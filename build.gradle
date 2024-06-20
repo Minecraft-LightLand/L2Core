@@ -1,0 +1,184 @@
+plugins {
+    id 'java-library'
+    id 'eclipse'
+    id 'idea'
+    id 'maven-publish'
+    id 'net.neoforged.gradle.userdev' version '7.0.145'
+}
+
+version = mod_version
+group = 'dev.kxmc'
+
+repositories {
+    mavenLocal()
+}
+
+base {
+    archivesName = mod_id
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+minecraft.accessTransformers.file rootProject.file('src/main/resources/META-INF/accesstransformer.cfg')
+
+runs {
+    configureEach {
+        systemProperty 'forge.logging.markers', 'REGISTRIES'
+        systemProperty 'forge.logging.console.level', 'debug'
+        modSource project.sourceSets.main
+    }
+    client {
+        systemProperty 'forge.enabledGameTestNamespaces', project.mod_id
+    }
+    server {
+        systemProperty 'forge.enabledGameTestNamespaces', project.mod_id
+        programArgument '--nogui'
+    }
+    gameTestServer {
+        systemProperty 'forge.enabledGameTestNamespaces', project.mod_id
+    }
+    data {
+        programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
+    }
+}
+
+sourceSets.main.resources { srcDir 'src/generated/resources' }
+
+
+dependencies {
+    implementation "net.neoforged:neoforge:${neo_version}"
+}
+
+tasks.withType(ProcessResources).configureEach {
+    var replaceProperties = [
+            minecraft_version   : minecraft_version, minecraft_version_range: minecraft_version_range,
+            neo_version         : neo_version, neo_version_range: neo_version_range,
+            loader_version_range: loader_version_range,
+            mod_id              : mod_id, mod_name: mod_name, mod_license: mod_license, mod_version: mod_version,
+            mod_authors         : mod_authors, mod_description: mod_description,
+    ]
+    inputs.properties replaceProperties
+
+    filesMatching(['META-INF/mods.toml']) {
+        expand replaceProperties + [project: project]
+    }
+}
+
+// Example configuration to allow publishing using the maven-publish plugin
+publishing {
+    publications {
+        register('mavenJava', MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            url "file://${project.projectDir}/repo"
+        }
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+}
+
+if (lljij.toBoolean()) jarJar.enable()
+
+jar {
+    manifest {
+        attributes([
+                "Specification-Title"     : "${mod_id}",
+                "Specification-Vendor"    : "xkmc",
+                "Specification-Version"   : "1", // We are version 1 of ourselves
+                "Implementation-Title"    : project.name,
+                "Implementation-Version"  : project.jar.archiveVersion,
+                "Implementation-Vendor"   : "xkmc",
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+                'MixinConfigs'            : "${mod_id}.mixins.json"
+        ])
+    }
+}
+
+if (lljij.toBoolean()) {
+
+    tasks.jarJar.configure {
+        archiveClassifier.set('')
+    }
+
+    jar {
+        archiveClassifier.set('slim')
+    }
+
+}
+
+dependencies {
+    //annotationProcessor "org.spongepowered:mixin:${mixin_version}:processor"
+    //compileOnly fg.deobf("com.tterrag.registrate:Registrate:${registrate_version}")
+    if (rootMod.toBoolean()) {
+        //jarJar(group: 'com.tterrag.registrate', name: 'Registrate', version: "[MC1.20,MC1.21)")
+    }
+}
+
+// project specific
+
+repositories {
+    flatDir {
+        dirs 'libs'
+    }
+    maven { // Registrate
+        url "https://maven.tterrag.com/"
+    }
+    maven {
+        url = "https://maven.theillusivec4.top/"
+    }
+    maven {
+        // Location of the maven for vazkii's mods
+        name 'blamejared'
+        url 'https://maven.blamejared.com'
+    }
+    maven {
+        url 'https://www.cursemaven.com'
+        content {
+            includeGroup "curse.maven"
+        }
+    }
+    maven {
+        // Location of the maven that hosts JEI files (and TiC)
+        name 'Progwml6 maven'
+        url 'https://dvs1.progwml6.com/files/maven'
+    }
+    mavenLocal();
+}
+
+dependencies {
+    // base dep
+    implementation "mezz.jei:jei-${jei_minecraft_version}:${jei_version}"
+    //implementation "top.theillusivec4.curios:curios-neoforge:${curios_version}"
+
+    implementation "dev.xkmc:l2serial:${l2serial_ver}"
+
+    //runtimeOnly fg.deobf("dev.xkmc.l2damagetracker:l2damagetracker:0.2.4")
+    //runtimeOnly fg.deobf("dev.xkmc.l2backpack:l2backpack:2.4.12-slim")
+    //runtimeOnly fg.deobf("dev.xkmc.l2complements:l2complements:2.4.18-slim")
+    //runtimeOnly fg.deobf('dev.xkmc.modulargolems:modulargolems:2.4.16-slim')
+    //runtimeOnly fg.deobf("dev.xkmc.l2archery:l2archery:2.4.9")
+    //runtimeOnly fg.deobf("dev.xkmc.l2weaponry:l2weaponry:2.4.18")
+    //runtimeOnly fg.deobf("dev.xkmc.l2artifacts:l2artifacts:2.4.8-slim")
+
+    //runtimeOnly fg.deobf("curse.maven:create-328085:4626108")
+    //implementation fg.deobf("curse.maven:just-enough-effect-descriptions-jeed-532286:4599236")
+
+    //runtimeOnly fg.deobf("curse.maven:badpackets-615134:4438956")
+    //runtimeOnly fg.deobf("curse.maven:wthit-forge-455982:4596739")
+    //runtimeOnly fg.deobf("curse.maven:attributefix-280510:4588114")
+    //runtimeOnly fg.deobf("curse.maven:bookshelf-228525:4581675")
+    //runtimeOnly fg.deobf("curse.maven:enchantment-descriptions-250419:4587429")
+    //runtimeOnly fg.deobf("curse.maven:appleskin-248787:4605078")
+    //implementation fg.deobf("curse.maven:patchouli-306770:4636277")
+
+    //runtimeOnly fg.deobf("dev.xkmc.traderefresh:traderefresh:2.1.1-slim")
+    //runtimeOnly fg.deobf("dev.xkmc.lasertransport:lasertransport:2.2.0.pre5-slim")
+
+    //runtimeOnly fg.deobf('curse.maven:max-health-fix-492246:4447240')
+    //runtimeOnly fg.deobf('curse.maven:the-twilight-forest-227639:4516391')
+}
