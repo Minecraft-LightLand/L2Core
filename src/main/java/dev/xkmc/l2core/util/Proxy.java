@@ -8,6 +8,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
+import javax.annotation.Nullable;
 import java.util.Optional;
 
 public class Proxy {
@@ -23,6 +24,7 @@ public class Proxy {
 		return Optional.ofNullable(ServerLifecycleHooks.getCurrentServer());
 	}
 
+	@Nullable
 	public static LocalPlayer getClientPlayer() {
 		return Minecraft.getInstance().player;
 	}

@@ -27,21 +27,21 @@ public record AttReg(DeferredRegister<AttachmentType<?>> att) {
 	}
 
 	public <E, T extends AttachmentDef<E>> AttVal<E, T> reg(String id, Function<ResourceLocation, T> factory) {
-		ResourceLocation rl = new ResourceLocation(att.getNamespace(), id);
+		ResourceLocation rl = ResourceLocation.fromNamespaceAndPath(att.getNamespace(), id);
 		T type = factory.apply(rl);
 		return reg(id, type);
 	}
 
 	public <E extends GeneralCapabilityTemplate<H, E>, H extends AttachmentHolder> AttVal.CapVal<H, E>
 	entity(String id, Class<E> holder_class, Supplier<E> sup, Class<H> entity_class, Predicate<H> pred) {
-		ResourceLocation rl = new ResourceLocation(att.getNamespace(), id);
+		ResourceLocation rl = ResourceLocation.fromNamespaceAndPath(att.getNamespace(), id);
 		var type = new GeneralCapabilityHolder<>(rl, holder_class, sup, entity_class, pred);
 		return new CapValImpl<>(att.register(id, type::type), type);
 	}
 
 	public <E extends PlayerCapabilityTemplate<E>> AttVal.PlayerVal<E>
 	player(String id, Class<E> holder_class, Supplier<E> sup, PlayerCapabilityHolder.NetworkFactory<E> network) {
-		ResourceLocation rl = new ResourceLocation(att.getNamespace(), id);
+		ResourceLocation rl = ResourceLocation.fromNamespaceAndPath(att.getNamespace(), id);
 		var type = new PlayerCapabilityHolder<>(rl, holder_class, sup, network);
 		return new PlayerValImpl<>(att.register(id, type::type), type);
 	}

@@ -1,8 +1,10 @@
 package dev.xkmc.l2core.serial.recipe;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.MethodsReturnNonnullByDefault;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.SmithingTransformRecipe;
@@ -42,12 +44,13 @@ public abstract class AbstractSmithingRecipe<T extends AbstractSmithingRecipe<T>
 		}
 
 		@Override
-		public Codec<SmithingTransformRecipe> codec() {
+		public MapCodec<SmithingTransformRecipe> codec() {
 			return super.codec().xmap(factory::map, e -> e);
 		}
 
-		public T fromNetwork(FriendlyByteBuf obj) {
-			return factory.map(super.fromNetwork(obj));
+		@Override
+		public StreamCodec<RegistryFriendlyByteBuf, SmithingTransformRecipe> streamCodec() {
+			return super.streamCodec().map(factory::map, e -> e);
 		}
 
 	}

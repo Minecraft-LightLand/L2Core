@@ -1,8 +1,9 @@
 package dev.xkmc.l2core.capability.player;
 
 import dev.xkmc.l2serial.network.SerialPacketBase;
-import dev.xkmc.l2serial.serialization.SerialClass;
 import dev.xkmc.l2serial.serialization.codec.PacketCodec;
+import dev.xkmc.l2serial.serialization.marker.SerialClass;
+import dev.xkmc.l2serial.serialization.marker.SerialField;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -18,26 +19,27 @@ public record PlayerCapToClient(Action action, ResourceLocation holderID, byte[]
 	public static <T extends PlayerCapabilityTemplate<T>> PlayerCapToClient
 	of(ServerPlayer player, Action action, PlayerCapabilityHolder<T> holder, T handler) {
 		return new PlayerCapToClient(action, holder.id,
-				PacketCodec.toBytes(handler, holder.cls(), action.pred),
+				PacketCodec.toBytes(player.level().registryAccess(),
+						handler, holder.cls(), action.pred),
 				player.getUUID());
 	}
 
 	@Override
-	public void handle(@Nullable Player player) {
-		ClientSyncHandler.parse(data, PlayerCapabilityHolder.INTERNAL_MAP.get(holderID), action.pred);
+	public void handle(Player player) {
+		ClientSyncHandler.parse(player.level().registryAccess(), data,
+				PlayerCapabilityHolder.INTERNAL_MAP.get(holderID), action.pred);
 	}
 
 	public enum Action {
 		ALL(e -> true),
-		CLIENT(SerialClass.SerialField::toClient),
-		TRACK(SerialClass.SerialField::toTracking),
+		CLIENT(SerialField::toClient),
+		TRACK(SerialField::toTracking),
 		;
-		public final Predicate<SerialClass.SerialField> pred;
+		public final Predicate<SerialField> pred;
 
-		Action(Predicate<SerialClass.SerialField> pred) {
+		Action(Predicate<SerialField> pred) {
 			this.pred = pred;
 		}
-
 
 	}
 

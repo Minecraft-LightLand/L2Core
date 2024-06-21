@@ -11,6 +11,7 @@ import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.crafting.RecipeInput;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedHashMap;
@@ -20,7 +21,7 @@ public class BaseRecipeBuilder<
 		T extends BaseRecipeBuilder<T, Rec, SRec, Inv>,
 		Rec extends SRec,
 		SRec extends BaseRecipe<?, SRec, Inv>,
-		Inv extends Container
+		Inv extends RecipeInput
 		> implements RecipeBuilder {
 
 	protected final BaseRecipe.RecType<Rec, SRec, Inv> type;
@@ -63,7 +64,7 @@ public class BaseRecipeBuilder<
 				.rewards(AdvancementRewards.Builder.recipe(id))
 				.requirements(AdvancementRequirements.Strategy.OR);
 		this.criteria.forEach(builder::addCriterion);
-		id = new ResourceLocation(id.getNamespace(), "recipes/" +
+		id = ResourceLocation.fromNamespaceAndPath(id.getNamespace(), "recipes/" +
 				BuiltInRegistries.RECIPE_SERIALIZER.getKey(type).getPath() + "/" + id.getPath());
 		pvd.accept(id, recipe, builder.build(id));
 	}

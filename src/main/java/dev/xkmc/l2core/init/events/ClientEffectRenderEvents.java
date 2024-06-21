@@ -32,7 +32,9 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.event.RenderLivingEvent;
 import net.neoforged.neoforge.event.TickEvent;
@@ -41,17 +43,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-@Mod.EventBusSubscriber(value = Dist.CLIENT, modid = L2Core.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(value = Dist.CLIENT, modid = L2Core.MODID, bus = EventBusSubscriber.Bus.GAME)
 public class ClientEffectRenderEvents {
 
 	private static final ArrayList<DelayedEntityRender> ICONS = new ArrayList<>();
 
 	@SubscribeEvent
-	public static void clientTick(TickEvent.ClientTickEvent event) {
-		if (event.phase != TickEvent.Phase.END) return;
+	public static void clientTick(ClientTickEvent.Post event) {
 		AbstractClientPlayer player = Proxy.getClientPlayer();
 		if (player != null) {
-			for (Map.Entry<MobEffect, MobEffectInstance> entry : player.getActiveEffectsMap().entrySet()) {
+			for (var entry : player.getActiveEffectsMap().entrySet()) {
 				if (entry.getKey() instanceof FirstPlayerRenderEffect effect) {
 					effect.onClientLevelRender(player, entry.getValue());
 				}
@@ -68,25 +69,10 @@ public class ClientEffectRenderEvents {
 		PoseStack stack = event.getPoseStack();
 
 		// cache the previous handler
-		PoseStack posestack = RenderSystem.getModelViewStack();
-		var last = posestack.last();
-		posestack.popPose();
-		RenderSystem.applyModelViewMatrix();
-
-		RenderSystem.disableDepthTest();
 		for (DelayedEntityRender icon : ICONS) {
-			renderIcon(stack, buffers, icon, event.getPartialTick(), camera, renderer.entityRenderDispatcher);
+			renderIcon(stack, buffers, icon, event.getPartialTick().getGameTimeDeltaTicks(), camera, renderer.entityRenderDispatcher);
 		}
 		buffers.endBatch();
-
-		// restore the previous handler
-		posestack.pushPose();
-		posestack.setIdentity();
-		posestack.last().pose().mul(last.pose());
-		posestack.last().normal().mul(last.normal());
-		RenderSystem.applyModelViewMatrix();
-
-		RenderSystem.enableDepthTest();
 
 		ICONS.clear();
 	}

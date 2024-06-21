@@ -1,9 +1,10 @@
 package dev.xkmc.l2core.serial.recipe;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.NonNullList;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -47,12 +48,13 @@ public abstract class AbstractShapelessRecipe<T extends AbstractShapelessRecipe<
 		}
 
 		@Override
-		public Codec<ShapelessRecipe> codec() {
+		public MapCodec<ShapelessRecipe> codec() {
 			return super.codec().xmap(factory::map, e -> e);
 		}
 
-		public T fromNetwork(FriendlyByteBuf obj) {
-			return factory.map(super.fromNetwork(obj));
+		@Override
+		public StreamCodec<RegistryFriendlyByteBuf, ShapelessRecipe> streamCodec() {
+			return super.streamCodec().map(factory::map, e -> e);
 		}
 
 	}

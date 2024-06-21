@@ -1,25 +1,33 @@
 package dev.xkmc.l2core.capability.conditionals;
 
 import dev.xkmc.l2core.capability.player.PlayerCapabilityTemplate;
-import dev.xkmc.l2core.init.L2LibraryConfig;
-import dev.xkmc.l2serial.serialization.SerialClass;
+import dev.xkmc.l2serial.serialization.marker.SerialClass;
+import dev.xkmc.l2serial.serialization.marker.SerialField;
 import dev.xkmc.l2serial.util.Wrappers;
 import net.minecraft.world.entity.player.Player;
 
 import javax.annotation.Nullable;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 @SerialClass
 public class ConditionalData extends PlayerCapabilityTemplate<ConditionalData> {
 
-	@SerialClass.SerialField
-	public HashMap<TokenKey<?>, ConditionalToken> data = new HashMap<>();
-	@SerialClass.SerialField
-	public int tickSinceDeath = 0;
+	@SerialField
+	public LinkedHashMap<TokenKey<?>, ConditionalToken> data = new LinkedHashMap<>();
 
 	@Override
-	public void onClone(boolean isWasDeath) {
-		tickSinceDeath = 0;
+	public void onClone(Player player, boolean isWasDeath) {
+		if (!isWasDeath) return;
+		List<TokenKey<?>> toRemove = new ArrayList<>();
+		for (var e : data.entrySet()) {
+			if (!e.getValue().retainOnDeath(player)) {
+				toRemove.add(e.getKey());
+			}
+		}
+		for (var e : toRemove)
+			data.remove(e);
 	}
 
 	public <T extends ConditionalToken, C extends Context> T getOrCreateData(TokenProvider<T, C> setEffect, C ent) {
@@ -33,12 +41,14 @@ public class ConditionalData extends PlayerCapabilityTemplate<ConditionalData> {
 
 	@Override
 	public void tick(Player player) {
-		tickSinceDeath++;
-		if (L2LibraryConfig.SERVER.restoreFullHealthOnRespawn.get() &&
-				tickSinceDeath < 60 && player.getHealth() < player.getMaxHealth()) {
-			player.setHealth(player.getMaxHealth());
+		List<TokenKey<?>> toRemove = new ArrayList<>();
+		for (var e : data.entrySet()) {
+			if (e.getValue().tick(player)) {
+				toRemove.add(e.getKey());
+			}
 		}
-		data.entrySet().removeIf(e -> e.getValue().tick(player));
+		for (var e : toRemove)
+			data.remove(e);
 	}
 
 	public boolean hasData(TokenKey<?> eff) {

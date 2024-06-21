@@ -27,7 +27,6 @@ public class L2Core {
 	// TODO public static final L2Registrate REGISTRATE = new L2Registrate(MODID);
 
 	public static final PacketHandler PACKET_HANDLER = new PacketHandler(MODID, 1,
-			e -> e.create(SyncPacket.class, PLAY_TO_CLIENT),
 			e -> e.create(EffectToClient.class, PLAY_TO_CLIENT),
 			e -> e.create(PlayerCapToClient.class, PLAY_TO_CLIENT),
 			e -> e.create(TokenToClient.class, PLAY_TO_CLIENT)
@@ -36,7 +35,6 @@ public class L2Core {
 	public L2Core(IEventBus bus) {
 		Handlers.register();
 		L2LibReg.register(bus);
-		L2LibraryConfig.init();
 	}
 
 	@SubscribeEvent

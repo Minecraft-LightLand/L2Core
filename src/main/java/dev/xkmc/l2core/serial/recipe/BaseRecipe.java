@@ -4,13 +4,14 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeInput;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 
 import java.util.function.Supplier;
 
-public abstract class BaseRecipe<Rec extends SRec, SRec extends BaseRecipe<?, SRec, Inv>, Inv extends Container> implements Recipe<Inv> {
+public abstract class BaseRecipe<Rec extends SRec, SRec extends BaseRecipe<?, SRec, Inv>, Inv extends RecipeInput> implements Recipe<Inv> {
 
 	private final RecType<Rec, SRec, Inv> factory;
 
@@ -39,11 +40,7 @@ public abstract class BaseRecipe<Rec extends SRec, SRec extends BaseRecipe<?, SR
 		return factory.type.get();
 	}
 
-	public interface RecInv<R extends BaseRecipe<?, R, ?>> extends Container {
-
-	}
-
-	public static class RecType<Rec extends SRec, SRec extends BaseRecipe<?, SRec, Inv>, Inv extends Container> extends RecSerializer<Rec, Inv> {
+	public static class RecType<Rec extends SRec, SRec extends BaseRecipe<?, SRec, Inv>, Inv extends RecipeInput> extends RecSerializer<Rec, Inv> {
 
 		public final Supplier<RecipeType<SRec>> type;
 

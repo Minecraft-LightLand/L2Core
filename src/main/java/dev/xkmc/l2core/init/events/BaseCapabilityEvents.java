@@ -5,18 +5,19 @@ import dev.xkmc.l2core.capability.player.PlayerCapabilityHolder;
 import dev.xkmc.l2core.init.L2Core;
 import dev.xkmc.l2serial.util.Wrappers;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.event.entity.living.LivingEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
-@Mod.EventBusSubscriber(modid = L2Core.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = L2Core.MODID, bus = EventBusSubscriber.Bus.GAME)
 public class BaseCapabilityEvents {
 
 	@SubscribeEvent
-	public static void onLivingTick(LivingEvent.LivingTickEvent event) {
-		if (event.getEntity().isAlive()) {
+	public static void onLivingTick(EntityTickEvent.Post event) {
+		if (event.getEntity() instanceof LivingEntity le && le.isAlive()) {
 			for (GeneralCapabilityHolder<?, ?> holder : GeneralCapabilityHolder.INTERNAL_MAP.values()) {
 				if (holder.isFor(event.getEntity()))
 					holder.get(Wrappers.cast(event.getEntity())).tick(Wrappers.cast(event.getEntity()));
@@ -28,7 +29,7 @@ public class BaseCapabilityEvents {
 	public static void onPlayerClone(PlayerEvent.Clone event) {
 		for (PlayerCapabilityHolder<?> holder : PlayerCapabilityHolder.INTERNAL_MAP.values()) {
 			ServerPlayer e = (ServerPlayer) event.getEntity();
-			holder.get(e).onClone(event.isWasDeath());
+			holder.get(e).onClone(e, event.isWasDeath());
 			holder.network.toClient(e);
 			holder.network.toTracking(e);
 		}
@@ -37,12 +38,11 @@ public class BaseCapabilityEvents {
 	@SubscribeEvent
 	public static void onServerPlayerJoin(PlayerEvent.PlayerLoggedInEvent event) {
 		ServerPlayer e = (ServerPlayer) event.getEntity();
-		if (e != null) {
-			for (PlayerCapabilityHolder<?> holder : PlayerCapabilityHolder.INTERNAL_MAP.values()) {
-				holder.get(e).init(e);
-				holder.network.toClient(e);
-				holder.network.toTracking(e);
-			}
+		if (e == null) return;
+		for (PlayerCapabilityHolder<?> holder : PlayerCapabilityHolder.INTERNAL_MAP.values()) {
+			holder.get(e).init(e);
+			holder.network.toClient(e);
+			holder.network.toTracking(e);
 		}
 	}
 

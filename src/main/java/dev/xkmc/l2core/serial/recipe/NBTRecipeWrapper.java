@@ -2,6 +2,7 @@ package dev.xkmc.l2core.serial.recipe;
 
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -21,10 +22,10 @@ public record NBTRecipeWrapper(RecipeOutput pvd, ItemStack stack) implements Rec
 	@Override
 	public void accept(ResourceLocation id, Recipe<?> recipe, @Nullable AdvancementHolder advancement, ICondition... conditions) {
 		if (recipe instanceof ShapedRecipe r) {
-			r.result.setTag(stack.getTag());
+			r.result.applyComponents(stack.getComponents());
 		}
 		if (recipe instanceof ShapelessRecipe r) {
-			r.result.setTag(stack.getTag());
+			r.result.applyComponents(stack.getComponents());
 		}
 		pvd.accept(id, recipe, advancement, conditions);
 	}
