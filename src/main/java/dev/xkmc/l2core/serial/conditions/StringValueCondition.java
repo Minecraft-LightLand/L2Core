@@ -1,9 +1,7 @@
 package dev.xkmc.l2core.serial.conditions;
 
-import com.mojang.serialization.Codec;
-import dev.xkmc.l2core.init.L2Core;
+import com.mojang.serialization.MapCodec;
 import dev.xkmc.l2core.init.L2LibReg;
-import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.config.ConfigTracker;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.common.conditions.ICondition;
@@ -11,8 +9,6 @@ import net.neoforged.neoforge.common.conditions.ICondition;
 import java.util.ArrayList;
 
 public record StringValueCondition(String path, ArrayList<String> line, String key) implements ICondition {
-
-	public static final ResourceLocation ID = new ResourceLocation(L2Core.MODID, "string_config");
 
 	public static StringValueCondition of(String file, ModConfigSpec.ConfigValue<String> config, String key) {
 		return new StringValueCondition(file, new ArrayList<>(config.getPath()), key);
@@ -28,7 +24,7 @@ public record StringValueCondition(String path, ArrayList<String> line, String k
 	}
 
 	@Override
-	public Codec<StringValueCondition> codec() {
+	public MapCodec<StringValueCondition> codec() {
 		return L2LibReg.CONDITION_STR.get();
 	}
 

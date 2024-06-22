@@ -24,7 +24,7 @@ public record BooleanValueCondition(String path, ArrayList<String> line, boolean
 	}
 
 	@Override
-	public MapCodec<? extends ICondition> codec() {
+	public MapCodec<BooleanValueCondition> codec() {
 		return L2LibReg.CONDITION_BOOL.get();
 	}
 

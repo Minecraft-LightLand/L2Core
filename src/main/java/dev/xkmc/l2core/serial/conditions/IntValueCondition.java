@@ -1,6 +1,6 @@
 package dev.xkmc.l2core.serial.conditions;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import dev.xkmc.l2core.init.L2Core;
 import dev.xkmc.l2core.init.L2LibReg;
 import net.minecraft.resources.ResourceLocation;
@@ -11,8 +11,6 @@ import net.neoforged.neoforge.common.conditions.ICondition;
 import java.util.ArrayList;
 
 public record IntValueCondition(String path, ArrayList<String> line, int low, int high) implements ICondition {
-
-	public static final ResourceLocation ID = new ResourceLocation(L2Core.MODID, "int_config");
 
 	public static IntValueCondition of(String file, ModConfigSpec.ConfigValue<Integer> config, int low, int high) {
 		return new IntValueCondition(file, new ArrayList<>(config.getPath()), low, high);
@@ -29,7 +27,7 @@ public record IntValueCondition(String path, ArrayList<String> line, int low, in
 
 
 	@Override
-	public Codec<IntValueCondition> codec() {
+	public MapCodec<IntValueCondition> codec() {
 		return L2LibReg.CONDITION_INT.get();
 	}
 

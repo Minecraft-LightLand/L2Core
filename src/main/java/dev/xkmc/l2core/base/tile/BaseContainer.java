@@ -39,7 +39,7 @@ public class BaseContainer<T extends BaseContainer<T>> extends SimpleContainer i
 		for (ItemStack stack : items) {
 			if (stack.isEmpty())
 				ans++;
-			else if (ItemStack.isSameItemSameTags(stack, add) &&
+			else if (ItemStack.isSameItemSameComponents(stack, add) &&
 					stack.getCount() + add.getCount() <=
 							Math.min(stack.getMaxStackSize(), getMaxStackSize())) {
 				return true;
@@ -61,7 +61,7 @@ public class BaseContainer<T extends BaseContainer<T>> extends SimpleContainer i
 	public boolean canRecipeAddItem(ItemStack stack) {
 		stack = stack.copy();
 		for (ItemStack slot : this.items) {
-			if (slot.isEmpty() || ItemStack.isSameItemSameTags(slot, stack)) {
+			if (slot.isEmpty() || ItemStack.isSameItemSameComponents(slot, stack)) {
 				int cap = Math.min(getMaxStackSize(), slot.getMaxStackSize());
 				int amount = Math.min(stack.getCount(), cap - slot.getCount());
 				if (amount > 0) {

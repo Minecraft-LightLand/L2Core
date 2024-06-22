@@ -1,4 +1,4 @@
-package dev.xkmc.l2core.init.events;
+package dev.xkmc.l2core.events;
 
 import dev.xkmc.l2core.capability.attachment.GeneralCapabilityHolder;
 import dev.xkmc.l2core.capability.player.PlayerCapabilityHolder;

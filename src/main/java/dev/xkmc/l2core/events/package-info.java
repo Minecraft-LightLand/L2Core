@@ -1,7 +1,7 @@
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
 
-package dev.xkmc.l2core.init.reg.registrate;
+package dev.xkmc.l2core.events;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 

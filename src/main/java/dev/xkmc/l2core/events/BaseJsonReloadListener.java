@@ -1,4 +1,4 @@
-package dev.xkmc.l2core.init.events;
+package dev.xkmc.l2core.events;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

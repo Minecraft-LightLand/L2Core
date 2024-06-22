@@ -3,9 +3,9 @@ package dev.xkmc.l2core.init;
 import dev.xkmc.l2core.base.effects.EffectToClient;
 import dev.xkmc.l2core.capability.conditionals.TokenToClient;
 import dev.xkmc.l2core.capability.player.PlayerCapToClient;
-import dev.xkmc.l2core.serial.config.SyncPacket;
 import dev.xkmc.l2serial.network.PacketHandler;
 import dev.xkmc.l2serial.serialization.custom_handler.Handlers;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -35,11 +35,16 @@ public class L2Core {
 	public L2Core(IEventBus bus) {
 		Handlers.register();
 		L2LibReg.register(bus);
+
 	}
 
 	@SubscribeEvent
 	public static void onPacketReg(RegisterPayloadHandlersEvent event) {
 		PACKET_HANDLER.register(event);
+	}
+
+	public static ResourceLocation loc(String id) {
+		return ResourceLocation.fromNamespaceAndPath(MODID, id);
 	}
 
 }

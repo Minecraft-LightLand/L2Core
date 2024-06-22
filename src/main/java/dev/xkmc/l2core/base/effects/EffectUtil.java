@@ -4,7 +4,6 @@ import dev.xkmc.l2core.base.effects.api.ForceEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
@@ -15,53 +14,46 @@ import java.util.function.Predicate;
 
 public class EffectUtil {
 
-	public enum AddReason {
-		NONE, PROF, FORCE, SKILL, SELF
-	}
-
-	private static final ThreadLocal<AddReason> REASON = new ThreadLocal<>();
-
 	/**
 	 * force add effect, make hard not override
 	 * for icon use only, such as Arcane Mark on Wither and Ender Dragon
 	 */
 	private static void forceAddEffect(LivingEntity e, MobEffectInstance ins, @Nullable Entity source) {
-		MobEffectInstance effectinstance = e.getActiveEffectsMap().get(ins.getEffect());
+		MobEffectInstance old = e.activeEffects.get(ins.getEffect());
 		var event = new ForceAddEffectEvent(e, ins);
 		NeoForge.EVENT_BUS.post(event);
-		if (event.getResult() == Event.Result.DENY) {
+		if (event.isCanceled()) {
 			return;
 		}
-		NeoForge.EVENT_BUS.post(new MobEffectEvent.Added(e, effectinstance, ins, source));
-		if (effectinstance == null) {
-			e.getActiveEffectsMap().put(ins.getEffect(), ins);
+		NeoForge.EVENT_BUS.post(new MobEffectEvent.Added(e, old, ins, source));
+		if (old == null) {
+			e.activeEffects.put(ins.getEffect(), ins);
 			e.onEffectAdded(ins, source);
-		} else if (effectinstance.update(ins)) {
-			e.onEffectUpdated(effectinstance, true, source);
+			ins.onEffectAdded(e);
+		} else if (old.update(ins)) {
+			e.onEffectUpdated(old, true, source);
 		}
+		ins.onEffectStarted(e);
 	}
 
-	public static void addEffect(LivingEntity entity, MobEffectInstance ins, AddReason reason, @Nullable Entity source) {
-		if (entity == source)
-			reason = AddReason.SELF;
-		if (ins.getEffect() instanceof ForceEffect)
-			reason = AddReason.FORCE;
+	public static void addEffect(LivingEntity entity, MobEffectInstance ins, @Nullable Entity source) {
 		ins = new MobEffectInstance(ins.getEffect(), ins.getDuration(), ins.getAmplifier(),
-				ins.isAmbient(), reason != AddReason.FORCE && ins.isVisible(), ins.showIcon());
-		REASON.set(reason);
+				ins.isAmbient(), ins.isVisible(), ins.showIcon());
 		if (ins.getEffect() instanceof ForceEffect)
 			forceAddEffect(entity, ins, source);
-		else if (ins.getEffect().isInstantenous())
-			ins.getEffect().applyInstantenousEffect(null, null, entity, ins.getAmplifier(), 1);
+		else if (ins.getEffect().value().isInstantenous())
+			ins.getEffect().value().applyInstantenousEffect(null, null, entity, ins.getAmplifier(), 1);
 		else entity.addEffect(ins, source);
-		REASON.set(AddReason.NONE);
 	}
 
-	public static void refreshEffect(LivingEntity entity, MobEffectInstance ins, AddReason reason, Entity source) {
+	public static void refreshEffect(LivingEntity entity, MobEffectInstance ins, Entity source) {
 		if (ins.duration < 40) ins.duration = 40;
 		MobEffectInstance cur = entity.getEffect(ins.getEffect());
-		if (cur == null || cur.getAmplifier() < ins.getAmplifier() || cur.getAmplifier() == ins.getAmplifier() && cur.getDuration() < ins.getDuration() / 2)
-			addEffect(entity, ins, reason, source);
+		if (cur == null ||
+				cur.getAmplifier() < ins.getAmplifier() ||
+				cur.getAmplifier() == ins.getAmplifier() &&
+						cur.getDuration() < ins.getDuration() / 2
+		) addEffect(entity, ins, source);
 	}
 
 	public static void removeEffect(LivingEntity entity, Predicate<MobEffectInstance> pred) {
@@ -74,11 +66,6 @@ public class EffectUtil {
 				entity.effectsDirty = true;
 			}
 		}
-	}
-
-	public static AddReason getReason() {
-		AddReason ans = REASON.get();
-		return ans == null ? AddReason.NONE : ans;
 	}
 
 }

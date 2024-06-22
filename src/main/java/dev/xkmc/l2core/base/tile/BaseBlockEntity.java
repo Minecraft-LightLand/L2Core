@@ -1,11 +1,12 @@
 package dev.xkmc.l2core.base.tile;
 
 import dev.xkmc.l2core.util.ServerOnly;
-import dev.xkmc.l2serial.serialization.SerialClass;
 import dev.xkmc.l2serial.serialization.codec.TagCodec;
-import dev.xkmc.l2serial.util.Wrappers;
+import dev.xkmc.l2serial.serialization.marker.SerialClass;
+import dev.xkmc.l2serial.serialization.marker.SerialField;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -24,16 +25,16 @@ public class BaseBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public void load(CompoundTag tag) {
-		super.load(tag);
+	public void loadAdditional(CompoundTag tag, HolderLookup.Provider pvd) {
+		super.loadAdditional(tag, pvd);
 		if (tag.contains("auto-serial"))
-			Wrappers.run(() -> TagCodec.fromTag(tag.getCompound("auto-serial"), getClass(), this, f -> true));
+			new TagCodec(pvd).fromTag(tag.getCompound("auto-serial"), getClass(), this);
 	}
 
 	@Override
-	public void saveAdditional(CompoundTag tag) {
-		super.saveAdditional(tag);
-		CompoundTag ser = Wrappers.get(() -> TagCodec.toTag(new CompoundTag(), getClass(), this, f -> true));
+	public void saveAdditional(CompoundTag tag, HolderLookup.Provider pvd) {
+		super.saveAdditional(tag, pvd);
+		CompoundTag ser = new TagCodec(pvd).toTag(new CompoundTag(), getClass(), this);
 		if (ser != null) tag.put("auto-serial", ser);
 	}
 
@@ -53,9 +54,10 @@ public class BaseBlockEntity extends BlockEntity {
 	 * Generate data packet from server to client, called from getUpdatePacket()
 	 */
 	@Override
-	public CompoundTag getUpdateTag() {
-		CompoundTag ans = super.getUpdateTag();
-		CompoundTag ser = Wrappers.get(() -> TagCodec.toTag(new CompoundTag(), getClass(), this, SerialClass.SerialField::toClient));
+	public CompoundTag getUpdateTag(HolderLookup.Provider pvd) {
+		CompoundTag ans = super.getUpdateTag(pvd);
+		CompoundTag ser = new TagCodec(pvd).pred(SerialField::toClient)
+				.toTag(new CompoundTag(), getClass(), this);
 		if (ser != null) ans.put("auto-serial", ser);
 		return ans;
 	}

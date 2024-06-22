@@ -1,6 +1,7 @@
 package dev.xkmc.l2core.base.menu.base;
 
-import dev.xkmc.l2serial.serialization.SerialClass;
+import dev.xkmc.l2serial.serialization.marker.SerialClass;
+import dev.xkmc.l2serial.serialization.marker.SerialField;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -17,7 +18,7 @@ import java.util.HashMap;
 public record MenuLayoutConfig(int height, HashMap<String, Rect> side, HashMap<String, Rect> comp) {
 
 	public static ResourceLocation getTexture(ResourceLocation id) {
-		return new ResourceLocation(id.getNamespace(), "textures/gui/container/" + id.getPath() + ".png");
+		return ResourceLocation.fromNamespaceAndPath(id.getNamespace(), "textures/gui/container/" + id.getPath() + ".png");
 	}
 
 	/**
@@ -109,7 +110,7 @@ public record MenuLayoutConfig(int height, HashMap<String, Rect> side, HashMap<S
 
 		public static final Rect ZERO = new Rect();
 
-		@SerialClass.SerialField
+		@SerialField
 		public int x, y, w, h, rx = 1, ry = 1;
 
 		public Rect() {
@@ -125,7 +126,7 @@ public record MenuLayoutConfig(int height, HashMap<String, Rect> side, HashMap<S
 
 		public final ResourceLocation id;
 
-		public MenuLayoutConfig parent(){
+		public MenuLayoutConfig parent() {
 			return MenuLayoutConfig.this;
 		}
 

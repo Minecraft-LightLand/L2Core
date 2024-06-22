@@ -1,7 +1,8 @@
 package dev.xkmc.l2core.capability.level;
 
-import dev.xkmc.l2serial.serialization.SerialClass;
 import dev.xkmc.l2serial.serialization.codec.TagCodec;
+import dev.xkmc.l2serial.serialization.marker.SerialClass;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.saveddata.SavedData;
 
@@ -9,8 +10,8 @@ import net.minecraft.world.level.saveddata.SavedData;
 public class BaseSavedData extends SavedData {
 
 	@Override
-	public CompoundTag save(CompoundTag tag) {
-		TagCodec.toTag(tag, this);
+	public CompoundTag save(CompoundTag tag, HolderLookup.Provider provider) {
+		new TagCodec(provider).toTag(tag, this);
 		return tag;
 	}
 
@@ -18,7 +19,6 @@ public class BaseSavedData extends SavedData {
 	public boolean isDirty() {
 		return true;
 	}
-
 
 
 }

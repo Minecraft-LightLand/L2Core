@@ -1,7 +1,8 @@
 package dev.xkmc.l2core.base.tile;
 
-import dev.xkmc.l2serial.serialization.SerialClass;
 import dev.xkmc.l2serial.serialization.codec.AliasCollection;
+import dev.xkmc.l2serial.serialization.marker.SerialClass;
+import dev.xkmc.l2serial.serialization.marker.SerialField;
 import net.minecraft.core.NonNullList;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
@@ -21,7 +22,7 @@ public class BaseTank implements IFluidHandler, AliasCollection<FluidStack> {
 	private Predicate<FluidStack> predicate = e -> true;
 	private BooleanSupplier allowExtract = () -> true;
 
-	@SerialClass.SerialField
+	@SerialField
 	public NonNullList<FluidStack> list;
 
 	private int click_max;
@@ -82,7 +83,7 @@ public class BaseTank implements IFluidHandler, AliasCollection<FluidStack> {
 		int filled = 0;
 		for (int i = 0; i < size; i++) {
 			FluidStack stack = list.get(i);
-			if (stack.isFluidEqual(resource)) {
+			if (FluidStack.isSameFluidSameComponents(stack, resource)) {
 				int remain = capacity - stack.getAmount();
 				int fill = Math.min(to_fill, remain);
 				filled += fill;
@@ -123,7 +124,7 @@ public class BaseTank implements IFluidHandler, AliasCollection<FluidStack> {
 		int drained = 0;
 		for (int i = 0; i < size; i++) {
 			FluidStack stack = list.get(i);
-			if (stack.isFluidEqual(resource)) {
+			if (FluidStack.isSameFluidSameComponents(stack, resource)) {
 				int remain = stack.getAmount();
 				int drain = Math.min(to_drain, remain);
 				drained += drain;
@@ -155,7 +156,7 @@ public class BaseTank implements IFluidHandler, AliasCollection<FluidStack> {
 		int drained = 0;
 		for (int i = 0; i < size; i++) {
 			FluidStack stack = list.get(i);
-			if (!stack.isEmpty() && (ans == null || stack.isFluidEqual(ans))) {
+			if (!stack.isEmpty() && (ans == null || FluidStack.isSameFluidSameComponents(stack, ans))) {
 				int remain = stack.getAmount();
 				int drain = Math.min(to_drain, remain);
 				drained += drain;

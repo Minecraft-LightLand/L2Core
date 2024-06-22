@@ -9,7 +9,7 @@ public record TokenKey<T extends ConditionalToken>(String type, String id) {
 	}
 
 	public ResourceLocation asLocation() {
-		return new ResourceLocation(type, id);
+		return ResourceLocation.fromNamespaceAndPath(type, id);
 	}
 
 }

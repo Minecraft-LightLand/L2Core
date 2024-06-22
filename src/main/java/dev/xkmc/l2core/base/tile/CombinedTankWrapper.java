@@ -3,7 +3,7 @@ package dev.xkmc.l2core.base.tile;
 import com.mojang.datafixers.util.Pair;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.items.wrapper.EmptyHandler;
+import net.neoforged.neoforge.fluids.capability.templates.EmptyFluidHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -85,36 +85,31 @@ public class CombinedTankWrapper implements IFluidHandler {
 	}
 
 	@Override
-	public int fill(FluidStack resource, FluidAction action) {
-		if (resource.isEmpty())
+	public int fill(FluidStack input, FluidAction action) {
+		if (input.isEmpty())
 			return 0;
 
-		int filled = 0;
-		resource = resource.copy();
+		int ans = 0;
+		input = input.copy();
 
-		boolean fittingHandlerFound = false;
-		Outer:
+		boolean found = false;
+
 		for (boolean searchPass : new boolean[]{true, false}) {
-			for (IFluidHandler iFluidHandler : fillable()) {
-
-				for (int i = 0; i < iFluidHandler.getTanks(); i++)
-					if (searchPass && iFluidHandler.getFluidInTank(i)
-							.isFluidEqual(resource))
-						fittingHandlerFound = true;
-
-				if (searchPass && !fittingHandlerFound)
+			for (IFluidHandler handler : fillable()) {
+				for (int i = 0; i < handler.getTanks(); i++)
+					if (searchPass && FluidStack.isSameFluidSameComponents(handler.getFluidInTank(i), input))
+						found = true;
+				if (searchPass && !found)
 					continue;
-
-				int filledIntoCurrent = iFluidHandler.fill(resource, action);
-				resource.shrink(filledIntoCurrent);
-				filled += filledIntoCurrent;
-
-				if (resource.isEmpty() || fittingHandlerFound || enforceVariety && filledIntoCurrent != 0)
-					break Outer;
+				int filler = handler.fill(input, action);
+				input.shrink(filler);
+				ans += filler;
+				if (input.isEmpty() || found || enforceVariety && filler != 0)
+					return ans;
 			}
 		}
 
-		return filled;
+		return ans;
 	}
 
 	@Override
@@ -122,41 +117,41 @@ public class CombinedTankWrapper implements IFluidHandler {
 		if (resource.isEmpty())
 			return resource;
 
-		FluidStack drained = FluidStack.EMPTY;
+		FluidStack ans = FluidStack.EMPTY;
 		resource = resource.copy();
 
-		for (IFluidHandler iFluidHandler : drainable()) {
-			FluidStack drainedFromCurrent = iFluidHandler.drain(resource, action);
-			int amount = drainedFromCurrent.getAmount();
+		for (IFluidHandler handler : drainable()) {
+			FluidStack drained = handler.drain(resource, action);
+			int amount = drained.getAmount();
 			resource.shrink(amount);
 
-			if (!drainedFromCurrent.isEmpty() && (drained.isEmpty() || drainedFromCurrent.isFluidEqual(drained)))
-				drained = new FluidStack(drainedFromCurrent.getFluid(), amount + drained.getAmount(),
-						drainedFromCurrent.getTag());
+			if (!drained.isEmpty() && (ans.isEmpty() || FluidStack.isSameFluidSameComponents(drained, ans)))
+				ans = new FluidStack(drained.getFluidHolder(), amount + ans.getAmount(),
+						drained.getComponentsPatch());
 			if (resource.isEmpty())
 				break;
 		}
 
-		return drained;
+		return ans;
 	}
 
 	@Override
 	public FluidStack drain(int maxDrain, FluidAction action) {
-		FluidStack drained = FluidStack.EMPTY;
+		FluidStack ans = FluidStack.EMPTY;
 
 		for (IFluidHandler iFluidHandler : drainable()) {
-			FluidStack drainedFromCurrent = iFluidHandler.drain(maxDrain, action);
-			int amount = drainedFromCurrent.getAmount();
+			FluidStack drained = iFluidHandler.drain(maxDrain, action);
+			int amount = drained.getAmount();
 			maxDrain -= amount;
 
-			if (!drainedFromCurrent.isEmpty() && (drained.isEmpty() || drainedFromCurrent.isFluidEqual(drained)))
-				drained = new FluidStack(drainedFromCurrent.getFluid(), amount + drained.getAmount(),
-						drainedFromCurrent.getTag());
+			if (!drained.isEmpty() && (ans.isEmpty() || FluidStack.isSameFluidSameComponents(drained, ans)))
+				ans = new FluidStack(drained.getFluidHolder(), amount + ans.getAmount(),
+						drained.getComponentsPatch());
 			if (maxDrain == 0)
 				break;
 		}
 
-		return drained;
+		return ans;
 	}
 
 	protected int getIndexForSlot(int slot) {
@@ -170,7 +165,7 @@ public class CombinedTankWrapper implements IFluidHandler {
 
 	protected IFluidHandler getHandlerFromIndex(int index) {
 		if (index < 0 || index >= list.size())
-			return (IFluidHandler) EmptyHandler.INSTANCE;
+			return EmptyFluidHandler.INSTANCE;
 		return list.get(index).getFirst();
 	}
 

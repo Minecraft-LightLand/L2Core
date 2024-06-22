@@ -1,6 +1,5 @@
-package dev.xkmc.l2core.init.events;
+package dev.xkmc.l2core.events;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -26,18 +25,15 @@ import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.event.RenderLivingEvent;
-import net.neoforged.neoforge.event.TickEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,11 +77,11 @@ public class ClientEffectRenderEvents {
 	public static void onLivingEntityRender(RenderLivingEvent.Post<?, ?> event) {
 		LivingEntity entity = event.getEntity();
 		if (!L2LibReg.EFFECT.type().isProper(entity)) return;
-		if (entity.getTags().contains("ClientOnly")) return;
+		if (entity.getTags().contains("ClientOnly")) return;//TODO
 		ClientEffectCap cap = L2LibReg.EFFECT.type().get(entity);
 		List<Pair<ClientRenderEffect, Integer>> l0 = new ArrayList<>();
-		for (Map.Entry<MobEffect, Integer> entry : cap.map.entrySet()) {
-			if (entry.getKey() instanceof ClientRenderEffect effect) {
+		for (var entry : cap.map.entrySet()) {
+			if (entry.getKey().value() instanceof ClientRenderEffect effect) {
 				l0.add(Pair.of(effect, entry.getValue()));
 			}
 		}
@@ -102,7 +98,6 @@ public class ClientEffectRenderEvents {
 				index++;
 			}
 		}
-
 
 		int n = index;
 		int w = (int) Math.ceil(Math.sqrt(n));
@@ -155,10 +150,9 @@ public class ClientEffectRenderEvents {
 	}
 
 	private static void iconVertex(PoseStack.Pose entry, VertexConsumer builder, float x, float y, float u, float v) {
-		builder.vertex(entry.pose(), x, y, 0)
-				.uv(u, v)
-				.normal(entry.normal(), 0.0F, 1.0F, 0.0F)
-				.endVertex();
+		builder.addVertex(entry.pose(), x, y, 0)
+				.setUv(u, v)
+				.setNormal(entry, 0.0F, 1.0F, 0.0F);
 	}
 
 	public static RenderType get2DIcon(ResourceLocation rl) {
@@ -187,6 +181,5 @@ public class ClientEffectRenderEvents {
 			cap.map.remove(eff.effect());
 		}
 	}
-
 
 }

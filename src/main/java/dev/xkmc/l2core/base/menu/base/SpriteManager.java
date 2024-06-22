@@ -6,7 +6,7 @@ import net.minecraft.resources.ResourceLocation;
 public record SpriteManager(ResourceLocation id) {
 
 	public SpriteManager(String modid, String path) {
-		this(new ResourceLocation(modid, path));
+		this(ResourceLocation.fromNamespaceAndPath(modid, path));
 	}
 
 	public MenuLayoutConfig get() {

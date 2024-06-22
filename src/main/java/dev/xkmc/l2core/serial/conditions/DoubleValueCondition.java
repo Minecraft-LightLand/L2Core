@@ -1,6 +1,6 @@
 package dev.xkmc.l2core.serial.conditions;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import dev.xkmc.l2core.init.L2LibReg;
 import net.neoforged.fml.config.ConfigTracker;
 import net.neoforged.neoforge.common.ModConfigSpec;
@@ -24,7 +24,7 @@ public record DoubleValueCondition(String path, ArrayList<String> line, double l
 	}
 
 	@Override
-	public Codec<DoubleValueCondition> codec() {
+	public MapCodec<DoubleValueCondition> codec() {
 		return L2LibReg.CONDITION_DOUBLE.get();
 	}
 

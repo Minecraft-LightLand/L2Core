@@ -1,5 +1,6 @@
 package dev.xkmc.l2core.serial.recipe;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
@@ -23,12 +24,13 @@ public abstract class BaseRecipe<Rec extends SRec, SRec extends BaseRecipe<?, SR
 	public abstract boolean matches(Inv inv, Level world);
 
 	@Override
-	public abstract ItemStack assemble(Inv inv, RegistryAccess access);
+	public abstract ItemStack assemble(Inv inv, HolderLookup.Provider provider);
+
+	@Override
+	public abstract ItemStack getResultItem(HolderLookup.Provider provider);
 
 	@Override
 	public abstract boolean canCraftInDimensions(int r, int c);
-
-	public abstract ItemStack getResultItem(RegistryAccess access);
 
 	@Override
 	public final RecipeSerializer<?> getSerializer() {
