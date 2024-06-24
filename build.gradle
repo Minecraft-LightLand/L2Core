@@ -113,7 +113,7 @@ if (lljij.toBoolean()) {
 
 dependencies {
     //annotationProcessor "org.spongepowered:mixin:${mixin_version}:processor"
-    //compileOnly fg.deobf("com.tterrag.registrate:Registrate:${registrate_version}")
+    compileOnly "com.tterrag.registrate:Registrate:${registrate_version}"
     if (rootMod.toBoolean()) {
         //jarJar(group: 'com.tterrag.registrate', name: 'Registrate', version: "[MC1.20,MC1.21)")
     }
@@ -124,9 +124,6 @@ dependencies {
 repositories {
     flatDir {
         dirs 'libs'
-    }
-    maven { // Registrate
-        url "https://maven.tterrag.com/"
     }
     maven {
         url = "https://maven.theillusivec4.top/"
