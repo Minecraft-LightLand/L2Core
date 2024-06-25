@@ -3,6 +3,7 @@ package dev.xkmc.l2core.init;
 import dev.xkmc.l2core.base.effects.EffectToClient;
 import dev.xkmc.l2core.capability.conditionals.TokenToClient;
 import dev.xkmc.l2core.capability.player.PlayerCapToClient;
+import dev.xkmc.l2core.init.reg.registrate.L2Registrate;
 import dev.xkmc.l2serial.network.PacketHandler;
 import dev.xkmc.l2serial.serialization.custom_handler.Handlers;
 import net.minecraft.resources.ResourceLocation;
@@ -24,7 +25,7 @@ public class L2Core {
 	public static final String MODID = "l2core";
 	public static final Logger LOGGER = LogManager.getLogger();
 
-	// TODO public static final L2Registrate REGISTRATE = new L2Registrate(MODID);
+	public static final L2Registrate REGISTRATE = new L2Registrate(MODID);
 
 	public static final PacketHandler PACKET_HANDLER = new PacketHandler(MODID, 1,
 			e -> e.create(EffectToClient.class, PLAY_TO_CLIENT),
@@ -36,6 +37,7 @@ public class L2Core {
 		Handlers.register();
 		L2LibReg.register(bus);
 
+		REGISTRATE.addDataGenerator(L2TagGen.EFF_TAGS, L2TagGen::onEffectTagGen);
 	}
 
 	@SubscribeEvent

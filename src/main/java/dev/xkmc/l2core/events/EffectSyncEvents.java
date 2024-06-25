@@ -2,10 +2,9 @@ package dev.xkmc.l2core.events;
 
 import dev.xkmc.l2core.base.effects.EffectToClient;
 import dev.xkmc.l2core.init.L2Core;
+import dev.xkmc.l2core.init.L2TagGen;
 import net.minecraft.core.Holder;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -16,19 +15,18 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 @EventBusSubscriber(modid = L2Core.MODID, bus = EventBusSubscriber.Bus.GAME)
 public class EffectSyncEvents {
 
-	public static final TagKey<MobEffect> SYNCED = TagKey.create(Registries.MOB_EFFECT, L2Core.loc("synced"));
-
 	private static boolean isTracked(Holder<MobEffect> eff) {
-		return eff.is(SYNCED);
+		return eff.is(L2TagGen.TRACKED_EFFECTS);
 	}
 
 	@SubscribeEvent
 	public static void onPotionAddedEvent(MobEffectEvent.Added event) {
-		if (isTracked(event.getEffectInstance().getEffect())) {
+		var ins = event.getEffectInstance();
+		if (ins == null) return;
+		if (isTracked(ins.getEffect())) {
 			onEffectAppear(event.getEffectInstance().getEffect(), event.getEntity(), event.getEffectInstance().getAmplifier());
 		}
 	}
-
 
 	@SubscribeEvent
 	public static void onPotionRemoveEvent(MobEffectEvent.Remove event) {
@@ -36,7 +34,6 @@ public class EffectSyncEvents {
 			onEffectDisappear(event.getEffectInstance().getEffect(), event.getEntity());
 		}
 	}
-
 
 	@SubscribeEvent
 	public static void onPotionExpiryEvent(MobEffectEvent.Expired event) {

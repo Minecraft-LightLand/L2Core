@@ -1,92 +1,151 @@
 package dev.xkmc.l2core.init.reg.registrate;
 
+import com.tterrag.registrate.AbstractRegistrate;
+import com.tterrag.registrate.builders.AbstractBuilder;
+import com.tterrag.registrate.builders.BuilderCallback;
+import com.tterrag.registrate.builders.NoConfigBuilder;
+import com.tterrag.registrate.providers.RegistrateLangProvider;
+import com.tterrag.registrate.util.OneTimeEventReceiver;
+import com.tterrag.registrate.util.entry.RegistryEntry;
+import com.tterrag.registrate.util.nullness.NonNullSupplier;
+import com.tterrag.registrate.util.nullness.NonnullType;
+import dev.xkmc.l2core.init.L2Core;
+import dev.xkmc.l2serial.serialization.custom_handler.CodecHandler;
+import dev.xkmc.l2serial.util.Wrappers;
+import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.Potion;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.neoforge.data.loading.DatagenModLoader;
+import net.neoforged.neoforge.registries.NewRegistryEvent;
+import net.neoforged.neoforge.registries.RegistryBuilder;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.TreeMap;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
+@SuppressWarnings("unused")
 public class L2Registrate extends AbstractRegistrate<L2Registrate> {
+
+	public final NonNullSupplier<Boolean> doDataGen = NonNullSupplier.lazy(DatagenModLoader::isRunningDataGen);
 
 	public L2Registrate(String modid) {
 		super(modid);
-		registerEventListeners(FMLJavaModLoadingContext.get().getModEventBus());
+		var bus = ModLoadingContext.get().getActiveContainer().getEventBus();
+		if (bus != null) registerEventListeners(bus);
+		else L2Core.LOGGER.error("Failed to register mod {}", modid);
 	}
 
-	public <T extends NamedEntry<T>, P extends T> GenericBuilder<T, P> generic(RegistryInstance<T> cls, String id, NonNullSupplier<P> sup) {
+	public ResourceLocation loc(String id) {
+		return ResourceLocation.fromNamespaceAndPath(getModid(), id);
+	}
+
+	public <T, P extends T> GenericBuilder<T, P> generic(RegistryInstance<T> cls, String id, NonNullSupplier<P> sup) {
 		return entry(id, cb -> new GenericBuilder<>(this, id, cb, cls.key(), sup));
 	}
 
-	public <T extends Recipe<?>> RegistryEntry<RecipeType<T>> recipe(String id) {
-		return simple(id, ForgeRegistries.Keys.RECIPE_TYPES, () -> new RecipeType<>() {
-		});
-	}
-
-	@Deprecated
-	@Override
-	public <T extends Enchantment> EnchantmentBuilder<T, L2Registrate> enchantment(String name, EnchantmentCategory type, EnchantmentBuilder.EnchantmentFactory<T> factory) {
-		return super.enchantment(name, type, factory);
-	}
-
-	public <T extends Enchantment> EnchantmentBuilder<T, L2Registrate> enchantment(String name, EnchantmentCategory type, EnchantmentBuilder.EnchantmentFactory<T> factory, String desc) {
-		addRawLang("enchantment." + getModid() + "." + name + ".desc", desc);
-		return super.enchantment(name, type, factory);
+	public <T extends Recipe<?>> RecipeTypeEntry<T> recipe(String id) {
+		return new RecipeTypeEntry<>(simple(id, Registries.RECIPE_TYPE, () -> new RecipeType<>() {
+			@Override
+			public String toString() {
+				return getModid() + ":" + id;
+			}
+		}));
 	}
 
 	public <T extends MobEffect> NoConfigBuilder<MobEffect, T, L2Registrate> effect(String name, NonNullSupplier<T> sup, String desc) {
 		addRawLang("effect." + getModid() + "." + name + ".description", desc);
-		return entry(name, cb -> new NoConfigBuilder<>(this, this, name, cb, ForgeRegistries.Keys.MOB_EFFECTS, sup));
+		addRawLang("effect." + getModid() + "." + name + ".desc", desc);
+		return entry(name, cb -> new NoConfigBuilder<>(this, this, name, cb, Registries.MOB_EFFECT, sup));
 	}
 
-	@SuppressWarnings({"unchecked", "unsafe"})
-	public <E extends NamedEntry<E>> RegistryInstance<E> newRegistry(String id, Class<?> cls, Consumer<RegistryBuilder<E>> cons) {
-		ResourceKey<Registry<E>> key = makeRegistry(id, () -> {
-			var ans = new RegistryBuilder<E>();
-			ans.onCreate((r, s) -> new RLClassHandler<>((Class<E>) cls, () -> r));
-			cons.accept(ans);
-			return ans;
-		});
-		return new RegistryInstance<>(Suppliers.memoize(() -> RegistryManager.ACTIVE.getRegistry(key)), key);
+	private <T extends Potion> SimpleEntry<Potion> genPotion(String name, NonNullSupplier<T> sup) {
+		RegistryEntry<Potion, T> ans = entry(name, (cb) -> new NoConfigBuilder<>(this, this, name, cb,
+				Registries.POTION, sup)).register();
+		if (doDataGen.get()) {
+			List<Item> list = List.of(Items.POTION, Items.SPLASH_POTION, Items.LINGERING_POTION, Items.TIPPED_ARROW);
+			for (Item item : list) {
+				String pref = item.getDescriptionId();
+				String[] prefs = pref.split("\\.");
+				String str = item.getDescriptionId() + ".effect." + name;
+				String pref_name = RegistrateLangProvider.toEnglishName(prefs[prefs.length - 1]);
+				if (item == Items.TIPPED_ARROW) pref_name = "Arrow";
+				addRawLang(str, pref_name + " of " + RegistrateLangProvider.toEnglishName(name));
+			}
+		}
+		return new SimpleEntry<>(ans);
 	}
 
-	public <E extends NamedEntry<E>> RegistryInstance<E> newRegistry(String id, Class<?> cls) {
+	@SuppressWarnings({"unsafe"})
+	public <E> RegistryInstance<E> newRegistry(String id, Class<?> cls, Consumer<RegistryBuilder<E>> cons) {
+		ResourceKey<Registry<E>> key = ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(getModid(), id));
+		var ans = new RegistryBuilder<>(key);
+		cons.accept(ans);
+		var reg = ans.create();
+		new CodecHandler<>(Wrappers.cast(cls), reg.byNameCodec(), ByteBufCodecs.fromCodecWithRegistries(reg.byNameCodec()));
+		OneTimeEventReceiver.addModListener(this, NewRegistryEvent.class, (e) -> e.register(reg));
+		return new RegistryInstance<>(reg, key);
+	}
+
+	public <E> RegistryInstance<E> newRegistry(String id, Class<?> cls) {
 		return newRegistry(id, cls, e -> {
 		});
 	}
 
-	public synchronized RegistryEntry<CreativeModeTab> buildModCreativeTab(String name, String def, Consumer<CreativeModeTab.Builder> config) {
-		ResourceLocation id = new ResourceLocation(getModid(), name);
+	public synchronized SimpleEntry<CreativeModeTab> buildModCreativeTab(String name, String def, Consumer<CreativeModeTab.Builder> config) {
+		ResourceLocation id = ResourceLocation.fromNamespaceAndPath(getModid(), name);
 		defaultCreativeTab(ResourceKey.create(Registries.CREATIVE_MODE_TAB, id));
-		return buildCreativeTabImpl(name, this.addLang("itemGroup", id, def), config);
+		return buildCreativeTabImpl(name, addLang("itemGroup", id, def), config);
 	}
 
-	public synchronized RegistryEntry<CreativeModeTab> buildL2CreativeTab(String name, String def, Consumer<CreativeModeTab.Builder> config) {
-		ResourceLocation id = new ResourceLocation(L2Library.MODID, name);
+	public synchronized SimpleEntry<CreativeModeTab> buildL2CreativeTab(String name, String def, Consumer<CreativeModeTab.Builder> config) {
+		ResourceLocation id = ResourceLocation.fromNamespaceAndPath(L2Core.MODID, name);
 		defaultCreativeTab(ResourceKey.create(Registries.CREATIVE_MODE_TAB, id));
 		TabSorter sorter = new TabSorter(getModid() + ":" + name, id);
-		return L2Library.REGISTRATE.buildCreativeTabImpl(name, this.addLang("itemGroup", id, def), b -> {
+		return L2Core.REGISTRATE.buildCreativeTabImpl(name, addLang("itemGroup", id, def), b -> {
 			config.accept(b);
 			sorter.sort(b);
 		});
 	}
 
-	private synchronized RegistryEntry<CreativeModeTab> buildCreativeTabImpl(String name, Component comp, Consumer<CreativeModeTab.Builder> config) {
-		return this.generic(self(), name, Registries.CREATIVE_MODE_TAB, () -> {
+	private synchronized SimpleEntry<CreativeModeTab> buildCreativeTabImpl(String name, Component comp, Consumer<CreativeModeTab.Builder> config) {
+		return new SimpleEntry<>(this.generic(self(), name, Registries.CREATIVE_MODE_TAB, () -> {
 			var builder = CreativeModeTab.builder().title(comp)
 					.withTabsBefore(CreativeModeTabs.SPAWN_EGGS);
 			config.accept(builder);
 			return builder.build();
-		}).register();
+		}).register());
 	}
 
-	public record RegistryInstance<E extends NamedEntry<E>>(Supplier<IForgeRegistry<E>> supplier,
-															ResourceKey<Registry<E>> key) implements Supplier<IForgeRegistry<E>> {
+	public record RegistryInstance<E>(
+			Registry<E> reg,
+			ResourceKey<Registry<E>> key
+	) implements Supplier<Registry<E>> {
 
 		@Override
-		public IForgeRegistry<E> get() {
-			return supplier().get();
+		public Registry<E> get() {
+			return reg;
 		}
+
 	}
 
-	public static class GenericBuilder<T extends NamedEntry<T>, P extends T> extends AbstractBuilder<T, P, L2Registrate, GenericBuilder<T, P>> {
+	public static class GenericBuilder<T, P extends T> extends AbstractBuilder<T, P, L2Registrate, GenericBuilder<T, P>> {
 
 		private final NonNullSupplier<P> sup;
 
@@ -101,7 +160,9 @@ public class L2Registrate extends AbstractRegistrate<L2Registrate> {
 		}
 
 		public GenericBuilder<T, P> defaultLang() {
-			return lang(NamedEntry::getDescriptionId, RegistrateLangProvider.toEnglishName(this.getName()));
+			var reg = getRegistryKey().location();
+			String id = reg.getPath() + "." + getOwner().getModid() + "." + getName();
+			return lang(e -> id, RegistrateLangProvider.toEnglishName(this.getName()));
 		}
 
 	}

@@ -2,7 +2,6 @@ package dev.xkmc.l2core.serial.recipe;
 
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
-import net.minecraft.core.component.DataComponentType;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -12,7 +11,7 @@ import net.minecraft.world.item.crafting.ShapelessRecipe;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import org.jetbrains.annotations.Nullable;
 
-public record NBTRecipeWrapper(RecipeOutput pvd, ItemStack stack) implements RecipeOutput {
+public record DataRecipeWrapper(RecipeOutput pvd, ItemStack stack) implements RecipeOutput {
 
 	@Override
 	public Advancement.Builder advancement() {
