@@ -13,6 +13,7 @@ import java.util.Optional;
 
 public class Proxy {
 
+	@Deprecated
 	public static RegistryAccess getRegistryAccess() {
 		if (FMLEnvironment.dist == Dist.CLIENT) {
 			return Minecraft.getInstance().level.registryAccess();

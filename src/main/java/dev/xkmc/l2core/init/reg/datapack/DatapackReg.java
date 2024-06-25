@@ -1,28 +1,33 @@
 package dev.xkmc.l2core.init.reg.datapack;
 
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
-import dev.xkmc.l2core.util.Proxy;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.registries.DataPackRegistryEvent;
 
+import javax.annotation.Nullable;
 import java.util.stream.Stream;
 
-public record DatapackReg<T>(ResourceKey<Registry<T>> key, Codec<T> codec) implements ValSet<ResourceLocation, T> {
+public record DatapackReg<T>(ResourceKey<Registry<T>> key, Codec<T> codec) {
 
 	public void onRegister(DataPackRegistryEvent.NewRegistry event) {
 		event.dataPackRegistry(key, codec, codec);
 	}
 
-	public T get(ResourceLocation id) {
-		return Proxy.getRegistryAccess().registry(key).get().get(id);
+	@Nullable
+	public Holder<T> get(RegistryAccess access, ResourceLocation id) {
+		var reg = access.registry(key);
+		if (reg.isEmpty()) return null;
+		return reg.get().getHolder(id).orElse(null);
 	}
 
-	public Stream<Pair<ResourceLocation, T>> getAll() {
-		return Proxy.getRegistryAccess().registry(key).get().entrySet()
-				.stream().map(e -> Pair.of(e.getKey().location(), e.getValue()));
+	public Stream<Holder<T>> getAll(RegistryAccess access) {
+		var reg = access.registry(key);
+		if (reg.isEmpty()) return Stream.empty();
+		return reg.get().holders().map(e -> e);
 	}
 
 }

@@ -1,6 +1,7 @@
 package dev.xkmc.l2core.base.menu.base;
 
 import dev.xkmc.l2serial.util.Wrappers;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
@@ -87,10 +88,13 @@ public class BaseContainerMenu<T extends BaseContainerMenu<T>> extends AbstractC
 	}
 
 	public final Inventory inventory;
+	public final Player player;
 	public final Container container;
-	public final SpriteManager sprite;
+	public final RegistryAccess access;
 	protected int added = 0;
 	protected final boolean isVirtual;
+
+	private final SpriteManager sprite;
 
 	private boolean updating = false;
 
@@ -109,12 +113,18 @@ public class BaseContainerMenu<T extends BaseContainerMenu<T>> extends AbstractC
 	protected BaseContainerMenu(MenuType<?> type, int wid, Inventory plInv, SpriteManager manager, Function<T, SimpleContainer> factory, boolean isVirtual) {
 		super(type, wid);
 		this.inventory = plInv;
+		this.player = plInv.player;
 		container = factory.apply(Wrappers.cast(this));
 		sprite = manager;
-		int x = manager.get().getPlInvX();
-		int y = manager.get().getPlInvY();
+		access = plInv.player.level().registryAccess();
+		int x = getLayout().getPlInvX();
+		int y = getLayout().getPlInvY();
 		this.bindPlayerInventory(plInv, x, y);
 		this.isVirtual = isVirtual;
+	}
+
+	public MenuLayoutConfig getLayout() {
+		return sprite.get(access);
 	}
 
 	/**
@@ -146,7 +156,7 @@ public class BaseContainerMenu<T extends BaseContainerMenu<T>> extends AbstractC
 	 * Add new slots, with item input predicate
 	 */
 	protected void addSlot(String name, Predicate<ItemStack> pred) {
-		sprite.get().getSlot(name, (x, y) -> new PredSlot(container, added++, x, y, pred), this::addSlot);
+		getLayout().getSlot(name, (x, y) -> new PredSlot(container, added++, x, y, pred), this::addSlot);
 	}
 
 	/**
@@ -155,7 +165,7 @@ public class BaseContainerMenu<T extends BaseContainerMenu<T>> extends AbstractC
 	 */
 	protected void addSlot(String name, BiPredicate<Integer, ItemStack> pred) {
 		int current = added;
-		sprite.get().getSlot(name, (x, y) -> {
+		getLayout().getSlot(name, (x, y) -> {
 			int i = added - current;
 			var ans = new PredSlot(container, added, x, y, e -> pred.test(i, e));
 			added++;
@@ -167,7 +177,7 @@ public class BaseContainerMenu<T extends BaseContainerMenu<T>> extends AbstractC
 	 * Add new slots, with other modifications to the slot.
 	 */
 	protected void addSlot(String name, Predicate<ItemStack> pred, Consumer<PredSlot> modifier) {
-		sprite.get().getSlot(name, (x, y) -> {
+		getLayout().getSlot(name, (x, y) -> {
 			PredSlot s = new PredSlot(container, added++, x, y, pred);
 			modifier.accept(s);
 			return s;
@@ -180,7 +190,7 @@ public class BaseContainerMenu<T extends BaseContainerMenu<T>> extends AbstractC
 	 */
 	protected void addSlot(String name, BiPredicate<Integer, ItemStack> pred, BiConsumer<Integer, PredSlot> modifier) {
 		int current = added;
-		sprite.get().getSlot(name, (x, y) -> {
+		getLayout().getSlot(name, (x, y) -> {
 			int i = added - current;
 			var ans = new PredSlot(container, added, x, y, e -> pred.test(i, e));
 			modifier.accept(i, ans);
