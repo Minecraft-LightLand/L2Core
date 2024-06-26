@@ -20,6 +20,10 @@ public abstract class BaseContainerScreen<T extends BaseContainerMenu<T>> extend
 		renderTooltip(g, mx, my);
 	}
 
+	protected MenuLayoutConfig.ScreenRenderer getRenderer() {
+		return menu.getLayout().getRenderer(menu.getLayoutId(), this);
+	}
+
 	protected boolean click(int btn) {
 		if (menu.clickMenuButton(menu.player, btn) && Minecraft.getInstance().gameMode != null) {
 			Minecraft.getInstance().gameMode.handleInventoryButtonClick(this.menu.containerId, btn);

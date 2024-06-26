@@ -207,7 +207,6 @@ public record MenuLayoutConfig(int height, HashMap<String, Rect> side, HashMap<S
 		 * bind texture, draw background color, and GUI background
 		 */
 		public void start(GuiGraphics g) {
-			scr.renderTransparentBackground(g);
 			g.blit(getTexture(id), x, y, 0, 0, w, h);
 		}
 

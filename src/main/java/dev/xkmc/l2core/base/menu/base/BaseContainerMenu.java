@@ -2,6 +2,7 @@ package dev.xkmc.l2core.base.menu.base;
 
 import dev.xkmc.l2serial.util.Wrappers;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
@@ -125,6 +126,10 @@ public class BaseContainerMenu<T extends BaseContainerMenu<T>> extends AbstractC
 
 	public MenuLayoutConfig getLayout() {
 		return sprite.get(access);
+	}
+
+	ResourceLocation getLayoutId() {
+		return sprite.id();
 	}
 
 	/**
