@@ -1,10 +1,7 @@
-package dev.xkmc.l2core.serial.conditions;
+package dev.xkmc.l2core.serial.configval;
 
 import com.mojang.serialization.MapCodec;
-import dev.xkmc.l2core.init.L2Core;
 import dev.xkmc.l2core.init.L2LibReg;
-import net.minecraft.resources.ResourceLocation;
-import net.neoforged.fml.config.ConfigTracker;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.common.conditions.ICondition;
 
@@ -18,11 +15,8 @@ public record IntValueCondition(String path, ArrayList<String> line, int low, in
 
 	@Override
 	public boolean test(IContext context) {
-		var file = ConfigTracker.INSTANCE.fileMap().get(path);
-		if (file == null) return false;
-		var line = file.getConfigData().get(line());
-		if (line == null) return false;
-		return line instanceof Integer val && low <= val && val <= high;
+		return AbstractConfigParser.parse(path, line)
+			.map(e -> e instanceof Integer val && low <= val && val <= high).orElse(false);
 	}
 
 

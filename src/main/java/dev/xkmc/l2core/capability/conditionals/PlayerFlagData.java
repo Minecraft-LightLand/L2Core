@@ -13,37 +13,37 @@ import java.util.TreeSet;
 @SerialClass
 public class PlayerFlagData extends PlayerCapabilityTemplate<PlayerFlagData> {
 
-	public static void addFlag(LivingEntity entity, String str) {
-		if (entity instanceof Player player) {
-			L2LibReg.FLAGS.type().get(player).addFlag(str);
-			if (player instanceof ServerPlayer sp)
-				L2LibReg.FLAGS.type().network.toClient(sp);
-		} else {
-			entity.addTag(str);
-		}
-	}
+    public static void addFlag(LivingEntity entity, String str) {
+        if (entity instanceof Player player) {
+            L2LibReg.FLAGS.type().getOrCreate(player).addFlag(str);
+            if (player instanceof ServerPlayer sp)
+                L2LibReg.FLAGS.type().network.toClient(sp);
+        } else {
+            entity.addTag(str);
+        }
+    }
 
-	public static boolean hasFlag(LivingEntity entity, String str) {
-		if (entity instanceof Player player) {
-			return L2LibReg.FLAGS.type().get(player).hasFlag(str);
-		} else {
-			return entity.getTags().contains(str);
-		}
-	}
+    public static boolean hasFlag(LivingEntity entity, String str) {
+        if (entity instanceof Player player) {
+            return L2LibReg.FLAGS.type().getExisting(player).map(e -> e.hasFlag(str)).orElse(false);
+        } else {
+            return entity.getTags().contains(str);
+        }
+    }
 
-	@SerialField
-	private final TreeSet<String> flags = new TreeSet<>();
+    @SerialField
+    private final TreeSet<String> flags = new TreeSet<>();
 
-	public void addFlag(String str) {
-		flags.add(str);
-	}
+    public void addFlag(String str) {
+        flags.add(str);
+    }
 
-	public boolean hasFlag(String flag) {
-		return flags.contains(flag);
-	}
+    public boolean hasFlag(String flag) {
+        return flags.contains(flag);
+    }
 
-	public static void register() {
+    public static void register() {
 
-	}
+    }
 
 }

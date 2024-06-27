@@ -20,7 +20,7 @@ public class BaseCapabilityEvents {
 		if (event.getEntity() instanceof LivingEntity le && le.isAlive()) {
 			for (GeneralCapabilityHolder<?, ?> holder : GeneralCapabilityHolder.INTERNAL_MAP.values()) {
 				if (holder.isFor(event.getEntity()))
-					holder.get(Wrappers.cast(event.getEntity())).tick(Wrappers.cast(event.getEntity()));
+					holder.getOrCreate(Wrappers.cast(event.getEntity())).tick(Wrappers.cast(event.getEntity()));
 			}
 		}
 	}
@@ -29,7 +29,7 @@ public class BaseCapabilityEvents {
 	public static void onPlayerClone(PlayerEvent.Clone event) {
 		for (PlayerCapabilityHolder<?> holder : PlayerCapabilityHolder.INTERNAL_MAP.values()) {
 			ServerPlayer e = (ServerPlayer) event.getEntity();
-			holder.get(e).onClone(e, event.isWasDeath());
+			holder.getOrCreate(e).onClone(e, event.isWasDeath());
 			holder.network.toClient(e);
 			holder.network.toTracking(e);
 		}
@@ -40,7 +40,7 @@ public class BaseCapabilityEvents {
 		ServerPlayer e = (ServerPlayer) event.getEntity();
 		if (e == null) return;
 		for (PlayerCapabilityHolder<?> holder : PlayerCapabilityHolder.INTERNAL_MAP.values()) {
-			holder.get(e).init(e);
+			holder.getOrCreate(e).init(e);
 			holder.network.toClient(e);
 			holder.network.toTracking(e);
 		}

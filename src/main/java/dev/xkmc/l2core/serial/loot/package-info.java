@@ -1,7 +1,7 @@
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
 
-package dev.xkmc.l2core.serial.conditions;
+package dev.xkmc.l2core.serial.loot;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 
