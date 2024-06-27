@@ -35,14 +35,7 @@ public class L2Core {
 
 	public L2Core(IEventBus bus) {
 		Handlers.register();
-		L2LibReg.register(bus);
-
 		REGISTRATE.addDataGenerator(L2TagGen.EFF_TAGS, L2TagGen::onEffectTagGen);
-	}
-
-	@SubscribeEvent
-	public static void onPacketReg(RegisterPayloadHandlersEvent event) {
-		PACKET_HANDLER.register(event);
 	}
 
 	public static ResourceLocation loc(String id) {
