@@ -11,6 +11,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.ItemLike;
+import net.neoforged.neoforge.common.conditions.ICondition;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -102,7 +103,7 @@ public class CriterionBuilder implements IAdvBuilder {
 		return this;
 	}
 
-	public void modify(String id, Advancement.Builder builder) {
+	public void onBuild(String id, Advancement.Builder builder, List<ICondition> conditions) {
 		if (list.size() > 1) {
 			var ids = list.stream().map(Pair::getFirst).toList();
 			builder.requirements(req == RequirementsStrategy.AND ?

@@ -20,8 +20,6 @@ import java.util.function.Consumer;
 
 public final class Reg {
 
-
-
 	private final String modid;
 
 	private final Map<Registry<?>, DeferredRegister<?>> map = new LinkedHashMap<>();

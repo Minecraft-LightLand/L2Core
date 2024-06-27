@@ -12,7 +12,7 @@ public record SR<T>(DeferredRegister<T> reg) {
 		return new SR<>(parent.make(reg));
 	}
 
-	public Val<T> reg(String id, Supplier<T> sup) {
+	public <H extends T> Val<H> reg(String id, Supplier<H> sup) {
 		return new ValImpl<>(reg.register(id, sup));
 	}
 

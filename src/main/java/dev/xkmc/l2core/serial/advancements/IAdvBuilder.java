@@ -1,14 +1,12 @@
 package dev.xkmc.l2core.serial.advancements;
 
 import net.minecraft.advancements.Advancement;
+import net.neoforged.neoforge.common.conditions.ICondition;
+
+import java.util.List;
 
 public interface IAdvBuilder {
 
-	default void modify(String id, Advancement.Builder builder) {
-
-	}
-
-	default void onBuild() {
-	}
+    void onBuild(String id, Advancement.Builder builder, List<ICondition> conditions);
 
 }
