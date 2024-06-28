@@ -4,22 +4,17 @@ import dev.xkmc.l2core.base.effects.EffectToClient;
 import dev.xkmc.l2core.capability.conditionals.TokenToClient;
 import dev.xkmc.l2core.capability.player.PlayerCapToClient;
 import dev.xkmc.l2core.init.reg.registrate.L2Registrate;
+import dev.xkmc.l2core.serial.config.SyncPacket;
 import dev.xkmc.l2serial.network.PacketHandler;
 import dev.xkmc.l2serial.serialization.custom_handler.Handlers;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.data.DataGenerator;
-import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.util.concurrent.CompletableFuture;
 
 import static dev.xkmc.l2serial.network.PacketHandler.NetDir.PLAY_TO_CLIENT;
 
@@ -36,7 +31,8 @@ public class L2Core {
 	public static final PacketHandler PACKET_HANDLER = new PacketHandler(MODID, 1,
 			e -> e.create(EffectToClient.class, PLAY_TO_CLIENT),
 			e -> e.create(PlayerCapToClient.class, PLAY_TO_CLIENT),
-			e -> e.create(TokenToClient.class, PLAY_TO_CLIENT)
+			e -> e.create(TokenToClient.class, PLAY_TO_CLIENT),
+			e -> e.create(SyncPacket.class, PLAY_TO_CLIENT)
 	);
 
 	public L2Core(IEventBus bus) {
