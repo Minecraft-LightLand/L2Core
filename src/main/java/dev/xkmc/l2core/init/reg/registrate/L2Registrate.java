@@ -60,15 +60,6 @@ public class L2Registrate extends AbstractRegistrate<L2Registrate> {
 		return entry(id, cb -> new GenericBuilder<>(this, id, cb, cls.key(), sup));
 	}
 
-	public <T extends Recipe<?>> RecipeTypeEntry<T> recipe(String id) {
-		return new RecipeTypeEntry<>(simple(id, Registries.RECIPE_TYPE, () -> new RecipeType<>() {
-			@Override
-			public String toString() {
-				return getModid() + ":" + id;
-			}
-		}));
-	}
-
 	public <T extends MobEffect> NoConfigBuilder<MobEffect, T, L2Registrate> effect(String name, NonNullSupplier<T> sup, String desc) {
 		addRawLang("effect." + getModid() + "." + name + ".description", desc);
 		addRawLang("effect." + getModid() + "." + name + ".desc", desc);
