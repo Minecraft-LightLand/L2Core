@@ -1,0 +1,19 @@
+package dev.xkmc.l2core.serial.config;
+
+import dev.xkmc.l2serial.network.SerialPacketBase;
+import net.minecraft.world.entity.player.Player;
+
+import java.util.ArrayList;
+
+public record SyncPacket(String id, ArrayList<PacketHandlerWithConfig.ConfigInstance> map)
+		implements SerialPacketBase<SyncPacket> {
+
+	@Override
+	public void handle(Player player) {
+		if (map != null) {
+			var handler = PacketHandlerWithConfig.INTERNAL.get(id);
+			handler.listener.apply(map);
+		}
+	}
+
+}
