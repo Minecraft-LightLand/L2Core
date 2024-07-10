@@ -1,4 +1,4 @@
-package dev.xkmc.l2core.util;
+package dev.xkmc.l2core.serial.loot;
 
 import net.minecraft.advancements.critereon.EnchantmentPredicate;
 import net.minecraft.advancements.critereon.MinMaxBounds;

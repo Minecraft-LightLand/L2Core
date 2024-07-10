@@ -10,6 +10,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.function.Supplier;
 
 @SerialClass
 public class ConditionalData extends PlayerCapabilityTemplate<ConditionalData> {
@@ -30,8 +31,8 @@ public class ConditionalData extends PlayerCapabilityTemplate<ConditionalData> {
 			data.remove(e);
 	}
 
-	public <T extends ConditionalToken, C extends Context> T getOrCreateData(TokenProvider<T, C> setEffect, C ent) {
-		return Wrappers.cast(data.computeIfAbsent(setEffect.getKey(), e -> setEffect.getData(ent)));
+	public <T extends ConditionalToken> T getOrCreateData(TokenKey<T> setEffect, Supplier<T> fallback) {
+		return Wrappers.cast(data.computeIfAbsent(setEffect, k -> fallback.get()));
 	}
 
 	@Nullable

@@ -1,6 +1,7 @@
 package dev.xkmc.l2core.init.reg.simple;
 
 import com.mojang.serialization.Codec;
+import dev.xkmc.l2core.util.DCStack;
 import dev.xkmc.l2serial.serialization.codec.CodecAdaptor;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -10,6 +11,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -51,6 +53,11 @@ public record DCReg(DeferredRegister<DataComponentType<?>> reg) {
 	public DCVal<UUID> uuid(String id) {
 		return reg(id, Codec.STRING.xmap(UUID::fromString, UUID::toString),
 				StreamCodec.of((b, e) -> FriendlyByteBuf.writeUUID(b, e), b -> FriendlyByteBuf.readUUID(b)), true);
+	}
+
+	public DCVal<DCStack> stack(String id) {
+		return reg(id, ItemStack.CODEC.xmap(DCStack::new, DCStack::stack),
+				ItemStack.STREAM_CODEC.map(DCStack::new, DCStack::stack), true);
 	}
 
 	public DCVal<Component> component(String id) {

@@ -7,11 +7,17 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.saveddata.SavedData;
 
 @SerialClass
-public class BaseSavedData extends SavedData {
+public class BaseSavedData<T> extends SavedData {
+
+	private final Class<T> cls;
+
+	public BaseSavedData(Class<T> cls) {
+		this.cls = cls;
+	}
 
 	@Override
 	public CompoundTag save(CompoundTag tag, HolderLookup.Provider provider) {
-		new TagCodec(provider).toTag(tag, this);
+		new TagCodec(provider).toTag(tag, cls, this);
 		return tag;
 	}
 
