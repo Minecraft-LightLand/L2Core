@@ -1,10 +1,8 @@
-package dev.xkmc.l2core.init.reg.datapack;
+package dev.xkmc.l2core.init.reg.ench;
 
 import com.mojang.serialization.Codec;
 import cpw.mods.util.Lazy;
 import dev.xkmc.l2core.init.reg.registrate.L2Registrate;
-import dev.xkmc.l2core.init.reg.simple.DCReg;
-import dev.xkmc.l2core.init.reg.simple.DCVal;
 import dev.xkmc.l2core.init.reg.simple.Reg;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentType;
@@ -15,8 +13,12 @@ import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Unit;
+import net.minecraft.world.item.enchantment.ConditionalEffect;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.effects.EnchantmentValueEffect;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.ArrayList;
@@ -40,23 +42,34 @@ public class EnchReg {
 		this.pvd = pvd;
 	}
 
-	public <T> DCVal<T> reg(String id, Codec<T> codec) {
-		return new DCReg.DCValImpl<>(reg.register(id, () -> DataComponentType.<T>builder().persistent(codec).build()));
+	private <T> DeferredHolder<DataComponentType<?>, DataComponentType<T>> reg(String id, Codec<T> codec) {
+		return reg.register(id, () -> DataComponentType.<T>builder().persistent(codec).build());
 	}
 
-	public DCVal<Unit> unit(String id) {
-		return reg(id, Unit.CODEC);
+	public EECVal.Flag unit(String id) {
+		return new EECVal.Flag.Impl<>(reg(id, Unit.CODEC));
 	}
 
-	public DCVal<EnchantmentValueEffect> val(String id) {
-		return reg(id, EnchantmentValueEffect.CODEC);
+	public <T> EECVal.Special<T> special(String id, Codec<T> codec) {
+		return new EECVal.Special.Impl<>(reg(id, codec));
+	}
+
+	public <T> EECVal<T> eff(String id, Codec<T> codec, LootContextParamSet loot) {
+		return new EECVal.Impl<>(reg(id, ConditionalEffect.codec(codec, loot).listOf()));
+	}
+
+	public EECVal.Num val(String id) {
+		return new EECVal.Num.Impl(reg(id, ConditionalEffect.codec(
+				EnchantmentValueEffect.CODEC,
+				LootContextParamSets.ENCHANTED_ITEM
+		).listOf()));
 	}
 
 	public EnchVal ench(String id, String name, String desc, UnaryOperator<EnchVal.Builder> cons) {
 		var key = ResourceKey.create(Registries.ENCHANTMENT, pvd.loc(id));
 		pvd.addRawLang("enchantment." + pvd.getModid() + "." + id, name);
 		pvd.addRawLang("enchantment." + pvd.getModid() + "." + id + ".desc", desc);
-		var ans = new EnchVal.Simple(key, Lazy.of(() -> cons.apply(new EnchVal.Builder())));
+		var ans = new EnchVal.Simple(key, Lazy.of(() -> cons.apply(new EnchVal.Builder(key.location()))));
 		list.add(ans);
 		return ans;
 	}
@@ -66,7 +79,7 @@ public class EnchReg {
 		pvd.addRawLang("enchantment." + pvd.getModid() + "." + id, name);
 		pvd.addRawLang("enchantment." + pvd.getModid() + "." + id + ".desc", desc);
 		var unit = unit(id);
-		var ans = new EnchVal.FlagImpl(unit, key, Lazy.of(() -> cons.apply(new EnchVal.Builder().effect(e -> e.withEffect(unit.get())))));
+		var ans = new EnchVal.FlagImpl(unit, key, Lazy.of(() -> cons.apply(new EnchVal.Builder(key.location()).effect(e -> e.withEffect(unit.get())))));
 		list.add(ans);
 		return ans;
 	}

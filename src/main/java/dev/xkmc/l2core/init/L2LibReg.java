@@ -6,6 +6,10 @@ import dev.xkmc.l2core.capability.conditionals.ConditionalData;
 import dev.xkmc.l2core.capability.conditionals.PlayerFlagData;
 import dev.xkmc.l2core.capability.player.PlayerCapabilityNetworkHandler;
 import dev.xkmc.l2core.init.reg.datapack.DatapackReg;
+import dev.xkmc.l2core.init.reg.ench.EECVal;
+import dev.xkmc.l2core.init.reg.ench.EnchReg;
+import dev.xkmc.l2core.init.reg.ench.LegacyEnchantment;
+import dev.xkmc.l2core.init.reg.registrate.L2Registrate;
 import dev.xkmc.l2core.init.reg.simple.*;
 import dev.xkmc.l2core.serial.configval.*;
 import dev.xkmc.l2core.serial.ingredients.EnchantmentIngredient;
@@ -42,11 +46,11 @@ public class L2LibReg {
 	public static final AttReg ATTACHMENT = AttReg.of(REG);
 
 	public static final AttVal.CapVal<LivingEntity, ClientEffectCap> EFFECT = ATTACHMENT.entity("effect",
-		ClientEffectCap.class, ClientEffectCap::new, LivingEntity.class, e -> e.level().isClientSide());
+			ClientEffectCap.class, ClientEffectCap::new, LivingEntity.class, e -> e.level().isClientSide());
 	public static final AttVal.PlayerVal<ConditionalData> CONDITIONAL = ATTACHMENT.player("conditionals",
-		ConditionalData.class, ConditionalData::new, PlayerCapabilityNetworkHandler::new);
+			ConditionalData.class, ConditionalData::new, PlayerCapabilityNetworkHandler::new);
 	public static final AttVal.PlayerVal<PlayerFlagData> FLAGS = ATTACHMENT.player("flags",
-		PlayerFlagData.class, PlayerFlagData::new, PlayerCapabilityNetworkHandler::new);
+			PlayerFlagData.class, PlayerFlagData::new, PlayerCapabilityNetworkHandler::new);
 
 	// loot modifiers
 	public static final CdcReg<IGlobalLootModifier> GLM = CdcReg.of(REG, NeoForgeRegistries.GLOBAL_LOOT_MODIFIER_SERIALIZERS);
@@ -55,10 +59,17 @@ public class L2LibReg {
 
 	// loot conditions
 	public static final SR<LootItemConditionType> LIC = SR.of(REG, BuiltInRegistries.LOOT_CONDITION_TYPE);
-	public static final Val<LootItemConditionType> LIC_FLAG = LIC.reg("player_flag", () -> new LootItemConditionType(MapCodecAdaptor.of(PlayerFlagCondition.class)));
+	public static final Val<LootItemConditionType> LIC_FLAG = LIC.reg("player_flag",
+			() -> new LootItemConditionType(MapCodecAdaptor.of(PlayerFlagCondition.class)));
 
 	// datapack
 	public static final DatapackReg<MenuLayoutConfig> MENU_LAYOUT = REG.dataReg("menu_layout", MenuLayoutConfig.class);
+
+	// enchantment
+	public static final L2Registrate.RegistryInstance<LegacyEnchantment> ENCH =
+			L2Core.REGISTRATE.newRegistry("legacy_enchantment", LegacyEnchantment.class, e -> e.sync(true));
+	public static final EECVal.Special<LegacyEnchantment> LEGACY =
+			EnchReg.of(REG, L2Core.REGISTRATE).special("legacy", ENCH.reg().byNameCodec());
 
 	public static void register() {
 	}
