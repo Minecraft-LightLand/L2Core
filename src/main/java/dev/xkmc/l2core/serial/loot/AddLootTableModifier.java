@@ -1,6 +1,5 @@
 package dev.xkmc.l2core.serial.loot;
 
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -18,35 +17,33 @@ import static net.minecraft.world.level.storage.loot.LootTable.createStackSplitt
 
 public class AddLootTableModifier extends LootModifier {
 
-    public static final Codec<AddLootTableModifier> CODEC = RecordCodecBuilder.create(inst -> codecStart(inst)
-        .and(ResourceLocation.CODEC.fieldOf("lootTable").forGetter((m) -> m.lootTable))
-        .apply(inst, AddLootTableModifier::new));
+	public static final MapCodec<AddLootTableModifier> MAP_CODEC = RecordCodecBuilder.mapCodec(inst -> codecStart(inst)
+			.and(ResourceLocation.CODEC.fieldOf("lootTable").forGetter((m) -> m.lootTable))
+			.apply(inst, AddLootTableModifier::new));
 
-    public static final MapCodec<AddLootTableModifier> MAP_CODEC = CODEC.dispatchMap(e -> e, AddLootTableModifier::codec);
+	private final ResourceLocation lootTable;
 
-    private final ResourceLocation lootTable;
+	protected AddLootTableModifier(LootItemCondition[] conditionsIn, ResourceLocation lootTable) {
+		super(conditionsIn);
+		this.lootTable = lootTable;
+	}
 
-    protected AddLootTableModifier(LootItemCondition[] conditionsIn, ResourceLocation lootTable) {
-        super(conditionsIn);
-        this.lootTable = lootTable;
-    }
+	public AddLootTableModifier(ResourceLocation lootTable, LootItemCondition... conditionsIn) {
+		super(conditionsIn);
+		this.lootTable = lootTable;
+	}
 
-    public AddLootTableModifier(ResourceLocation lootTable, LootItemCondition... conditionsIn) {
-        super(conditionsIn);
-        this.lootTable = lootTable;
-    }
+	@Nonnull
+	@Override
+	protected ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
+		var extraTable = context.getResolver().lookupOrThrow(Registries.LOOT_TABLE)
+				.getOrThrow(ResourceKey.create(Registries.LOOT_TABLE, this.lootTable)).value();
+		extraTable.getRandomItemsRaw(context, createStackSplitter(context.getLevel(), generatedLoot::add));
+		return generatedLoot;
+	}
 
-    @Nonnull
-    @Override
-    protected ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
-        var extraTable = context.getResolver().lookupOrThrow(Registries.LOOT_TABLE)
-            .getOrThrow(ResourceKey.create(Registries.LOOT_TABLE, this.lootTable)).value();
-        extraTable.getRandomItemsRaw(context, createStackSplitter(context.getLevel(), generatedLoot::add));
-        return generatedLoot;
-    }
-
-    @Override
-    public MapCodec<AddLootTableModifier> codec() {
-        return MAP_CODEC;
-    }
+	@Override
+	public MapCodec<AddLootTableModifier> codec() {
+		return MAP_CODEC;
+	}
 }

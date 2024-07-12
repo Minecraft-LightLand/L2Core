@@ -64,7 +64,7 @@ public record DCReg(DeferredRegister<DataComponentType<?>> reg) {
 		return reg(id, ComponentSerialization.CODEC, ComponentSerialization.STREAM_CODEC, true);
 	}
 
-	private record DCValImpl<T>(DeferredHolder<DataComponentType<?>, DataComponentType<T>> val) implements DCVal<T> {
+	public record DCValImpl<T>(DeferredHolder<DataComponentType<?>, DataComponentType<T>> val) implements DCVal<T> {
 
 		@Override
 		public DataComponentType<T> get() {

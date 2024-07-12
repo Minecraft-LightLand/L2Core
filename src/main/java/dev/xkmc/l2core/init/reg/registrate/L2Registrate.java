@@ -25,8 +25,6 @@ import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potion;
-import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.world.item.crafting.RecipeType;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.neoforge.data.loading.DatagenModLoader;
 import net.neoforged.neoforge.registries.NewRegistryEvent;
@@ -66,7 +64,7 @@ public class L2Registrate extends AbstractRegistrate<L2Registrate> {
 		return entry(name, cb -> new NoConfigBuilder<>(this, this, name, cb, Registries.MOB_EFFECT, sup));
 	}
 
-	private <T extends Potion> SimpleEntry<Potion> genPotion(String name, NonNullSupplier<T> sup) {
+	public <T extends Potion> SimpleEntry<Potion> potion(String name, NonNullSupplier<T> sup) {
 		RegistryEntry<Potion, T> ans = entry(name, (cb) -> new NoConfigBuilder<>(this, this, name, cb,
 				Registries.POTION, sup)).register();
 		if (doDataGen.get()) {

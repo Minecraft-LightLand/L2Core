@@ -19,13 +19,12 @@ import java.util.concurrent.CompletableFuture;
 public abstract class ConfigDataProvider implements DataProvider {
 
 	private final DataGenerator generator;
-	private final HolderLookup.Provider pvd;
+	private final CompletableFuture<HolderLookup.Provider> pvd;
 	private final String name;
-
 
 	private final Map<String, ConfigEntry<?>> map = new HashMap<>();
 
-	public ConfigDataProvider(DataGenerator generator, HolderLookup.Provider pvd, String name) {
+	public ConfigDataProvider(DataGenerator generator, CompletableFuture<HolderLookup.Provider> pvd, String name) {
 		this.generator = generator;
 		this.pvd = pvd;
 		this.name = name;
@@ -35,17 +34,19 @@ public abstract class ConfigDataProvider implements DataProvider {
 
 	@Override
 	public CompletableFuture<?> run(CachedOutput cache) {
-		Path folder = generator.getPackOutput().getOutputFolder();
-		add(new Collector(map));
-		List<CompletableFuture<?>> list = new ArrayList<>();
-		map.forEach((k, v) -> {
-			JsonElement elem = v.serialize(pvd);
-			if (elem != null) {
-				Path path = folder.resolve(k + ".json");
-				list.add(DataProvider.saveStable(cache, elem, path));
-			}
+		return pvd.thenCompose(lookup -> {
+			Path folder = generator.getPackOutput().getOutputFolder();
+			add(new Collector(map));
+			List<CompletableFuture<?>> list = new ArrayList<>();
+			map.forEach((k, v) -> {
+				JsonElement elem = v.serialize(lookup);
+				if (elem != null) {
+					Path path = folder.resolve(k + ".json");
+					list.add(DataProvider.saveStable(cache, elem, path));
+				}
+			});
+			return CompletableFuture.allOf(list.toArray(CompletableFuture[]::new));
 		});
-		return CompletableFuture.allOf(list.toArray(CompletableFuture[]::new));
 	}
 
 	@Override
