@@ -7,9 +7,9 @@ import java.util.Optional;
 
 public class AbstractConfigParser {
 
-    public static Optional<Object> parse(String path, List<String> line) {
-        return Optional.ofNullable(ConfigTracker.INSTANCE.fileMap().get(path))
-            .map(file -> file.getConfigData().get(line));
-    }
+	public static Optional<Object> parse(String path, List<String> line) {
+		return Optional.ofNullable(ConfigTracker.INSTANCE.fileMap().get(path))
+				.map(file -> file.getConfigData().get(line));
+	}
 
 }

@@ -22,7 +22,7 @@ public class AddItemModifier extends LootModifier {
 
 	public static final MapCodec<AddItemModifier> MAP_CODEC = RecordCodecBuilder.mapCodec(i -> LootModifier.codecStart(i).and(i.group(
 			BuiltInRegistries.ITEM.byNameCodec().fieldOf("item").forGetter(m -> m.item),
-			BuiltInRegistries.ITEM.byNameCodec().optionalFieldOf("fail").forGetter(m -> m.fail == Items.AIR ? Optional.<Item>empty() : Optional.of(m.fail)),
+			BuiltInRegistries.ITEM.byNameCodec().optionalFieldOf("fail").forGetter(m -> m.fail == Items.AIR ? Optional.empty() : Optional.of(m.fail)),
 			DoubleConfigValue.CODEC.optionalFieldOf("chance")
 					.forGetter(m -> Optional.ofNullable(m.chance))
 	)).apply(i, AddItemModifier::new));

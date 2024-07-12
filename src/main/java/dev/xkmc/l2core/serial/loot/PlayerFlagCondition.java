@@ -11,28 +11,28 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
 @SerialClass
 public class PlayerFlagCondition implements LootItemCondition {
 
-    @SerialField
-    public String flag;
+	@SerialField
+	public String flag;
 
-    @Deprecated
-    public PlayerFlagCondition() {
+	@Deprecated
+	public PlayerFlagCondition() {
 
-    }
+	}
 
-    public PlayerFlagCondition(String flag) {
-        this.flag = flag;
-    }
+	public PlayerFlagCondition(String flag) {
+		this.flag = flag;
+	}
 
-    @Override
-    public LootItemConditionType getType() {
-        return L2LibReg.LIC_FLAG.get();
-    }
+	@Override
+	public LootItemConditionType getType() {
+		return L2LibReg.LIC_FLAG.get();
+	}
 
-    @Override
-    public boolean test(LootContext ctx) {
-        if (!ctx.hasParam(LootContextParams.LAST_DAMAGE_PLAYER)) return false;
-        var player = ctx.getParam(LootContextParams.LAST_DAMAGE_PLAYER);
-        return L2LibReg.FLAGS.type().getExisting(player).map(e -> e.hasFlag(flag)).orElse(false);
-    }
+	@Override
+	public boolean test(LootContext ctx) {
+		if (!ctx.hasParam(LootContextParams.LAST_DAMAGE_PLAYER)) return false;
+		var player = ctx.getParam(LootContextParams.LAST_DAMAGE_PLAYER);
+		return L2LibReg.FLAGS.type().getExisting(player).map(e -> e.hasFlag(flag)).orElse(false);
+	}
 
 }

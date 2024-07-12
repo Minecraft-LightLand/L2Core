@@ -15,7 +15,7 @@ public class MergedConfigType<T extends BaseConfig> extends BaseConfigType<T> {
 			return result;
 		}
 		result = new ConfigMerger<>(cls).apply(configs.values());
-		result.id =  ResourceLocation.fromNamespaceAndPath(parent.modid, id);
+		result.id = ResourceLocation.fromNamespaceAndPath(parent.modid, id);
 		return result;
 	}
 

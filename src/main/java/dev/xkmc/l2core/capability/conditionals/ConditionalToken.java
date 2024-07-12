@@ -15,7 +15,7 @@ public class ConditionalToken {
 
 	/**
 	 * return true to retain
-	 * */
+	 */
 	public boolean retainOnDeath(Player player) {
 		return false;
 	}

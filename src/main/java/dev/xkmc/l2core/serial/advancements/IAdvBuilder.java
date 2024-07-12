@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface IAdvBuilder {
 
-    void onBuild(String id, Advancement.Builder builder, List<ICondition> conditions);
+	void onBuild(String id, Advancement.Builder builder, List<ICondition> conditions);
 
 }

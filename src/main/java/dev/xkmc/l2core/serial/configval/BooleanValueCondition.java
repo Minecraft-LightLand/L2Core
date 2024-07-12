@@ -9,19 +9,19 @@ import java.util.ArrayList;
 
 public record BooleanValueCondition(String path, ArrayList<String> line, boolean expected) implements ICondition {
 
-    public static BooleanValueCondition of(String file, ModConfigSpec.ConfigValue<Boolean> config, boolean value) {
-        return new BooleanValueCondition(file, new ArrayList<>(config.getPath()), value);
-    }
+	public static BooleanValueCondition of(String file, ModConfigSpec.ConfigValue<Boolean> config, boolean value) {
+		return new BooleanValueCondition(file, new ArrayList<>(config.getPath()), value);
+	}
 
-    @Override
-    public boolean test(IContext context) {
-        return AbstractConfigParser.parse(path, line)
-            .map(e -> e instanceof Boolean bool && bool == expected).orElse(false);
-    }
+	@Override
+	public boolean test(IContext context) {
+		return AbstractConfigParser.parse(path, line)
+				.map(e -> e instanceof Boolean bool && bool == expected).orElse(false);
+	}
 
-    @Override
-    public MapCodec<BooleanValueCondition> codec() {
-        return L2LibReg.CONDITION_BOOL.get();
-    }
+	@Override
+	public MapCodec<BooleanValueCondition> codec() {
+		return L2LibReg.CONDITION_BOOL.get();
+	}
 
 }

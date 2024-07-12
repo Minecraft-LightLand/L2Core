@@ -67,8 +67,8 @@ public class CriterionBuilder implements IAdvBuilder {
 	public static CriterionBuilder enchanted(TagKey<Item> item, Holder<Enchantment> enchantment) {
 		return one(InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item().of(item)
 				.withSubPredicate(ItemSubPredicates.ENCHANTMENTS,
-				ItemEnchantmentsPredicate.enchantments(List.of(
-						new EnchantmentPredicate(enchantment, MinMaxBounds.Ints.ANY))))));
+						ItemEnchantmentsPredicate.enchantments(List.of(
+								new EnchantmentPredicate(enchantment, MinMaxBounds.Ints.ANY))))));
 	}
 
 	public static CriterionBuilder one(Criterion<?> instance) {
@@ -76,7 +76,7 @@ public class CriterionBuilder implements IAdvBuilder {
 	}
 
 	public enum RequirementsStrategy {
-		AND, OR;
+		AND, OR
 	}
 
 	public static CriterionBuilder and() {

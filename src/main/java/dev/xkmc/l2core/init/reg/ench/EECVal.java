@@ -105,6 +105,7 @@ public interface EECVal<T> extends Val<DataComponentType<List<ConditionalEffect<
 		}
 
 	}
+
 	interface Special<T> extends Val<DataComponentType<T>> {
 
 		record Impl<T>(

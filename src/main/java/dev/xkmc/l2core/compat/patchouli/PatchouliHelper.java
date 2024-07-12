@@ -4,7 +4,6 @@ import com.tterrag.registrate.providers.ProviderType;
 import com.tterrag.registrate.util.DataIngredient;
 import dev.xkmc.l2core.init.reg.registrate.L2Registrate;
 import dev.xkmc.l2core.serial.recipe.ConditionalRecipeWrapper;
-import net.minecraft.Util;
 import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
@@ -16,7 +15,6 @@ import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.neoforged.neoforge.client.model.generators.ModelFile;
 
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class PatchouliHelper {

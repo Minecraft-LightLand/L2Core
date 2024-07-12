@@ -12,7 +12,7 @@ public final class DCStack {
 		hashCode = stack.hashCode();
 	}
 
-	public ItemStack stack(){
+	public ItemStack stack() {
 		return stack;
 	}
 

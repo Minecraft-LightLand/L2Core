@@ -9,19 +9,19 @@ import java.util.ArrayList;
 
 public record StringValueCondition(String path, ArrayList<String> line, String key) implements ICondition {
 
-    public static StringValueCondition of(String file, ModConfigSpec.ConfigValue<String> config, String key) {
-        return new StringValueCondition(file, new ArrayList<>(config.getPath()), key);
-    }
+	public static StringValueCondition of(String file, ModConfigSpec.ConfigValue<String> config, String key) {
+		return new StringValueCondition(file, new ArrayList<>(config.getPath()), key);
+	}
 
-    @Override
-    public boolean test(IContext context) {
-        return AbstractConfigParser.parse(path, line)
-            .map(e -> e instanceof String val && val.equals(key)).orElse(false);
-    }
+	@Override
+	public boolean test(IContext context) {
+		return AbstractConfigParser.parse(path, line)
+				.map(e -> e instanceof String val && val.equals(key)).orElse(false);
+	}
 
-    @Override
-    public MapCodec<StringValueCondition> codec() {
-        return L2LibReg.CONDITION_STR.get();
-    }
+	@Override
+	public MapCodec<StringValueCondition> codec() {
+		return L2LibReg.CONDITION_STR.get();
+	}
 
 }

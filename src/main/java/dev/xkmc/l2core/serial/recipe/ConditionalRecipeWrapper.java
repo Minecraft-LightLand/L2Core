@@ -12,27 +12,27 @@ import org.jetbrains.annotations.Nullable;
 
 public record ConditionalRecipeWrapper(RecipeOutput pvd, ICondition... conditions) implements RecipeOutput {
 
-    public static RecipeOutput mod(RecipeOutput pvd, String... modid) {
-        ICondition[] ans = new ICondition[modid.length];
-        for (int i = 0; i < ans.length; ++i) {
-            ans[i] = new ModLoadedCondition(modid[i]);
-        }
-        return new ConditionalRecipeWrapper(pvd, ans);
+	public static RecipeOutput mod(RecipeOutput pvd, String... modid) {
+		ICondition[] ans = new ICondition[modid.length];
+		for (int i = 0; i < ans.length; ++i) {
+			ans[i] = new ModLoadedCondition(modid[i]);
+		}
+		return new ConditionalRecipeWrapper(pvd, ans);
 
-    }
+	}
 
-    public static RecipeOutput of(RecipeOutput pvd, ICondition... cond) {
-        return new ConditionalRecipeWrapper(pvd, cond);
-    }
+	public static RecipeOutput of(RecipeOutput pvd, ICondition... cond) {
+		return new ConditionalRecipeWrapper(pvd, cond);
+	}
 
-    @Override
-    public Advancement.Builder advancement() {
-        return pvd.advancement();
-    }
+	@Override
+	public Advancement.Builder advancement() {
+		return pvd.advancement();
+	}
 
-    @Override
-    public void accept(ResourceLocation id, Recipe<?> recipe, @Nullable AdvancementHolder advancement, ICondition... conditions) {
-        pvd.accept(id, recipe, advancement, MathHelper.merge(conditions(), conditions));
-    }
+	@Override
+	public void accept(ResourceLocation id, Recipe<?> recipe, @Nullable AdvancementHolder advancement, ICondition... conditions) {
+		pvd.accept(id, recipe, advancement, MathHelper.merge(conditions(), conditions));
+	}
 
 }

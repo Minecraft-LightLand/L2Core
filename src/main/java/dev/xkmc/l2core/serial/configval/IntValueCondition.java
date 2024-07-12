@@ -16,7 +16,7 @@ public record IntValueCondition(String path, ArrayList<String> line, int low, in
 	@Override
 	public boolean test(IContext context) {
 		return AbstractConfigParser.parse(path, line)
-			.map(e -> e instanceof Integer val && low <= val && val <= high).orElse(false);
+				.map(e -> e instanceof Integer val && low <= val && val <= high).orElse(false);
 	}
 
 

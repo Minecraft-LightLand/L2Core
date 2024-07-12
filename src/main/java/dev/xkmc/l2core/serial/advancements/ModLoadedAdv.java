@@ -8,11 +8,11 @@ import java.util.List;
 
 public record ModLoadedAdv(String... modid) implements IAdvBuilder {
 
-    @Override
-    public void onBuild(String id, Advancement.Builder builder, List<ICondition> conditions) {
-        for (var e : modid) {
-            conditions.add(new ModLoadedCondition(e));
-        }
-    }
+	@Override
+	public void onBuild(String id, Advancement.Builder builder, List<ICondition> conditions) {
+		for (var e : modid) {
+			conditions.add(new ModLoadedCondition(e));
+		}
+	}
 
 }
