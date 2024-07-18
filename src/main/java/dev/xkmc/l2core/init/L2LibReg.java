@@ -1,5 +1,6 @@
 package dev.xkmc.l2core.init;
 
+import com.tterrag.registrate.providers.ProviderType;
 import dev.xkmc.l2core.base.effects.ClientEffectCap;
 import dev.xkmc.l2core.base.menu.base.MenuLayoutConfig;
 import dev.xkmc.l2core.capability.conditionals.ConditionalData;

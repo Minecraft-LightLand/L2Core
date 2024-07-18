@@ -5,6 +5,7 @@ import com.tterrag.registrate.providers.RegistrateProvider;
 import dev.xkmc.l2core.serial.config.RecordDataProvider;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.neoforged.fml.LogicalSide;
 
 import java.util.concurrent.CompletableFuture;
@@ -16,8 +17,8 @@ public class PatchouliProvider extends RecordDataProvider implements RegistrateP
 
 	private BiConsumer<String, Record> map;
 
-	public PatchouliProvider(AbstractRegistrate<?> owner, CompletableFuture<HolderLookup.Provider> pvd, DataGenerator gen) {
-		super(gen, pvd, "Patchouli Provider");
+	public PatchouliProvider(AbstractRegistrate<?> owner, PackOutput output, CompletableFuture<HolderLookup.Provider> pvd) {
+		super(output, pvd, "Patchouli Provider");
 		this.owner = owner;
 	}
 

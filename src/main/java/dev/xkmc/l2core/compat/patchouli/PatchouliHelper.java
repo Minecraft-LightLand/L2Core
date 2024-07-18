@@ -19,7 +19,7 @@ import java.util.function.Supplier;
 
 public class PatchouliHelper {
 
-	public static final ProviderType<PatchouliProvider> PATCHOULI = ProviderType.register("patchouli", (p, e) -> new PatchouliProvider(p, e.getLookupProvider(), e.getGenerator()));
+	public static final ProviderType<PatchouliProvider> PATCHOULI = ProviderType.register("patchouli", PatchouliProvider::new);
 
 	public static ItemStack getBook(ResourceLocation book) {
 		return ItemStack.EMPTY; // TODO ItemModBook.forBook(book);

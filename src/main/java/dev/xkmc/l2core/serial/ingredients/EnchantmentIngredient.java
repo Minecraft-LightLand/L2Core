@@ -1,7 +1,11 @@
 package dev.xkmc.l2core.serial.ingredients;
 
 import dev.xkmc.l2core.init.L2LibReg;
+import dev.xkmc.l2core.util.DataGenOnly;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -18,6 +22,12 @@ public record EnchantmentIngredient(Holder<Enchantment> enchantment, int minLeve
 
 	public static Ingredient of(Holder<Enchantment> ench, int min) {
 		return new EnchantmentIngredient(ench, min).toVanilla();
+	}
+
+	@DataGenOnly
+	public static Ingredient of(HolderLookup.Provider pvd, ResourceKey<Enchantment> ench, int min) {
+		var holder = pvd.lookup(Registries.ENCHANTMENT).orElseThrow().getOrThrow(ench);
+		return of(holder, min);
 	}
 
 	@Override

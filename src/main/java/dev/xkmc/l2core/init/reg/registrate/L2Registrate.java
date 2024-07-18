@@ -6,13 +6,19 @@ import com.tterrag.registrate.builders.BuilderCallback;
 import com.tterrag.registrate.builders.NoConfigBuilder;
 import com.tterrag.registrate.providers.RegistrateLangProvider;
 import com.tterrag.registrate.util.OneTimeEventReceiver;
+import com.tterrag.registrate.util.RegistrateDistExecutor;
 import com.tterrag.registrate.util.entry.RegistryEntry;
 import com.tterrag.registrate.util.nullness.NonNullSupplier;
 import com.tterrag.registrate.util.nullness.NonnullType;
 import dev.xkmc.l2core.init.L2Core;
+import dev.xkmc.l2core.init.reg.simple.Val;
 import dev.xkmc.l2serial.serialization.custom_handler.CodecHandler;
 import dev.xkmc.l2serial.util.Wrappers;
+import net.minecraft.client.particle.ParticleEngine;
+import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.core.Registry;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -25,7 +31,9 @@ import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potion;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.data.loading.DatagenModLoader;
 import net.neoforged.neoforge.registries.NewRegistryEvent;
 import net.neoforged.neoforge.registries.RegistryBuilder;
@@ -79,6 +87,16 @@ public class L2Registrate extends AbstractRegistrate<L2Registrate> {
 			}
 		}
 		return new SimpleEntry<>(ans);
+	}
+
+	public <T extends ParticleOptions, R extends ParticleType<T>> Val<R>
+	particle(String name, NonNullSupplier<R> sup, NonNullSupplier<? extends ParticleSupplier<T>> pvd) {
+		RegistryEntry<ParticleType<?>, R> ans = entry(name, (cb) -> new NoConfigBuilder<>(this, this, name, cb,
+				Registries.PARTICLE_TYPE, sup)).register();
+		RegistrateDistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () ->
+				OneTimeEventReceiver.addModListener(this, RegisterParticleProvidersEvent.class,
+						event -> pvd.get().register(event, ans.get())));
+		return new Val.Registrate<>(ans);
 	}
 
 	@SuppressWarnings({"unsafe"})
@@ -212,6 +230,24 @@ public class L2Registrate extends AbstractRegistrate<L2Registrate> {
 			}
 			return false;
 		}
+
+	}
+
+	public interface ParticleSupplier<T extends ParticleOptions> {
+
+		static <T extends ParticleOptions> ParticleSupplier<T> provider(ParticleProvider<T> pvd) {
+			return (event, type) -> event.registerSpecial(type, pvd);
+		}
+
+		static <T extends ParticleOptions> ParticleSupplier<T> sprite(ParticleProvider.Sprite<T> pvd) {
+			return (event, type) -> event.registerSprite(type, pvd);
+		}
+
+		static <T extends ParticleOptions> ParticleSupplier<T> spriteSet(ParticleEngine.SpriteParticleRegistration<T> pvd) {
+			return (event, type) -> event.registerSpriteSet(type, pvd);
+		}
+
+		void register(RegisterParticleProvidersEvent event, ParticleType<T> type);
 
 	}
 

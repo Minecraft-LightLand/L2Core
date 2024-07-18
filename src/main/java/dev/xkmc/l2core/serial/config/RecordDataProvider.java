@@ -6,6 +6,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
+import net.minecraft.data.PackOutput;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -16,13 +17,13 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 
 public abstract class RecordDataProvider implements DataProvider {
-	private final DataGenerator generator;
+	private final PackOutput output;
 	private final CompletableFuture<HolderLookup.Provider> pvd;
 	private final String name;
 	private final Map<String, Record> map = new HashMap<>();
 
-	public RecordDataProvider(DataGenerator generator, CompletableFuture<HolderLookup.Provider> pvd, String name) {
-		this.generator = generator;
+	public RecordDataProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> pvd, String name) {
+		this.output = output;
 		this.pvd = pvd;
 		this.name = name;
 	}
@@ -31,7 +32,7 @@ public abstract class RecordDataProvider implements DataProvider {
 
 	public CompletableFuture<?> run(CachedOutput cache) {
 		return pvd.thenCompose(pvd -> {
-			Path folder = this.generator.getPackOutput().getOutputFolder();
+			Path folder = output.getOutputFolder();
 			this.add(this.map::put);
 			List<CompletableFuture<?>> list = new ArrayList<>();
 			this.map.forEach((k, v) -> {

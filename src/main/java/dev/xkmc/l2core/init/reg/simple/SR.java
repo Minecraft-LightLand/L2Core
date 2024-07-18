@@ -19,15 +19,15 @@ public record SR<T>(DeferredRegister<T> reg) {
 		return new SR<>(parent.make(reg));
 	}
 
-	public <H extends T> Val<H> reg(String id, Supplier<H> sup) {
+	public <H extends T> ValImpl<T, H> reg(String id, Supplier<H> sup) {
 		return new ValImpl<>(reg.register(id, sup));
 	}
 
-	public <H extends T> Val<H> reg(String id, Function<ResourceLocation, H> sup) {
+	public <H extends T> ValImpl<T, H> reg(String id, Function<ResourceLocation, H> sup) {
 		return new ValImpl<>(reg.register(id, sup));
 	}
 
-	private record ValImpl<R, T extends R>(DeferredHolder<R, T> val) implements Val<T> {
+	public record ValImpl<R, T extends R>(DeferredHolder<R, T> val) implements Val<T> {
 
 		@Override
 		public T get() {

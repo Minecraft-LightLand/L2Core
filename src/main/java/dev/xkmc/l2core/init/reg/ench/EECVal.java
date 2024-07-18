@@ -106,14 +106,14 @@ public interface EECVal<T> extends Val<DataComponentType<List<ConditionalEffect<
 
 	}
 
-	interface Special<T> extends Val<DataComponentType<T>> {
+	interface Special<T> extends Val<DataComponentType<List<T>>> {
 
 		record Impl<T>(
-				DeferredHolder<DataComponentType<?>, DataComponentType<T>> val
+				DeferredHolder<DataComponentType<?>, DataComponentType<List<T>>> val
 		) implements Special<T> {
 
 			@Override
-			public DataComponentType<T> get() {
+			public DataComponentType<List<T>> get() {
 				return val.get();
 			}
 

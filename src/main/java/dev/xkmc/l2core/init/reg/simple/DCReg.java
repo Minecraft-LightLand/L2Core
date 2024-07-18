@@ -11,6 +11,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.util.Unit;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -32,6 +33,10 @@ public record DCReg(DeferredRegister<DataComponentType<?>> reg) {
 	public <T> DCVal<T> reg(String id, Class<T> cls, boolean cache) {
 		var cdc = new CodecAdaptor<>(cls);
 		return reg(id, cdc, cdc.toNetwork(), cache);
+	}
+
+	public DCVal<Unit> unit(String id) {
+		return reg(id, Unit.CODEC, StreamCodec.unit(Unit.INSTANCE), false);
 	}
 
 	public DCVal<Integer> intVal(String id) {

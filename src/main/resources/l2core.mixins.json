@@ -4,6 +4,7 @@
   "package": "dev.xkmc.l2core.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+	"ConfigTrackerAccessor"
   ],
   "client": [
   ],
