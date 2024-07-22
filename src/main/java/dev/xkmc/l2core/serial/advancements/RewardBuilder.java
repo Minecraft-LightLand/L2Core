@@ -15,11 +15,19 @@ import java.util.function.Supplier;
 public record RewardBuilder(L2Registrate reg, int exp, ResourceKey<LootTable> loot,
 							Supplier<LootTable.Builder> sup) implements IAdvBuilder {
 
+	public RewardBuilder(L2Registrate reg, int exp, ResourceKey<LootTable> loot,
+						 Supplier<LootTable.Builder> sup){
+		this.reg = reg;
+		this.exp = exp;
+		this.loot = loot;
+		this.sup = sup;
+		reg.addDataGenerator(ProviderType.LOOT, e -> e.addLootAction(LootContextParamSets.EMPTY,
+				x -> x.accept(loot, sup.get())));
+	}
+
 	@Override
 	public void onBuild(String id, Advancement.Builder builder, List<ICondition> conditions) {
 		builder.rewards(AdvancementRewards.Builder.loot(loot).addExperience(exp).build());
-		reg.addDataGenerator(ProviderType.LOOT, e -> e.addLootAction(LootContextParamSets.EMPTY,
-				x -> x.accept(loot, sup.get())));
 	}
 
 }

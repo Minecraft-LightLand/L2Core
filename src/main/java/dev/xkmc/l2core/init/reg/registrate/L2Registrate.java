@@ -12,6 +12,7 @@ import com.tterrag.registrate.util.nullness.NonNullSupplier;
 import com.tterrag.registrate.util.nullness.NonnullType;
 import dev.xkmc.l2core.init.L2Core;
 import dev.xkmc.l2core.init.reg.simple.Val;
+import dev.xkmc.l2core.util.ConfigInit;
 import dev.xkmc.l2serial.serialization.custom_handler.CodecHandler;
 import dev.xkmc.l2serial.util.Wrappers;
 import net.minecraft.client.particle.ParticleEngine;
@@ -32,7 +33,9 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potion;
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.data.loading.DatagenModLoader;
 import net.neoforged.neoforge.registries.NewRegistryEvent;
@@ -44,6 +47,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 @SuppressWarnings("unused")
@@ -53,14 +57,33 @@ public class L2Registrate extends AbstractRegistrate<L2Registrate> {
 
 	public L2Registrate(String modid) {
 		super(modid);
-		var bus = ModLoadingContext.get().getActiveContainer().getEventBus();
+		var mod = ModLoadingContext.get().getActiveContainer();
+		var bus = mod.getEventBus();
 		if (bus != null) registerEventListeners(bus);
 		else L2Core.LOGGER.error("Failed to register mod {}", modid);
+		addRawLang(modid + ".title", mod.getModInfo().getDisplayName());
 	}
 
 	public ResourceLocation loc(String id) {
 		return ResourceLocation.fromNamespaceAndPath(getModid(), id);
 	}
+
+	private boolean initConfig = false;
+
+	public <T extends ConfigInit> T registerClient(Function<ConfigInit.Builder, T> factory) {
+		return ConfigInit.register(this, ModConfig.Type.CLIENT, factory);
+	}
+
+	public <T extends ConfigInit> T registerSynced(Function<ConfigInit.Builder, T> factory) {
+		return ConfigInit.register(this, ModConfig.Type.SERVER, factory);
+	}
+
+	public void initConfigTitle(ModContainer mod) {
+		if (initConfig) return;
+		initConfig = true;
+		addRawLang(getModid() + ".configuration.title", mod.getModInfo().getDisplayName() + " Configuration");
+	}
+
 
 	public <T, P extends T> GenericBuilder<T, P> generic(RegistryInstance<T> cls, String id, NonNullSupplier<P> sup) {
 		return entry(id, cb -> new GenericBuilder<>(this, id, cb, cls.key(), sup));
@@ -99,9 +122,17 @@ public class L2Registrate extends AbstractRegistrate<L2Registrate> {
 		return new Val.Registrate<>(ans);
 	}
 
+	public <E> RegistryInstance<E> newRegistry(String id) {
+		ResourceKey<Registry<E>> key = ResourceKey.createRegistryKey(loc(id));
+		RegistryBuilder<E> ans = new RegistryBuilder<>(key);
+		Registry<E> reg = ans.create();
+		OneTimeEventReceiver.addModListener(this, NewRegistryEvent.class, (e) -> e.register(reg));
+		return new RegistryInstance<>(reg, key);
+	}
+
 	@SuppressWarnings({"unsafe"})
 	public <E> RegistryInstance<E> newRegistry(String id, Class<?> cls, Consumer<RegistryBuilder<E>> cons) {
-		ResourceKey<Registry<E>> key = ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(getModid(), id));
+		ResourceKey<Registry<E>> key = ResourceKey.createRegistryKey(loc(id));
 		var ans = new RegistryBuilder<>(key);
 		cons.accept(ans);
 		var reg = ans.create();

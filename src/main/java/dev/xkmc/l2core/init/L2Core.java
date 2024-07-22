@@ -20,7 +20,6 @@ import static dev.xkmc.l2serial.network.PacketHandler.NetDir.PLAY_TO_CLIENT;
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(L2Core.MODID)
-@EventBusSubscriber(modid = L2Core.MODID, bus = EventBusSubscriber.Bus.MOD)
 public class L2Core {
 
 	public static final String MODID = "l2core";
@@ -39,10 +38,6 @@ public class L2Core {
 		L2LibReg.register();
 		Handlers.register();
 		REGISTRATE.addDataGenerator(L2TagGen.EFF_TAGS, L2TagGen::onEffectTagGen);
-	}
-
-	@SubscribeEvent
-	public static void gatherData(GatherDataEvent event) {
 	}
 
 	public static ResourceLocation loc(String id) {
