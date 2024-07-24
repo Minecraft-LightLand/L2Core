@@ -2,6 +2,7 @@ package dev.xkmc.l2core.init.reg.simple;
 
 import com.mojang.serialization.MapCodec;
 import dev.xkmc.l2serial.serialization.codec.MapCodecAdaptor;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.common.crafting.ICustomIngredient;
 import net.neoforged.neoforge.common.crafting.IngredientType;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -29,6 +30,12 @@ public record IngReg(DeferredRegister<IngredientType<?>> reg) {
 		public IngredientType<R> get() {
 			return val.get();
 		}
+
+		@Override
+		public ResourceLocation id() {
+			return val.getId();
+		}
+
 
 	}
 

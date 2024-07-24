@@ -1,6 +1,7 @@
 package dev.xkmc.l2core.init.reg.ench;
 
-import cpw.mods.util.Lazy;
+import com.tterrag.registrate.providers.RegistrateProvider;
+import dev.xkmc.l2core.util.DataGenOnly;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
@@ -15,6 +16,7 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.common.util.Lazy;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -27,6 +29,9 @@ import java.util.function.UnaryOperator;
 public interface EnchVal {
 
 	ResourceKey<Enchantment> id();
+
+	@DataGenOnly
+	Holder<Enchantment> datagenDirect(RegistrateProvider pvd);
 
 	default Holder<Enchantment> holder() {
 		return Optional.ofNullable(CommonHooks.resolveLookup(Registries.ENCHANTMENT)).orElseThrow().getOrThrow(id());
@@ -42,6 +47,14 @@ public interface EnchVal {
 
 	interface Impl extends EnchVal {
 		Lazy<Builder> builder();
+
+		@Override
+		default Holder<Enchantment> datagenDirect(RegistrateProvider pvd) {
+			var val = builder().get().cache;
+			if (val == null) throw new IllegalStateException("Enchantment is not built yet");
+			return new DataGenHolder<>(id(), val);
+		}
+
 	}
 
 	interface Flag extends EnchVal {
@@ -70,6 +83,8 @@ public interface EnchVal {
 		public final ResourceLocation id;
 
 		final List<TagKey<Enchantment>> tags = new ArrayList<>();
+
+		private Enchantment cache;
 
 		Builder(ResourceLocation id) {
 			this.id = id;
@@ -156,14 +171,17 @@ public interface EnchVal {
 
 		Enchantment build(BootstrapContext<Enchantment> ctx, ResourceLocation id) {
 			var items = ctx.registryLookup(Registries.ITEM).orElseThrow();
-			var enchs = ctx.registryLookup(Registries.ENCHANTMENT).orElseThrow();
+			var enchs = ctx.lookup(Registries.ENCHANTMENT);
+			var fakeItem = new FakeRegistryLookup<>(Registries.ITEM);
+			var fakeEnch = new FakeRegistryLookup<>(Registries.ENCHANTMENT);
 			var ans = Enchantment.enchantment(new Enchantment.EnchantmentDefinition(
-					supported.build(items), Optional.of(primary.build(items)),
+					supported.build(fakeItem, items), Optional.of(primary.build(fakeItem, items)),
 					weight, maxLevel, min, max, anvilCost,
 					group == null ? List.of() : List.of(group)));
-			if (exclude != null) ans.exclusiveWith(exclude.build(enchs));
+			if (exclude != null) ans.exclusiveWith(exclude.build(fakeEnch, enchs));
 			for (var e : effects) e.accept(ans);
-			return ans.build(id);
+			cache = ans.build(id);
+			return cache;
 		}
 
 	}

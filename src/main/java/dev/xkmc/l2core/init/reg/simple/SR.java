@@ -34,6 +34,11 @@ public record SR<T>(DeferredRegister<T> reg) {
 			return val.get();
 		}
 
+		@Override
+		public ResourceLocation id() {
+			return val.getId();
+		}
+
 	}
 
 }

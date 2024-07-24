@@ -1,6 +1,6 @@
 package dev.xkmc.l2core.init.reg.ench;
 
-import net.minecraft.core.HolderLookup;
+import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderSet;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
@@ -37,12 +37,12 @@ public interface HolderSetBuilder<T> {
 		return new Any<>();
 	}
 
-	HolderSet<T> build(HolderLookup.RegistryLookup<T> pvd);
+	HolderSet<T> build(FakeRegistryLookup<T> reg, HolderGetter<T> pvd);
 
 	record Simple<T>(TagKey<T> tag) implements HolderSetBuilder<T> {
 
 		@Override
-		public HolderSet<T> build(HolderLookup.RegistryLookup<T> pvd) {
+		public HolderSet<T> build(FakeRegistryLookup<T> reg, HolderGetter<T> pvd) {
 			return pvd.getOrThrow(tag);
 		}
 
@@ -51,7 +51,7 @@ public interface HolderSetBuilder<T> {
 	record Direct<T>(ResourceKey<T> key) implements HolderSetBuilder<T> {
 
 		@Override
-		public HolderSet<T> build(HolderLookup.RegistryLookup<T> pvd) {
+		public HolderSet<T> build(FakeRegistryLookup<T> reg, HolderGetter<T> pvd) {
 			return HolderSet.direct(pvd.getOrThrow(key));
 		}
 
@@ -60,8 +60,8 @@ public interface HolderSetBuilder<T> {
 	record Or<T>(List<HolderSetBuilder<T>> list) implements HolderSetBuilder<T> {
 
 		@Override
-		public HolderSet<T> build(HolderLookup.RegistryLookup<T> pvd) {
-			return new OrHolderSet<>(list.stream().map(e -> e.build(pvd)).toList());
+		public HolderSet<T> build(FakeRegistryLookup<T> reg, HolderGetter<T> pvd) {
+			return new OrHolderSet<>(list.stream().map(e -> e.build(reg, pvd)).toList());
 		}
 
 	}
@@ -69,8 +69,8 @@ public interface HolderSetBuilder<T> {
 	record And<T>(List<HolderSetBuilder<T>> list) implements HolderSetBuilder<T> {
 
 		@Override
-		public HolderSet<T> build(HolderLookup.RegistryLookup<T> pvd) {
-			return new AndHolderSet<>(list.stream().map(e -> e.build(pvd)).toList());
+		public HolderSet<T> build(FakeRegistryLookup<T> reg, HolderGetter<T> pvd) {
+			return new AndHolderSet<>(list.stream().map(e -> e.build(reg, pvd)).toList());
 		}
 
 	}
@@ -78,8 +78,8 @@ public interface HolderSetBuilder<T> {
 	record Not<T>(HolderSetBuilder<T> val) implements HolderSetBuilder<T> {
 
 		@Override
-		public HolderSet<T> build(HolderLookup.RegistryLookup<T> pvd) {
-			return new NotHolderSet<>(pvd, val.build(pvd));
+		public HolderSet<T> build(FakeRegistryLookup<T> reg, HolderGetter<T> pvd) {
+			return new NotHolderSet<>(reg, val.build(reg, pvd));
 		}
 
 	}
@@ -87,8 +87,8 @@ public interface HolderSetBuilder<T> {
 	record Any<T>() implements HolderSetBuilder<T> {
 
 		@Override
-		public HolderSet<T> build(HolderLookup.RegistryLookup<T> pvd) {
-			return new AnyHolderSet<>(pvd);
+		public HolderSet<T> build(FakeRegistryLookup<T> reg, HolderGetter<T> pvd) {
+			return new AnyHolderSet<>(reg);
 		}
 
 	}

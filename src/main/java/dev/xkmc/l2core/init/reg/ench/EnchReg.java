@@ -3,7 +3,6 @@ package dev.xkmc.l2core.init.reg.ench;
 import com.mojang.serialization.Codec;
 import com.tterrag.registrate.providers.ProviderType;
 import com.tterrag.registrate.providers.RegistrateTagsProvider;
-import cpw.mods.util.Lazy;
 import dev.xkmc.l2core.init.L2LibReg;
 import dev.xkmc.l2core.init.L2TagGen;
 import dev.xkmc.l2core.init.reg.registrate.L2Registrate;
@@ -19,6 +18,7 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.effects.EnchantmentValueEffect;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.neoforged.neoforge.common.util.Lazy;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -48,7 +48,7 @@ public class EnchReg {
 		pvd.addDataGenerator(L2TagGen.ENCH_TAGS, this::doTagGen);
 		var init = pvd.getDataGenInitializer();
 		init.add(Registries.ENCHANTMENT, this::build);
-		init.addDependency(ProviderType.DYNAMIC, L2TagGen.ENCH_TAGS);
+		init.addDependency(L2TagGen.ENCH_TAGS, ProviderType.DYNAMIC);
 	}
 
 	private <T> DeferredHolder<DataComponentType<?>, DataComponentType<T>> reg(String id, Codec<T> codec) {

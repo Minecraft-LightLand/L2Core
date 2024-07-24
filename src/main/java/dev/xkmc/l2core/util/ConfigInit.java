@@ -54,8 +54,11 @@ public class ConfigInit {
 		val.path = path;
 		RegistrateDistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> initClient(mod));
 		reg.initConfigTitle(mod);
-		reg.addRawLang(reg.getModid() + ".configuration.section." + path.replaceAll("[-_/]", ".") + ".title",
-				mod.getModInfo().getDisplayName() + " " + RegistrateLangProvider.toEnglishName(type.extension()) + " Configuration");
+		String typeName = RegistrateLangProvider.toEnglishName(type.extension());
+		String fileName = reg.getModid() + ".configuration.section." + path.replaceAll("[-_/]", ".");
+		String title = mod.getModInfo().getDisplayName() + " " + typeName + " Configuration";
+		reg.addRawLang(fileName, title);
+		reg.addRawLang(fileName + ".title", title);
 	}
 
 	private static void initClient(ModContainer mod) {

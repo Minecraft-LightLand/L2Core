@@ -55,6 +55,11 @@ public record AttReg(DeferredRegister<AttachmentType<?>> att) {
 			return val.get();
 		}
 
+		@Override
+		public ResourceLocation id() {
+			return val.getId();
+		}
+
 	}
 
 	private record CapValImpl<E extends AttachmentHolder, T extends GeneralCapabilityTemplate<E, T>>(
@@ -66,6 +71,11 @@ public record AttReg(DeferredRegister<AttachmentType<?>> att) {
 			return val.get();
 		}
 
+		@Override
+		public ResourceLocation id() {
+			return val.getId();
+		}
+
 	}
 
 	private record PlayerValImpl<T extends PlayerCapabilityTemplate<T>>(
@@ -75,6 +85,11 @@ public record AttReg(DeferredRegister<AttachmentType<?>> att) {
 		@Override
 		public AttachmentType<T> get() {
 			return val.get();
+		}
+
+		@Override
+		public ResourceLocation id() {
+			return val.getId();
 		}
 
 	}

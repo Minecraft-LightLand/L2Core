@@ -5,6 +5,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Unit;
 import net.minecraft.world.item.ItemStack;
@@ -62,6 +63,11 @@ public interface EECVal<T> extends Val<DataComponentType<List<ConditionalEffect<
 			return val.get();
 		}
 
+		@Override
+		public ResourceLocation id() {
+			return val.getId();
+		}
+
 	}
 
 	interface Num extends EECVal<EnchantmentValueEffect> {
@@ -83,6 +89,11 @@ public interface EECVal<T> extends Val<DataComponentType<List<ConditionalEffect<
 				return val.get();
 			}
 
+			@Override
+			public ResourceLocation id() {
+				return val.getId();
+			}
+
 		}
 
 	}
@@ -102,6 +113,11 @@ public interface EECVal<T> extends Val<DataComponentType<List<ConditionalEffect<
 				return val.get();
 			}
 
+			@Override
+			public ResourceLocation id() {
+				return val.getId();
+			}
+
 		}
 
 	}
@@ -115,6 +131,11 @@ public interface EECVal<T> extends Val<DataComponentType<List<ConditionalEffect<
 			@Override
 			public DataComponentType<List<T>> get() {
 				return val.get();
+			}
+
+			@Override
+			public ResourceLocation id() {
+				return val.getId();
 			}
 
 		}

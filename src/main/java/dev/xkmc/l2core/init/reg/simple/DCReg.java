@@ -11,6 +11,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Unit;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -75,6 +76,12 @@ public record DCReg(DeferredRegister<DataComponentType<?>> reg) {
 		public DataComponentType<T> get() {
 			return val.get();
 		}
+
+		@Override
+		public ResourceLocation id() {
+			return val.getId();
+		}
+
 	}
 
 }

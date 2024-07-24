@@ -3,7 +3,9 @@ package dev.xkmc.l2core.compat.patchouli;
 import com.tterrag.registrate.providers.ProviderType;
 import com.tterrag.registrate.util.DataIngredient;
 import dev.xkmc.l2core.init.reg.registrate.L2Registrate;
+import dev.xkmc.l2core.serial.advancements.RewardBuilder;
 import dev.xkmc.l2core.serial.recipe.ConditionalRecipeWrapper;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
@@ -34,13 +36,15 @@ public class PatchouliHelper {
 	}
 
 	private final L2Registrate reg;
-	private final ResourceLocation book;
+	public final ResourceLocation book;
+	public final RewardBuilder reward;
 
 	private ResourceLocation model;
 
 	public PatchouliHelper(L2Registrate reg, String name) {
 		this.reg = reg;
-		book = ResourceLocation.fromNamespaceAndPath(reg.getModid(), name);
+		book = reg.loc(name);
+		reward = new RewardBuilder(reg, 0, ResourceKey.create(Registries.LOOT_TABLE, book), () -> PatchouliHelper.getBookLoot(book));
 	}
 
 	public PatchouliHelper buildModel() {

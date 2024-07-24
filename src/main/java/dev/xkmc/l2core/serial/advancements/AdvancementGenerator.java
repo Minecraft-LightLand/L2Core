@@ -93,11 +93,11 @@ public class AdvancementGenerator {
 				return sub;
 			}
 
-			public Entry patchouli(L2Registrate reg, CriterionBuilder builder, ResourceLocation book, String title, String desc) {
-				ItemStack stack = PatchouliHelper.getBook(book);
+			public Entry patchouli(L2Registrate reg, CriterionBuilder builder, PatchouliHelper pat, String title, String desc) {
+				ItemStack stack = PatchouliHelper.getBook(pat.book);
 				return create("patchouli", stack, builder, title, desc)
 						.add(new ModLoadedAdv("patchouli"))
-						.add(new RewardBuilder(reg, 0, ResourceKey.create(Registries.LOOT_TABLE, book), () -> PatchouliHelper.getBookLoot(book)));
+						.add(pat.reward);
 			}
 
 			public Entry root() {
