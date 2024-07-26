@@ -145,4 +145,5 @@ dependencies {
     implementation "mezz.jei:jei-${jei_minecraft_version}:${jei_version}"
     implementation "com.tterrag.registrate:Registrate:${registrate_version}"
     implementation "dev.xkmc:l2serial:${l2serial_ver}"
+    implementation "vazkii.patchouli:Patchouli:${patchouli_ver}"
 }

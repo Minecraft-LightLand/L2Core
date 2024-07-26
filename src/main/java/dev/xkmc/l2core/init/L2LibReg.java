@@ -1,6 +1,5 @@
 package dev.xkmc.l2core.init;
 
-import com.tterrag.registrate.providers.ProviderType;
 import dev.xkmc.l2core.base.effects.ClientEffectCap;
 import dev.xkmc.l2core.base.menu.base.MenuLayoutConfig;
 import dev.xkmc.l2core.capability.conditionals.ConditionalData;
@@ -8,6 +7,7 @@ import dev.xkmc.l2core.capability.conditionals.PlayerFlagData;
 import dev.xkmc.l2core.capability.player.PlayerCapabilityNetworkHandler;
 import dev.xkmc.l2core.init.reg.datapack.DatapackReg;
 import dev.xkmc.l2core.init.reg.ench.EECVal;
+import dev.xkmc.l2core.init.reg.ench.EnchColor;
 import dev.xkmc.l2core.init.reg.ench.EnchReg;
 import dev.xkmc.l2core.init.reg.ench.LegacyEnchantment;
 import dev.xkmc.l2core.init.reg.registrate.L2Registrate;
@@ -69,8 +69,9 @@ public class L2LibReg {
 	// enchantment
 	public static final L2Registrate.RegistryInstance<LegacyEnchantment> ENCH =
 			L2Core.REGISTRATE.newRegistry("legacy_enchantment", LegacyEnchantment.class, e -> e.sync(true));
-	public static final EECVal.Special<LegacyEnchantment> LEGACY =
-			EnchReg.of(REG, L2Core.REGISTRATE).special("legacy", ENCH.reg().byNameCodec());
+	private static final EnchReg ENCH_REG = EnchReg.of(REG, L2Core.REGISTRATE);
+	public static final EECVal.Special<EnchColor> COLOR = ENCH_REG.special("color", EnchColor.CODEC);
+	public static final EECVal.Special<LegacyEnchantment> LEGACY = ENCH_REG.special("legacy", ENCH.reg().byNameCodec());
 
 	public static void register() {
 	}

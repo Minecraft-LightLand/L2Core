@@ -74,6 +74,10 @@ public class L2Registrate extends AbstractRegistrate<L2Registrate> {
 		return ConfigInit.register(this, ModConfig.Type.CLIENT, factory);
 	}
 
+	public <T extends ConfigInit> T registerUnsynced(Function<ConfigInit.Builder, T> factory) {
+		return ConfigInit.register(this, ModConfig.Type.COMMON, factory);
+	}
+
 	public <T extends ConfigInit> T registerSynced(Function<ConfigInit.Builder, T> factory) {
 		return ConfigInit.register(this, ModConfig.Type.SERVER, factory);
 	}

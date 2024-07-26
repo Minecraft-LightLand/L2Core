@@ -1,3 +1,10 @@
 {
-  "l2core.title": "莱特兰·核心"
+  "l2core.title": "莱特兰·核心",
+  "l2core.configuration.addEnchantmentDescription": "附魔描述显示",
+  "l2core.configuration.addEnchantmentDescription.tooltip": "包含莱特兰自身的依赖等级/配置的特殊附魔描述显示。\n其他附魔描述模组可能无法正常显示本模组部分附魔的描述。\n- DISABLE：关闭附魔描述\n- SHIFT_ONLY：只在按SHIFT时显示附魔描述\n- ALWAYS：永远显示附魔描述",
+  "l2core.configuration.overlayZVal": "物品文字渲染高度",
+  "l2core.configuration.overlayZVal.tooltip": "默认值：250",
+  "l2core.configuration.section.l2configs.l2core.client.toml": "莱特兰核心 - 客户端配置",
+  "l2core.configuration.section.l2configs.l2core.client.toml.title": "莱特兰核心 - 客户端配置",
+  "l2core.configuration.title": "莱特兰核心 - 配置"
 }

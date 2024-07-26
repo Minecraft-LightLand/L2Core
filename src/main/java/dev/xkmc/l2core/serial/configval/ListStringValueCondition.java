@@ -2,16 +2,18 @@ package dev.xkmc.l2core.serial.configval;
 
 import com.mojang.serialization.MapCodec;
 import dev.xkmc.l2core.init.L2LibReg;
+import dev.xkmc.l2core.util.ConfigInit;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.common.conditions.ICondition;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 public record ListStringValueCondition(String path, ArrayList<String> line, String key) implements ICondition {
 
-	public static ListStringValueCondition of(String file, ModConfigSpec.ConfigValue<List<String>> config, String key) {
-		return new ListStringValueCondition(file, new ArrayList<>(config.getPath()), key);
+	public static <T extends ConfigInit> ListStringValueCondition of(T file, Function<T, ModConfigSpec.ConfigValue<Double>> config, String key) {
+		return new ListStringValueCondition(file.getPath(), new ArrayList<>(config.apply(file).getPath()), key);
 	}
 
 	@Override

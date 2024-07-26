@@ -12,14 +12,34 @@ import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
+import javax.annotation.Nullable;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class ConfigInit {
 
+	private static final ConcurrentHashMap<String, ConfigInit> MAP = new ConcurrentHashMap<>();
+
+	@Nullable
+	public static ConfigInit get(String path) {
+		return MAP.get(path);
+	}
+
 	private String folder = null;
 	private String path = "";
+
+	public ModConfig.Type getType() {
+		return type;
+	}
+
+	public IConfigSpec getSpec() {
+		return spec;
+	}
+
+	private ModConfig.Type type;
+	private IConfigSpec spec;
 
 	public String getPath() {
 		return path;
@@ -52,6 +72,9 @@ public class ConfigInit {
 		String path = val.folder + mod.getModId() + "-" + type.extension() + ".toml";
 		mod.registerConfig(type, spec, path);
 		val.path = path;
+		val.type = type;
+		val.spec = spec;
+		MAP.put(path, val);
 		RegistrateDistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> initClient(mod));
 		reg.initConfigTitle(mod);
 		String typeName = RegistrateLangProvider.toEnglishName(type.extension());

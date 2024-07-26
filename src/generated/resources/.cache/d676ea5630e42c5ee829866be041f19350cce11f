@@ -1,0 +1,4 @@
+// 1.21	2024-07-25T11:38:15.636395	Registrate Provider for l2core [Registries, Data Maps, Recipes, Advancements, Loot Tables, Tags (blocks), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider, Tags (mob_effect), Tags (attribute), Tags (enchantment)]
+7fd8a37c6437c7cab27c53dbc0df73ececc1cd44 assets/l2core/lang/en_ud.json
+18ae34417262501a3c00959390185e01ffb2ae7c assets/l2core/lang/en_us.json
+35133e95f1c8fdd7a1c21afcc231fc0bffefb9a8 data/l2core/tags/mob_effect/tracked_effects.json

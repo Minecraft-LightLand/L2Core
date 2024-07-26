@@ -5,9 +5,12 @@ import com.tterrag.registrate.util.DataIngredient;
 import dev.xkmc.l2core.init.reg.registrate.L2Registrate;
 import dev.xkmc.l2core.serial.advancements.RewardBuilder;
 import dev.xkmc.l2core.serial.recipe.ConditionalRecipeWrapper;
+import net.minecraft.Util;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.recipes.RecipeBuilder;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.data.recipes.RecipeCategory;
+import net.minecraft.data.recipes.ShapedRecipeBuilder;
+import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
@@ -15,8 +18,14 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.entries.LootItem;
+import net.minecraft.world.level.storage.loot.functions.SetComponentsFunction;
 import net.neoforged.neoforge.client.model.generators.ModelFile;
+import vazkii.patchouli.common.item.ItemModBook;
+import vazkii.patchouli.common.item.PatchouliDataComponents;
+import vazkii.patchouli.common.item.PatchouliItems;
 
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class PatchouliHelper {
@@ -24,14 +33,13 @@ public class PatchouliHelper {
 	public static final ProviderType<PatchouliProvider> PATCHOULI = ProviderType.registerServerData("patchouli", PatchouliProvider::new);
 
 	public static ItemStack getBook(ResourceLocation book) {
-		return ItemStack.EMPTY; // TODO ItemModBook.forBook(book);
+		return ItemModBook.forBook(book);
 	}
 
 	public static LootTable.Builder getBookLoot(ResourceLocation book) {
-		CompoundTag tag = new CompoundTag();
-		tag.putString("patchouli:book", book.toString());
 		return LootTable.lootTable().withPool(
-				LootPool.lootPool()//TODO .add(LootItem.lootTableItem(PatchouliItems.BOOK).apply(SetNbtFunction.setTag(tag)))
+				LootPool.lootPool().add(LootItem.lootTableItem(PatchouliItems.BOOK)
+						.apply(SetComponentsFunction.setComponent(PatchouliDataComponents.BOOK, book)))
 		);
 	}
 
@@ -59,15 +67,13 @@ public class PatchouliHelper {
 		return this;
 	}
 
-	/* TODO
-	public PatchouliHelper buildShapelessRecipe(Consumer<ShapelessPatchouliBuilder> cons, Supplier<Item> unlock) {
-		return buildRecipe(() -> Util.make(new ShapelessPatchouliBuilder(book), cons), unlock);
+	public PatchouliHelper buildShapelessRecipe(Consumer<ShapelessRecipeBuilder> cons, Supplier<Item> unlock) {
+		return buildRecipe(() -> Util.make(new ShapelessRecipeBuilder(RecipeCategory.MISC, getBook(book)), cons), unlock);
 	}
 
-	public PatchouliHelper buildShapedRecipe(Consumer<ShapedPatchouliBuilder> cons, Supplier<Item> unlock) {
-		return buildRecipe(() -> Util.make(new ShapedPatchouliBuilder(book), cons), unlock);
+	public PatchouliHelper buildShapedRecipe(Consumer<ShapedRecipeBuilder> cons, Supplier<Item> unlock) {
+		return buildRecipe(() -> Util.make(new ShapedRecipeBuilder(RecipeCategory.MISC, getBook(book)), cons), unlock);
 	}
-	 */
 
 	private PatchouliHelper buildRecipe(Supplier<RecipeBuilder> cons, Supplier<Item> unlock) {
 		reg.addDataGenerator(ProviderType.RECIPE, pvd -> {

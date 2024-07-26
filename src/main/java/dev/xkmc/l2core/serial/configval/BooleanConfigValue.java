@@ -2,15 +2,17 @@ package dev.xkmc.l2core.serial.configval;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
+import dev.xkmc.l2core.util.ConfigInit;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 import java.util.List;
 import java.util.function.BooleanSupplier;
+import java.util.function.Function;
 
 public record BooleanConfigValue(String path, List<String> line) implements BooleanSupplier {
 
-	public static BooleanConfigValue of(String file, ModConfigSpec.ConfigValue<Double> config) {
-		return new BooleanConfigValue(file, config.getPath());
+	public static <T extends ConfigInit> BooleanConfigValue of(T file, Function<T, ModConfigSpec.ConfigValue<Boolean>> config) {
+		return new BooleanConfigValue(file.getPath(), config.apply(file).getPath());
 	}
 
 	public static BooleanConfigValue of(String data) {

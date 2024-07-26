@@ -1,6 +1,7 @@
 package dev.xkmc.l2core.init.reg.ench;
 
 import com.tterrag.registrate.providers.RegistrateProvider;
+import dev.xkmc.l2core.init.L2LibReg;
 import dev.xkmc.l2core.util.DataGenOnly;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
@@ -167,6 +168,15 @@ public interface EnchVal {
 		public Builder effect(Consumer<Enchantment.Builder> effect) {
 			this.effects.add(effect);
 			return this;
+		}
+
+		public <T> Builder special(EECVal.Special<T> type, T val) {
+			this.effects.add(e -> e.withSpecialEffect(type.get(), List.of(val)));
+			return this;
+		}
+
+		public Builder color(EnchColor color) {
+			return special(L2LibReg.COLOR, color);
 		}
 
 		Enchantment build(BootstrapContext<Enchantment> ctx, ResourceLocation id) {

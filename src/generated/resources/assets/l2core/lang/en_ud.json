@@ -1,3 +1,10 @@
 {
+  "l2core.configuration.addEnchantmentDescription": "suoıʇdıɹɔsǝᗡ ʇuǝɯʇuɐɥɔuƎ ppⱯ",
+  "l2core.configuration.addEnchantmentDescription.tooltip": "SʎⱯMꞀⱯ 'ʎꞀNO‾⟘ℲIHS 'ƎꞀᗺⱯSIᗡ :sǝnןɐΛ pǝʍoןןⱯ",
+  "l2core.configuration.overlayZVal": "ʎɐןɹǝʌo ɹǝʇɔɐɹɐɥɔ ɯǝʇı ɟo ʇɥbıǝɥ ǝɥ⟘",
+  "l2core.configuration.overlayZVal.tooltip": "000000Ɩ ~ 000000Ɩ- :ǝbuɐᴚ",
+  "l2core.configuration.section.l2configs.l2core.client.toml": "uoıʇɐɹnbıɟuoƆ ʇuǝıןƆ ǝɹoƆᄅꞀ",
+  "l2core.configuration.section.l2configs.l2core.client.toml.title": "uoıʇɐɹnbıɟuoƆ ʇuǝıןƆ ǝɹoƆᄅꞀ",
+  "l2core.configuration.title": "uoıʇɐɹnbıɟuoƆ ǝɹoƆᄅꞀ",
   "l2core.title": "ǝɹoƆᄅꞀ"
 }

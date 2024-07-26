@@ -20,6 +20,14 @@ import java.util.*;
 public class LegacyEnchantment {
 
 	@Nullable
+	public static <T> T firstOf(Holder<Enchantment> ench, EECVal.Special<T> comp) {
+		for (var e : ench.value().getEffects(comp.get())) {
+			return Wrappers.cast(e);
+		}
+		return null;
+	}
+
+	@Nullable
 	public static <T> T firstOf(Holder<Enchantment> ench, Class<T> cls) {
 		for (var e : ench.value().getEffects(L2LibReg.LEGACY.get())) {
 			if (cls.isInstance(e)) {
@@ -60,10 +68,6 @@ public class LegacyEnchantment {
 			}
 		}
 		return map;
-	}
-
-	public List<Component> descFull(int lv, String key, boolean alt, boolean book) {
-		return List.of(Component.translatable(key).withStyle(ChatFormatting.DARK_GRAY));
 	}
 
 }

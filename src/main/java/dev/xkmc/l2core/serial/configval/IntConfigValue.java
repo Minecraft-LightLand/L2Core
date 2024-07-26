@@ -2,15 +2,17 @@ package dev.xkmc.l2core.serial.configval;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
+import dev.xkmc.l2core.util.ConfigInit;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 import java.util.List;
+import java.util.function.Function;
 import java.util.function.IntSupplier;
 
 public record IntConfigValue(String path, List<String> line) implements IntSupplier {
 
-	public static IntConfigValue of(String file, ModConfigSpec.ConfigValue<Integer> config) {
-		return new IntConfigValue(file, config.getPath());
+	public static <T extends ConfigInit> IntConfigValue of(T file, Function<T, ModConfigSpec.ConfigValue<Integer>> config) {
+		return new IntConfigValue(file.getPath(), config.apply(file).getPath());
 	}
 
 	public static IntConfigValue of(String data) {

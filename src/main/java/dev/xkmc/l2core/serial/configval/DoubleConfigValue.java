@@ -2,15 +2,17 @@ package dev.xkmc.l2core.serial.configval;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
+import dev.xkmc.l2core.util.ConfigInit;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 import java.util.List;
 import java.util.function.DoubleSupplier;
+import java.util.function.Function;
 
 public record DoubleConfigValue(String path, List<String> line) implements DoubleSupplier {
 
-	public static DoubleConfigValue of(String file, ModConfigSpec.ConfigValue<Double> config) {
-		return new DoubleConfigValue(file, config.getPath());
+	public static <T extends ConfigInit> DoubleConfigValue of(T file, Function<T, ModConfigSpec.ConfigValue<Double>> config) {
+		return new DoubleConfigValue(file.getPath(), config.apply(file).getPath());
 	}
 
 	public static DoubleConfigValue of(String data) {

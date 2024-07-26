@@ -9,10 +9,7 @@ import dev.xkmc.l2serial.network.PacketHandler;
 import dev.xkmc.l2serial.serialization.custom_handler.Handlers;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.data.event.GatherDataEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -36,6 +33,7 @@ public class L2Core {
 
 	public L2Core(IEventBus bus) {
 		L2LibReg.register();
+		L2CoreConfig.init();
 		Handlers.register();
 		REGISTRATE.addDataGenerator(L2TagGen.EFF_TAGS, L2TagGen::onEffectTagGen);
 	}
