@@ -14,6 +14,7 @@ import dev.xkmc.l2core.init.L2Core;
 import dev.xkmc.l2core.init.reg.simple.Val;
 import dev.xkmc.l2core.util.ConfigInit;
 import dev.xkmc.l2serial.serialization.custom_handler.CodecHandler;
+import dev.xkmc.l2serial.util.ModContainerHack;
 import dev.xkmc.l2serial.util.Wrappers;
 import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.client.particle.ParticleProvider;
@@ -34,7 +35,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potion;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.data.loading.DatagenModLoader;
@@ -57,7 +57,7 @@ public class L2Registrate extends AbstractRegistrate<L2Registrate> {
 
 	public L2Registrate(String modid) {
 		super(modid);
-		var mod = ModLoadingContext.get().getActiveContainer();
+		var mod = ModContainerHack.getMod(modid);
 		var bus = mod.getEventBus();
 		if (bus != null) registerEventListeners(bus);
 		else L2Core.LOGGER.error("Failed to register mod {}", modid);

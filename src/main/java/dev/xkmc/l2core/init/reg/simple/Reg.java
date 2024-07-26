@@ -4,11 +4,11 @@ import com.mojang.serialization.Codec;
 import dev.xkmc.l2core.init.reg.datapack.DataMapReg;
 import dev.xkmc.l2core.init.reg.datapack.DatapackReg;
 import dev.xkmc.l2serial.serialization.codec.CodecAdaptor;
+import dev.xkmc.l2serial.util.ModContainerHack;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
 
@@ -19,10 +19,7 @@ public final class Reg {
 
 	public Reg(String modid) {
 		this.modid = modid;
-
-		var cont = ModLoadingContext.get().getActiveContainer();
-		if (!cont.getModId().equals(modid))
-			throw new IllegalStateException("Class Initialized from wrong thread for " + modid);
+		var cont = ModContainerHack.getMod(modid);
 		var bus = cont.getEventBus();
 		if (bus != null) this.bus = bus;
 		else throw new IllegalStateException("Event bus is null for " + modid);

@@ -4,7 +4,6 @@ import com.tterrag.registrate.AbstractRegistrate;
 import com.tterrag.registrate.providers.RegistrateProvider;
 import dev.xkmc.l2core.serial.config.RecordDataProvider;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.neoforged.fml.LogicalSide;
 

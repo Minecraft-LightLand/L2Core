@@ -3,9 +3,9 @@ package dev.xkmc.l2core.util;
 import com.tterrag.registrate.providers.RegistrateLangProvider;
 import com.tterrag.registrate.util.RegistrateDistExecutor;
 import dev.xkmc.l2core.init.reg.registrate.L2Registrate;
+import dev.xkmc.l2serial.util.ModContainerHack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.config.IConfigSpec;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
@@ -68,7 +68,7 @@ public class ConfigInit {
 
 	private static void register(L2Registrate reg, ModConfig.Type type, IConfigSpec spec, ConfigInit val) {
 		if (val.folder == null) throw new IllegalStateException("Config must specify folder");
-		var mod = ModLoadingContext.get().getActiveContainer();
+		var mod = ModContainerHack.getMod(reg.getModid());
 		String path = val.folder + mod.getModId() + "-" + type.extension() + ".toml";
 		mod.registerConfig(type, spec, path);
 		val.path = path;

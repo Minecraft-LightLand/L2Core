@@ -2,11 +2,9 @@ package dev.xkmc.l2core.init.reg.ench;
 
 import dev.xkmc.l2core.init.L2LibReg;
 import dev.xkmc.l2serial.util.Wrappers;
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;

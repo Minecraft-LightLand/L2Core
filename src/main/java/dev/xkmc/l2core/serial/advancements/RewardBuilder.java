@@ -16,7 +16,7 @@ public record RewardBuilder(L2Registrate reg, int exp, ResourceKey<LootTable> lo
 							Supplier<LootTable.Builder> sup) implements IAdvBuilder {
 
 	public RewardBuilder(L2Registrate reg, int exp, ResourceKey<LootTable> loot,
-						 Supplier<LootTable.Builder> sup){
+						 Supplier<LootTable.Builder> sup) {
 		this.reg = reg;
 		this.exp = exp;
 		this.loot = loot;
