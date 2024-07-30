@@ -3,9 +3,10 @@ package dev.xkmc.l2core.init.reg.simple;
 import com.mojang.serialization.Codec;
 import dev.xkmc.l2core.util.DCStack;
 import dev.xkmc.l2serial.serialization.codec.CodecAdaptor;
+import dev.xkmc.l2serial.util.Wrappers;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
@@ -17,6 +18,9 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public record DCReg(DeferredRegister<DataComponentType<?>> reg) {
@@ -31,9 +35,22 @@ public record DCReg(DeferredRegister<DataComponentType<?>> reg) {
 		return new DCValImpl<>(reg.register(id, builder::build));
 	}
 
+	public <T> DCVal<List<T>> list(String id, Codec<T> codec, StreamCodec<? super RegistryFriendlyByteBuf, T> stream, boolean cache) {
+		var builder = DataComponentType.<List<T>>builder()
+				.persistent(codec.listOf())
+				.networkSynchronized(stream.apply(Wrappers.cast(ByteBufCodecs.list())));
+		if (cache) builder.cacheEncoding();
+		return new DCValImpl<>(reg.register(id, builder::build));
+	}
+
 	public <T> DCVal<T> reg(String id, Class<T> cls, boolean cache) {
 		var cdc = new CodecAdaptor<>(cls);
 		return reg(id, cdc, cdc.toNetwork(), cache);
+	}
+
+	public <T> DCVal<List<T>> list(String id, Class<T> cls, boolean cache) {
+		var cdc = new CodecAdaptor<>(cls);
+		return reg(id, cdc.listOf(), ByteBufCodecs.<RegistryFriendlyByteBuf, T>list().apply(cdc.toNetwork()), cache);
 	}
 
 	public DCVal<Unit> unit(String id) {
@@ -56,9 +73,17 @@ public record DCReg(DeferredRegister<DataComponentType<?>> reg) {
 		return reg(id, Codec.STRING, ByteBufCodecs.STRING_UTF8, false);
 	}
 
+	public DCVal<ResourceLocation> loc(String id) {
+		return reg(id, ResourceLocation.CODEC, ResourceLocation.STREAM_CODEC, false);
+	}
+
 	public DCVal<UUID> uuid(String id) {
-		return reg(id, Codec.STRING.xmap(UUID::fromString, UUID::toString),
-				StreamCodec.of((b, e) -> FriendlyByteBuf.writeUUID(b, e), b -> FriendlyByteBuf.readUUID(b)), true);
+		return reg(id, UUIDUtil.CODEC, UUIDUtil.STREAM_CODEC, true);
+	}
+
+	public DCVal<Set<UUID>> uuidSet(String id) {
+		return reg(id, UUIDUtil.CODEC_LINKED_SET, UUIDUtil.STREAM_CODEC.apply(
+				ByteBufCodecs.collection(LinkedHashSet::newLinkedHashSet)), true);
 	}
 
 	public DCVal<DCStack> stack(String id) {

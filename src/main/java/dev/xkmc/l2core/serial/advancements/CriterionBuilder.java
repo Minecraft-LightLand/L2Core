@@ -15,6 +15,7 @@ import net.neoforged.neoforge.common.conditions.ICondition;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class CriterionBuilder implements IAdvBuilder {
 
@@ -69,6 +70,10 @@ public class CriterionBuilder implements IAdvBuilder {
 				.withSubPredicate(ItemSubPredicates.ENCHANTMENTS,
 						ItemEnchantmentsPredicate.enchantments(List.of(
 								new EnchantmentPredicate(enchantment, MinMaxBounds.Ints.ANY))))));
+	}
+
+	public static CriterionBuilder player(PlayerTrigger trigger) {
+		return one(trigger.createCriterion(new PlayerTrigger.TriggerInstance(Optional.empty())));
 	}
 
 	public static CriterionBuilder one(Criterion<?> instance) {

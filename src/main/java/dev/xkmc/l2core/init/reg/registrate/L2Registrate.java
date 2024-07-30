@@ -46,6 +46,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.TreeMap;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -122,7 +123,7 @@ public class L2Registrate extends AbstractRegistrate<L2Registrate> {
 				Registries.PARTICLE_TYPE, sup)).register();
 		RegistrateDistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () ->
 				OneTimeEventReceiver.addModListener(this, RegisterParticleProvidersEvent.class,
-						event -> pvd.get().register(event, ans.get())));
+						event -> pvd.get().register().accept(event, ans.get())));
 		return new Val.Registrate<>(ans);
 	}
 
@@ -270,19 +271,19 @@ public class L2Registrate extends AbstractRegistrate<L2Registrate> {
 
 	public interface ParticleSupplier<T extends ParticleOptions> {
 
-		static <T extends ParticleOptions> ParticleSupplier<T> provider(ParticleProvider<T> pvd) {
-			return (event, type) -> event.registerSpecial(type, pvd);
+		static <T extends ParticleOptions> ParticleSupplier<T> provider(NonNullSupplier<ParticleProvider<T>> pvd) {
+			return () -> (event, type) -> event.registerSpecial(type, pvd.get());
 		}
 
-		static <T extends ParticleOptions> ParticleSupplier<T> sprite(ParticleProvider.Sprite<T> pvd) {
-			return (event, type) -> event.registerSprite(type, pvd);
+		static <T extends ParticleOptions> ParticleSupplier<T> sprite(NonNullSupplier<ParticleProvider.Sprite<T>> pvd) {
+			return () -> (event, type) -> event.registerSprite(type, pvd.get());
 		}
 
-		static <T extends ParticleOptions> ParticleSupplier<T> spriteSet(ParticleEngine.SpriteParticleRegistration<T> pvd) {
-			return (event, type) -> event.registerSpriteSet(type, pvd);
+		static <T extends ParticleOptions> ParticleSupplier<T> spriteSet(NonNullSupplier<ParticleEngine.SpriteParticleRegistration<T>> pvd) {
+			return () -> (event, type) -> event.registerSpriteSet(type, pvd.get());
 		}
 
-		void register(RegisterParticleProvidersEvent event, ParticleType<T> type);
+		BiConsumer<RegisterParticleProvidersEvent, ParticleType<T>> register();
 
 	}
 
