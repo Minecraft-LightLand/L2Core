@@ -83,8 +83,14 @@ public class ClientEventHandler {
 				compound.set(i, Either.left(comp));
 				flag = true;
 			} else color = EnchColor.DEFAULT;
-			if (skip) continue;
+
 			var legacy = LegacyEnchantment.findFirst(ench.get(), CustomDescEnchantment.class);
+			if (legacy.isPresent()){
+				comp = legacy.get().title(stack, list.get(i), alt, book, color);
+				compound.set(i, Either.left(comp));
+				flag = true;
+			}
+			if (skip) continue;
 			if (legacy.isEmpty()) {
 				if (I18n.exists(tr.getKey() + ".desc")) {
 					compound.set(i, Either.right(List.of(comp, Component.translatable(tr.getKey() + ".desc")
@@ -93,7 +99,7 @@ public class ClientEventHandler {
 				}
 			} else {
 				int lv = map.getLevel(ench.get());
-				var es = legacy.get().descFull(lv, tr.getKey() + ".desc", alt, book, color);
+				var es = legacy.get().descFull(stack, lv, tr.getKey() + ".desc", alt, book, color);
 				compound.set(i, Either.right(Stream.concat(Stream.of(comp), es.stream().map(e -> (Component) lit.copy().append(e))).toList()));
 				flag = true;
 			}

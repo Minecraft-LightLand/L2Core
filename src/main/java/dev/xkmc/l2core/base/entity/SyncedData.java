@@ -1,5 +1,6 @@
 package dev.xkmc.l2core.base.entity;
 
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.RegistryAccess;
@@ -25,9 +26,9 @@ public class SyncedData {
 	public static final Serializer<Optional<UUID>> UUID;
 
 	static {
-		INT = new Serializer<>(EntityDataSerializers.INT, Codec.INT);
-		BLOCK_POS = new Serializer<>(EntityDataSerializers.BLOCK_POS, BlockPos.CODEC);
-		UUID = new Serializer<>(EntityDataSerializers.OPTIONAL_UUID, UUIDUtil.CODEC.xmap(Optional::of, Optional::get));
+		INT = new Simple<>(EntityDataSerializers.INT, Codec.INT);
+		BLOCK_POS = new Simple<>(EntityDataSerializers.BLOCK_POS, BlockPos.CODEC);
+		UUID = new Opt<>(EntityDataSerializers.OPTIONAL_UUID, UUIDUtil.CODEC);
 	}
 
 	private final Definer cls;
@@ -71,7 +72,7 @@ public class SyncedData {
 
 		private Data(Serializer<T> ser, T init, @Nullable String name) {
 			this.ser = ser;
-			this.data = cls.define(ser.ser());
+			this.data = cls.define(ser.data());
 			this.init = init;
 			this.name = name;
 		}
@@ -93,7 +94,19 @@ public class SyncedData {
 		}
 	}
 
-	public record Serializer<T>(EntityDataSerializer<T> ser, Codec<T> codec) {
+	public interface Serializer<T> {
+
+		EntityDataSerializer<T> data();
+
+		@Nullable
+		Tag write(RegistryAccess pvd, T t);
+
+		@Nullable
+		T read(RegistryAccess pvd, Tag tag);
+
+	}
+
+	public record Simple<T>(EntityDataSerializer<T> data, Codec<T> codec) implements Serializer<T> {
 
 		@Nullable
 		public Tag write(RegistryAccess pvd, T t) {
@@ -103,6 +116,19 @@ public class SyncedData {
 		@Nullable
 		public T read(RegistryAccess pvd, Tag tag) {
 			return codec.decode(pvd.createSerializationContext(NbtOps.INSTANCE), tag).getOrThrow().getFirst();
+		}
+
+	}
+
+	public record Opt<T>(EntityDataSerializer<Optional<T>> data, Codec<T> codec) implements Serializer<Optional<T>> {
+
+		@Nullable
+		public Tag write(RegistryAccess pvd, Optional<T> val) {
+			return val.map(e -> codec.encodeStart(pvd.createSerializationContext(NbtOps.INSTANCE), e).getOrThrow()).orElse(null);
+		}
+
+		public Optional<T> read(RegistryAccess pvd, Tag tag) {
+			return codec.decode(pvd.createSerializationContext(NbtOps.INSTANCE), tag).result().map(Pair::getFirst);
 		}
 
 	}

@@ -18,6 +18,7 @@ import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.util.Lazy;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -62,11 +63,23 @@ public interface EnchVal {
 		EECVal.Flag unit();
 	}
 
+	interface Legacy<T extends LegacyEnchantment> extends EnchVal {
+
+		DeferredHolder<LegacyEnchantment, T> legacy();
+
+	}
+
 	record Simple(ResourceKey<Enchantment> id, Lazy<Builder> builder) implements Impl {
 
 	}
 
 	record FlagImpl(EECVal.Flag unit, ResourceKey<Enchantment> id, Lazy<Builder> builder) implements Flag, Impl {
+
+	}
+
+	record LegacyImpl<T extends LegacyEnchantment>(
+			ResourceKey<Enchantment> id, DeferredHolder<LegacyEnchantment, T> legacy, Lazy<Builder> builder
+	) implements Legacy<T>, Impl {
 
 	}
 

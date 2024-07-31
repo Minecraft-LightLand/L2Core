@@ -95,11 +95,12 @@ public class EnchReg {
 						e.withEffect(unit.get()))))));
 	}
 
-	public EnchVal enchLegacy(String id, String name, String desc, UnaryOperator<EnchVal.Builder> cons, Supplier<LegacyEnchantment> factory) {
+	public <T extends LegacyEnchantment> EnchVal.Legacy<T> enchLegacy(String id, String name, String desc, UnaryOperator<EnchVal.Builder> cons, Supplier<T> factory) {
 		var unit = legacy.register(id, factory);
-		return enchBase(id, name, desc, key -> new EnchVal.Simple(key,
+		return enchBase(id, name, desc, key -> new EnchVal.LegacyImpl<>(key, unit,
 				Lazy.of(() -> cons.apply(new EnchVal.Builder(key.location()).effect(e ->
-						e.withSpecialEffect(L2LibReg.LEGACY.get(), List.of(unit.get())))))));
+						e.withSpecialEffect(L2LibReg.LEGACY.get(), List.of(unit.get())))))
+		));
 	}
 
 	public void build(BootstrapContext<Enchantment> ctx) {

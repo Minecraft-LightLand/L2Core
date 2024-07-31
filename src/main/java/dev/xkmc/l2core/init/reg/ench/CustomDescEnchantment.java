@@ -6,13 +6,24 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffectUtil;
+import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.List;
 
 public interface CustomDescEnchantment {
 
+	default List<Component> descFull(ItemStack stack, int lv, String key, boolean alt, boolean book, EnchColor color) {
+		return descFull(lv, key, alt, book, color);
+	}
+
+	@ApiStatus.OverrideOnly
 	default List<Component> descFull(int lv, String key, boolean alt, boolean book, EnchColor color) {
 		return List.of(Component.translatable(key).withStyle(color.desc()));
+	}
+
+	default Component title(ItemStack stack, Component comp, boolean alt, boolean book, EnchColor color) {
+		return comp.copy().withStyle(color.base());
 	}
 
 	static MutableComponent perc(double val) {
