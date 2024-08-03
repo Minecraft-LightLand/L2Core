@@ -65,6 +65,10 @@ public record DCReg(DeferredRegister<DataComponentType<?>> reg) {
 		return reg(id, Codec.DOUBLE, ByteBufCodecs.DOUBLE, false);
 	}
 
+	public DCVal<Float> floatVal(String id) {
+		return reg(id, Codec.FLOAT, ByteBufCodecs.FLOAT, false);
+	}
+
 	public DCVal<Long> longVal(String id) {
 		return reg(id, Codec.LONG, ByteBufCodecs.VAR_LONG, false);
 	}

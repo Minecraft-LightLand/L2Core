@@ -38,7 +38,7 @@ public class EnchReg {
 	private final DeferredRegister<DataComponentType<?>> reg;
 	private final DeferredRegister<LegacyEnchantment> legacy;
 	private final L2Registrate pvd;
-
+	private final List<EnchReg> parent = new ArrayList<>();
 	private final List<EnchVal.Impl> list = new ArrayList<>();
 
 	private EnchReg(Reg reg, L2Registrate pvd) {
@@ -103,7 +103,12 @@ public class EnchReg {
 		));
 	}
 
+	public void addParent(EnchReg reg) {
+		parent.add(reg);
+	}
+
 	public void build(BootstrapContext<Enchantment> ctx) {
+		for (var e : parent) e.build(ctx);
 		for (var e : list) ctx.register(e.id(), e.builder().get().build(ctx, e.id().location()));
 	}
 
