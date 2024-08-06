@@ -119,6 +119,9 @@ repositories {
     flatDir {
         dirs 'libs'
     }
+    maven { // Registrate
+        url "https://maven.ithundxr.dev/snapshots"
+    }
     maven {
         url = "https://maven.theillusivec4.top/"
     }
@@ -146,4 +149,11 @@ dependencies {
     implementation "com.tterrag.registrate:Registrate:${registrate_version}"
     implementation "dev.xkmc:l2serial:${l2serial_ver}"
     implementation "vazkii.patchouli:Patchouli:${patchouli_ver}"
+
+
+    runtimeOnly "dev.xkmc:l2damagetracker:3.0.2"
+    runtimeOnly "dev.xkmc:l2menustacker:3.0.9"
+    runtimeOnly "dev.xkmc:l2itemselector:3.0.7"
+    runtimeOnly "dev.xkmc:l2library:3.0.2"
+    runtimeOnly "dev.xkmc:l2complements:3.0.2+3"
 }

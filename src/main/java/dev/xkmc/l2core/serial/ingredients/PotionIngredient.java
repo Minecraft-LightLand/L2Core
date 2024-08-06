@@ -7,12 +7,17 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.common.crafting.ICustomIngredient;
 import net.neoforged.neoforge.common.crafting.IngredientType;
 
 import java.util.stream.Stream;
 
 public record PotionIngredient(Holder<Potion> potion) implements ICustomIngredient {
+
+	public static Ingredient of(Holder<Potion> potion){
+		return new PotionIngredient(potion).toVanilla();
+	}
 
 	@Override
 	public Stream<ItemStack> getItems() {

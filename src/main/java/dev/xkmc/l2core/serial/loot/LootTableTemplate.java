@@ -22,6 +22,7 @@ import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 import java.util.Optional;
 
 @SuppressWarnings("unused")
+@Deprecated
 public class LootTableTemplate {
 
 	public static LootPool.Builder getPool(int roll, int bonus) {

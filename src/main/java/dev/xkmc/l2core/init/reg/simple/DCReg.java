@@ -77,6 +77,10 @@ public record DCReg(DeferredRegister<DataComponentType<?>> reg) {
 		return reg(id, Codec.STRING, ByteBufCodecs.STRING_UTF8, false);
 	}
 
+	public <T> DCVal<T> enumVal(String id, EnumCodec<T> codec) {
+		return reg(id, codec.codec(), codec.stream(), true);
+	}
+
 	public DCVal<ResourceLocation> loc(String id) {
 		return reg(id, ResourceLocation.CODEC, ResourceLocation.STREAM_CODEC, false);
 	}
@@ -91,8 +95,8 @@ public record DCReg(DeferredRegister<DataComponentType<?>> reg) {
 	}
 
 	public DCVal<DCStack> stack(String id) {
-		return reg(id, ItemStack.CODEC.xmap(DCStack::new, DCStack::stack),
-				ItemStack.STREAM_CODEC.map(DCStack::new, DCStack::stack), true);
+		return reg(id, ItemStack.OPTIONAL_CODEC.xmap(DCStack::new, DCStack::stack),
+				ItemStack.OPTIONAL_STREAM_CODEC.map(DCStack::new, DCStack::stack), true);
 	}
 
 	public DCVal<Component> component(String id) {

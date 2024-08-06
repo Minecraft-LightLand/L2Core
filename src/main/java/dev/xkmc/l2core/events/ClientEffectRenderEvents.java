@@ -47,7 +47,7 @@ public class ClientEffectRenderEvents {
 		AbstractClientPlayer player = Proxy.getClientPlayer();
 		if (player != null) {
 			for (var entry : player.getActiveEffectsMap().entrySet()) {
-				if (entry.getKey() instanceof FirstPlayerRenderEffect effect) {
+				if (entry.getValue().getEffect().value() instanceof FirstPlayerRenderEffect effect) {
 					effect.onClientLevelRender(player, entry.getValue());
 				}
 			}
@@ -64,7 +64,9 @@ public class ClientEffectRenderEvents {
 
 		// cache the previous handler
 		for (DelayedEntityRender icon : ICONS) {
-			renderIcon(stack, buffers, icon, event.getPartialTick().getGameTimeDeltaTicks(), camera, renderer.entityRenderDispatcher);
+			renderIcon(stack, buffers, icon,
+					event.getPartialTick().getGameTimeDeltaPartialTick(true),
+					camera, renderer.entityRenderDispatcher);
 		}
 		buffers.endBatch();
 
@@ -115,10 +117,9 @@ public class ClientEffectRenderEvents {
 								   float partial, Camera camera, EntityRenderDispatcher dispatcher) {
 		LivingEntity entity = icon.entity();
 		float f = entity.getBbHeight() / 2;
-
-		double x0 = Mth.lerp(partial, entity.xOld, entity.getX());
-		double y0 = Mth.lerp(partial, entity.yOld, entity.getY());
-		double z0 = Mth.lerp(partial, entity.zOld, entity.getZ());
+		double x0 = Mth.lerp(partial, icon.xo(), entity.getX());
+		double y0 = Mth.lerp(partial, icon.yo(), entity.getY());
+		double z0 = Mth.lerp(partial, icon.zo(), entity.getZ());
 		Vec3 offset = dispatcher.getRenderer(entity).getRenderOffset(entity, partial);
 		Vec3 cam_pos = camera.getPosition();
 		double d2 = x0 - cam_pos.x + offset.x();
@@ -140,17 +141,15 @@ public class ClientEffectRenderEvents {
 		float u1 = icon.tx() + icon.tw();
 		float v1 = icon.ty() + icon.th();
 
-		iconVertex(entry, ivertexbuilder, ix1, iy0, u0, v1);
-		iconVertex(entry, ivertexbuilder, ix0, iy0, u1, v1);
-		iconVertex(entry, ivertexbuilder, ix0, iy1, u1, v0);
-		iconVertex(entry, ivertexbuilder, ix1, iy1, u0, v0);
+		iconVertex(entry, ivertexbuilder, ix0, iy0, u0, v1);
+		iconVertex(entry, ivertexbuilder, ix1, iy0, u1, v1);
+		iconVertex(entry, ivertexbuilder, ix1, iy1, u1, v0);
+		iconVertex(entry, ivertexbuilder, ix0, iy1, u0, v0);
 		pose.popPose();
 	}
 
 	private static void iconVertex(PoseStack.Pose entry, VertexConsumer builder, float x, float y, float u, float v) {
-		builder.addVertex(entry.pose(), x, y, 0)
-				.setUv(u, v)
-				.setNormal(entry, 0.0F, 1.0F, 0.0F);
+		builder.addVertex(entry.pose(), x, y, 0).setUv(u, v);
 	}
 
 	public static RenderType get2DIcon(ResourceLocation rl) {
