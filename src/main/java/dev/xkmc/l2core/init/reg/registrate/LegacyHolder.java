@@ -75,6 +75,11 @@ public interface LegacyHolder<T> extends Holder<T>, Supplier<T> {
 	}
 
 	@Override
+	default Holder<T> getDelegate() {
+		return holder().getDelegate();
+	}
+
+	@Override
 	default boolean canSerializeIn(HolderOwner<T> pOwner) {
 		return holder().canSerializeIn(pOwner);
 	}

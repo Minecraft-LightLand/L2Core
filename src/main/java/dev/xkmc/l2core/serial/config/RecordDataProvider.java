@@ -1,11 +1,13 @@
 package dev.xkmc.l2core.serial.config;
 
 import com.google.gson.JsonElement;
+import com.mojang.serialization.JsonOps;
 import dev.xkmc.l2serial.serialization.codec.JsonCodec;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
+import net.neoforged.neoforge.common.conditions.ICondition;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -37,6 +39,10 @@ public abstract class RecordDataProvider implements DataProvider {
 			this.map.forEach((k, v) -> {
 				JsonElement elem = new JsonCodec(pvd).toJson(v);
 				if (elem != null) {
+					if (v instanceof ConditionalRecord c) {
+						var cond = ICondition.LIST_CODEC.encodeStart(JsonOps.INSTANCE, c.conditions()).getOrThrow();
+						elem.getAsJsonObject().add("neoforge:conditions", cond);
+					}
 					Path path = folder.resolve("data/" + k + ".json");
 					list.add(DataProvider.saveStable(cache, elem, path));
 				}
@@ -47,6 +53,12 @@ public abstract class RecordDataProvider implements DataProvider {
 
 	public String getName() {
 		return this.name;
+	}
+
+	public interface ConditionalRecord {
+
+		List<ICondition> conditions();
+
 	}
 
 }
