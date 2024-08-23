@@ -35,7 +35,9 @@ import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.event.RenderLivingEvent;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @EventBusSubscriber(value = Dist.CLIENT, modid = L2Core.MODID, bus = EventBusSubscriber.Bus.GAME)
 public class ClientEffectRenderEvents {
@@ -62,11 +64,15 @@ public class ClientEffectRenderEvents {
 		Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
 		PoseStack stack = event.getPoseStack();
 
-		// cache the previous handler
-		for (DelayedEntityRender icon : ICONS) {
-			renderIcon(stack, buffers, icon,
-					event.getPartialTick().getGameTimeDeltaPartialTick(true),
-					camera, renderer.entityRenderDispatcher);
+		Map<ResourceLocation, List<DelayedEntityRender>> map = new HashMap<>();
+		for (var e : ICONS) map.computeIfAbsent(e.rl(), k -> new ArrayList<>()).add(e);
+		for (var ent : map.entrySet()) {
+			VertexConsumer vc = buffers.getBuffer(get2DIcon(ent.getKey()));
+			for (var e : ent.getValue()) {
+				renderIcon(stack, vc, e,
+						event.getPartialTick().getGameTimeDeltaPartialTick(true),
+						camera, renderer.entityRenderDispatcher);
+			}
 		}
 		buffers.endBatch();
 
@@ -113,7 +119,7 @@ public class ClientEffectRenderEvents {
 
 	}
 
-	private static void renderIcon(PoseStack pose, MultiBufferSource buffer, DelayedEntityRender icon,
+	private static void renderIcon(PoseStack pose, VertexConsumer vc, DelayedEntityRender icon,
 								   float partial, Camera camera, EntityRenderDispatcher dispatcher) {
 		LivingEntity entity = icon.entity();
 		float f = entity.getBbHeight() / 2;
@@ -130,7 +136,6 @@ public class ClientEffectRenderEvents {
 		pose.translate(d2, d3 + f, d0);
 		pose.mulPose(camera.rotation());
 		PoseStack.Pose entry = pose.last();
-		VertexConsumer ivertexbuilder = buffer.getBuffer(get2DIcon(icon.rl()));
 
 		float ix0 = -0.5f + icon.region().x();
 		float ix1 = ix0 + icon.region().scale();
@@ -141,10 +146,10 @@ public class ClientEffectRenderEvents {
 		float u1 = icon.tx() + icon.tw();
 		float v1 = icon.ty() + icon.th();
 
-		iconVertex(entry, ivertexbuilder, ix0, iy0, u0, v1);
-		iconVertex(entry, ivertexbuilder, ix1, iy0, u1, v1);
-		iconVertex(entry, ivertexbuilder, ix1, iy1, u1, v0);
-		iconVertex(entry, ivertexbuilder, ix0, iy1, u0, v0);
+		iconVertex(entry, vc, ix0, iy0, u0, v1);
+		iconVertex(entry, vc, ix1, iy0, u1, v1);
+		iconVertex(entry, vc, ix1, iy1, u1, v0);
+		iconVertex(entry, vc, ix0, iy1, u0, v0);
 		pose.popPose();
 	}
 

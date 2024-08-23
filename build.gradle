@@ -156,4 +156,6 @@ dependencies {
     runtimeOnly "dev.xkmc:l2itemselector:3.0.7"
     runtimeOnly "dev.xkmc:l2library:3.0.2"
     runtimeOnly "dev.xkmc:l2complements:3.0.2+3"
+
+    runtimeOnly "curse.maven:embeddium-908741:5630163"
 }

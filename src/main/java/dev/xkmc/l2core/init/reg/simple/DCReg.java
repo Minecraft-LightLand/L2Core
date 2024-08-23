@@ -4,6 +4,8 @@ import com.mojang.serialization.Codec;
 import dev.xkmc.l2core.util.DCStack;
 import dev.xkmc.l2serial.serialization.codec.CodecAdaptor;
 import dev.xkmc.l2serial.util.Wrappers;
+import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -79,6 +81,10 @@ public record DCReg(DeferredRegister<DataComponentType<?>> reg) {
 
 	public <T> DCVal<T> enumVal(String id, EnumCodec<T> codec) {
 		return reg(id, codec.codec(), codec.stream(), true);
+	}
+
+	public <T> DCVal<Holder<T>> registry(String id, Registry<T> reg) {
+		return reg(id, reg.holderByNameCodec(), ByteBufCodecs.holderRegistry(reg.key()), false);
 	}
 
 	public DCVal<ResourceLocation> loc(String id) {
