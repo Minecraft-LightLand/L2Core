@@ -14,6 +14,7 @@ import dev.xkmc.l2core.base.effects.api.IconRenderRegion;
 import dev.xkmc.l2core.init.L2Core;
 import dev.xkmc.l2core.init.L2LibReg;
 import dev.xkmc.l2core.util.Proxy;
+import net.minecraft.Util;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
@@ -38,6 +39,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+
+import static net.minecraft.client.renderer.RenderStateShard.POSITION_TEX_SHADER;
 
 @EventBusSubscriber(value = Dist.CLIENT, modid = L2Core.MODID, bus = EventBusSubscriber.Bus.GAME)
 public class ClientEffectRenderEvents {
@@ -56,26 +60,44 @@ public class ClientEffectRenderEvents {
 		}
 	}
 
+	private static final RenderType DUMMY = RenderType.create(
+			"entity_icon_preparation", DefaultVertexFormat.POSITION_TEX,
+			VertexFormat.Mode.QUADS, 256, false, false,
+			RenderType.CompositeState.builder().createCompositeState(false)
+	);
+
+	private static final Function<ResourceLocation, RenderType> ICON_TYPE = Util.memoize(rl -> RenderType.create(
+			"entity_body_icon",
+			DefaultVertexFormat.POSITION_TEX,
+			VertexFormat.Mode.QUADS, 256, false, false,
+			RenderType.CompositeState.builder()
+					.setShaderState(POSITION_TEX_SHADER)
+					.setTextureState(new RenderStateShard.TextureStateShard(rl, false, false))
+					.setTransparencyState(RenderStateShard.ADDITIVE_TRANSPARENCY)
+					.setDepthTestState(RenderStateShard.NO_DEPTH_TEST)
+					.createCompositeState(false)
+	));
+
 	@SubscribeEvent
 	public static void levelRenderLast(RenderLevelStageEvent event) {
 		if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_WEATHER) return;
+
+		DUMMY.setupRenderState();
+		DUMMY.clearRenderState();
+
 		LevelRenderer renderer = event.getLevelRenderer();
 		MultiBufferSource.BufferSource buffers = Minecraft.getInstance().renderBuffers().bufferSource();
 		Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
 		PoseStack stack = event.getPoseStack();
-
+		float pTick = event.getPartialTick().getGameTimeDeltaPartialTick(true);
 		Map<ResourceLocation, List<DelayedEntityRender>> map = new HashMap<>();
 		for (var e : ICONS) map.computeIfAbsent(e.rl(), k -> new ArrayList<>()).add(e);
 		for (var ent : map.entrySet()) {
-			VertexConsumer vc = buffers.getBuffer(get2DIcon(ent.getKey()));
+			VertexConsumer vc = buffers.getBuffer(ICON_TYPE.apply(ent.getKey()));
 			for (var e : ent.getValue()) {
-				renderIcon(stack, vc, e,
-						event.getPartialTick().getGameTimeDeltaPartialTick(true),
-						camera, renderer.entityRenderDispatcher);
+				renderIcon(stack, vc, e, pTick, camera, renderer.entityRenderDispatcher);
 			}
 		}
-		buffers.endBatch();
-
 		ICONS.clear();
 	}
 
@@ -155,20 +177,6 @@ public class ClientEffectRenderEvents {
 
 	private static void iconVertex(PoseStack.Pose entry, VertexConsumer builder, float x, float y, float u, float v) {
 		builder.addVertex(entry.pose(), x, y, 0).setUv(u, v);
-	}
-
-	public static RenderType get2DIcon(ResourceLocation rl) {
-		return RenderType.create(
-				"entity_body_icon",
-				DefaultVertexFormat.POSITION_TEX,
-				VertexFormat.Mode.QUADS, 256, false, true,
-				RenderType.CompositeState.builder()
-						.setShaderState(RenderStateShard.RENDERTYPE_ENTITY_GLINT_SHADER)
-						.setTextureState(new RenderStateShard.TextureStateShard(rl, false, false))
-						.setTransparencyState(RenderStateShard.ADDITIVE_TRANSPARENCY)
-						.setDepthTestState(RenderStateShard.NO_DEPTH_TEST)
-						.createCompositeState(false)
-		);
 	}
 
 	public static void sync(EffectToClient eff) {
