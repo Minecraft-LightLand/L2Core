@@ -7,10 +7,7 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.datafixers.util.Pair;
 import dev.xkmc.l2core.base.effects.ClientEffectCap;
 import dev.xkmc.l2core.base.effects.EffectToClient;
-import dev.xkmc.l2core.base.effects.api.ClientRenderEffect;
-import dev.xkmc.l2core.base.effects.api.DelayedEntityRender;
-import dev.xkmc.l2core.base.effects.api.FirstPlayerRenderEffect;
-import dev.xkmc.l2core.base.effects.api.IconRenderRegion;
+import dev.xkmc.l2core.base.effects.api.*;
 import dev.xkmc.l2core.init.L2Core;
 import dev.xkmc.l2core.init.L2LibReg;
 import dev.xkmc.l2core.util.Proxy;
@@ -18,13 +15,10 @@ import net.minecraft.Util;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
-import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
@@ -46,7 +40,11 @@ import static net.minecraft.client.renderer.RenderStateShard.POSITION_TEX_SHADER
 @EventBusSubscriber(value = Dist.CLIENT, modid = L2Core.MODID, bus = EventBusSubscriber.Bus.GAME)
 public class ClientEffectRenderEvents {
 
-	private static final ArrayList<DelayedEntityRender> ICONS = new ArrayList<>();
+	private static final ArrayList<IDelayedRender> ICONS = new ArrayList<>();
+
+	public static void addIcon(IDelayedRender icon) {
+		ICONS.add(icon);
+	}
 
 	@SubscribeEvent
 	public static void clientTick(ClientTickEvent.Post event) {
@@ -84,18 +82,16 @@ public class ClientEffectRenderEvents {
 
 		DUMMY.setupRenderState();
 		DUMMY.clearRenderState();
-
-		LevelRenderer renderer = event.getLevelRenderer();
 		MultiBufferSource.BufferSource buffers = Minecraft.getInstance().renderBuffers().bufferSource();
 		Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
 		PoseStack stack = event.getPoseStack();
 		float pTick = event.getPartialTick().getGameTimeDeltaPartialTick(true);
-		Map<ResourceLocation, List<DelayedEntityRender>> map = new HashMap<>();
+		Map<ResourceLocation, List<IDelayedRender>> map = new HashMap<>();
 		for (var e : ICONS) map.computeIfAbsent(e.rl(), k -> new ArrayList<>()).add(e);
 		for (var ent : map.entrySet()) {
 			VertexConsumer vc = buffers.getBuffer(ICON_TYPE.apply(ent.getKey()));
 			for (var e : ent.getValue()) {
-				renderIcon(stack, vc, e, pTick, camera, renderer.entityRenderDispatcher);
+				renderIcon(stack, vc, e, pTick, camera);
 			}
 		}
 		ICONS.clear();
@@ -141,21 +137,12 @@ public class ClientEffectRenderEvents {
 
 	}
 
-	private static void renderIcon(PoseStack pose, VertexConsumer vc, DelayedEntityRender icon,
-								   float partial, Camera camera, EntityRenderDispatcher dispatcher) {
-		LivingEntity entity = icon.entity();
-		float f = entity.getBbHeight() / 2;
-		double x0 = Mth.lerp(partial, icon.xo(), entity.getX());
-		double y0 = Mth.lerp(partial, icon.yo(), entity.getY());
-		double z0 = Mth.lerp(partial, icon.zo(), entity.getZ());
-		Vec3 offset = dispatcher.getRenderer(entity).getRenderOffset(entity, partial);
+	private static void renderIcon(PoseStack pose, VertexConsumer vc, IDelayedRender icon,
+								   float partial, Camera camera) {
+		Vec3 pos = icon.pos(partial);
 		Vec3 cam_pos = camera.getPosition();
-		double d2 = x0 - cam_pos.x + offset.x();
-		double d3 = y0 - cam_pos.y + offset.y();
-		double d0 = z0 - cam_pos.z + offset.z();
-
 		pose.pushPose();
-		pose.translate(d2, d3 + f, d0);
+		pose.translate(pos.x() - cam_pos.x, pos.y() - cam_pos.y, pos.z() - cam_pos.z);
 		pose.mulPose(camera.rotation());
 		PoseStack.Pose entry = pose.last();
 

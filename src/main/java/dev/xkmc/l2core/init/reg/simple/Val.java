@@ -1,7 +1,9 @@
 package dev.xkmc.l2core.init.reg.simple;
 
 import com.tterrag.registrate.util.entry.RegistryEntry;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 import java.util.function.Supplier;
 
@@ -11,16 +13,22 @@ public interface Val<T> extends Supplier<T> {
 
 	ResourceLocation id();
 
-	record Registrate<H, T extends H>(RegistryEntry<H, T> entry) implements Val<T> {
+	DeferredHolder<? super T, T> val();
+
+	default ResourceKey<? super T> key() {
+		return val().getKey();
+	}
+
+	record Registrate<H, T extends H>(RegistryEntry<H, T> val) implements Val<T> {
 
 		@Override
 		public T get() {
-			return entry.get();
+			return val.get();
 		}
 
 		@Override
 		public ResourceLocation id() {
-			return entry.getId();
+			return val.getId();
 		}
 
 	}
