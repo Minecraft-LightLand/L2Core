@@ -3,9 +3,10 @@ package dev.xkmc.l2core.init.reg.varitem;
 import com.tterrag.registrate.util.entry.ItemEntry;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ItemLike;
-import org.jetbrains.annotations.Nullable;
 
-public class VarHolder<T extends Item> implements VarEntry<T>, ItemLike {
+import java.util.function.Supplier;
+
+public class VarHolder<T extends Item> implements VarEntry<T>, ItemLike, Supplier<T> {
 
 	private final String str;
 	private final VarBuilder<T> builder;
@@ -23,6 +24,11 @@ public class VarHolder<T extends Item> implements VarEntry<T>, ItemLike {
 	@Override
 	public Item asItem() {
 		return item.asItem();
+	}
+
+	@Override
+	public T get() {
+		return item.get();
 	}
 
 	@Override

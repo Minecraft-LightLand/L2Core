@@ -2,7 +2,6 @@ package dev.xkmc.l2core.init.reg.varitem;
 
 import com.google.gson.*;
 import com.mojang.datafixers.util.Pair;
-import com.tterrag.registrate.util.OneTimeEventReceiver;
 import com.tterrag.registrate.util.entry.ItemEntry;
 import dev.xkmc.l2core.init.L2Core;
 import dev.xkmc.l2core.init.reg.registrate.L2Registrate;
@@ -14,12 +13,10 @@ import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import org.apache.logging.log4j.Level;
 
+import javax.annotation.Nullable;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
@@ -41,7 +38,7 @@ public class VarItemInit<T extends Item> {
 	private final Function<ResourceLocation, T> func;
 	private final VarBuilder<T> builder;
 	private final Map<String, VarEntry<T>> defaults = new LinkedHashMap<>();
-	private final List<String> registered = new ArrayList<>();
+	private final Set<String> registered = new LinkedHashSet<>();
 	private final Map<String, ItemEntry<T>> results = new ConcurrentHashMap<>();
 
 	private VarItemInit(L2Registrate reg, ResourceLocation id, Function<ResourceLocation, T> func, VarBuilder<T> builder) {
@@ -49,7 +46,7 @@ public class VarItemInit<T extends Item> {
 		this.id = id;
 		this.func = func;
 		this.builder = builder;
-		reg.getModEventBus().addListener( EventPriority.HIGH, RegisterEvent.class, this::init);
+		reg.getModEventBus().addListener(EventPriority.HIGH, RegisterEvent.class, this::init);
 	}
 
 	public synchronized void add(List<String> defaults) {
@@ -59,6 +56,11 @@ public class VarItemInit<T extends Item> {
 	public synchronized VarHolder<T> add(VarHolder<T> e) {
 		defaults.put(e.id(), e);
 		return e;
+	}
+
+	@Nullable
+	public ItemEntry<T> get(String str) {
+		return results.get(str);
 	}
 
 	private synchronized void init(RegisterEvent event) {
@@ -119,17 +121,24 @@ public class VarItemInit<T extends Item> {
 
 	private Pair<Boolean, List<String>> parseFile(JsonElement elem) {
 		if (!elem.isJsonArray()) return Pair.of(true, List.of());
-		List<String> ans = new ArrayList<>();
+		Set<String> ans = new LinkedHashSet<>(defaults.keySet());
+		Set<String> checker = new HashSet<>();
 		boolean err = false;
 		for (var e : elem.getAsJsonArray()) {
 			var rl = e.getAsString();
-			if (ResourceLocation.isValidPath(rl)) ans.add(rl);
-			else {
+			if (ResourceLocation.isValidPath(rl)) {
+				ans.add(rl);
+				checker.add(rl);
+			} else {
 				L2Core.LOGGER.error("Item ID {} for varitem type {} is invalid. Skipped", rl, id);
 				err = true;
 			}
 		}
-		return Pair.of(err, ans);
+		if (checker.size() != ans.size()) {
+			L2Core.LOGGER.error("Found missing default items for varitem type {}. Filling", id);
+			err = true;
+		}
+		return Pair.of(err, new ArrayList<>(ans));
 	}
 
 	private record SimpleVarEntry<T extends Item>(String id) implements VarEntry<T> {
