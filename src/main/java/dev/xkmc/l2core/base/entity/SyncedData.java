@@ -23,11 +23,13 @@ public class SyncedData {
 
 	public static final Serializer<Integer> INT;
 	public static final Serializer<BlockPos> BLOCK_POS;
+	public static final Serializer<String> STRING;
 	public static final Serializer<Optional<UUID>> UUID;
 
 	static {
 		INT = new Simple<>(EntityDataSerializers.INT, Codec.INT);
 		BLOCK_POS = new Simple<>(EntityDataSerializers.BLOCK_POS, BlockPos.CODEC);
+		STRING = new Simple<>(EntityDataSerializers.STRING, Codec.STRING);
 		UUID = new Opt<>(EntityDataSerializers.OPTIONAL_UUID, UUIDUtil.CODEC);
 	}
 
@@ -35,14 +37,25 @@ public class SyncedData {
 
 	private final List<Data<?>> list = new ArrayList<>();
 
+	@Nullable
+	private final SyncedData parent;
+
 	public SyncedData(Definer cls) {
 		this.cls = cls;
+		parent = null;
+	}
+
+	public SyncedData(Definer cls, SyncedData parent) {
+		this.cls = cls;
+		this.parent = parent;
 	}
 
 	public void register(SynchedEntityData.Builder data) {
 		for (Data<?> entry : list) {
 			entry.register(data);
 		}
+		if (parent != null)
+			parent.register(data);
 	}
 
 	public <T> EntityDataAccessor<T> define(Serializer<T> ser, T init, @Nullable String name) {
@@ -51,16 +64,20 @@ public class SyncedData {
 		return data.data;
 	}
 
-	public void write(RegistryAccess pvd, CompoundTag tag, SynchedEntityData entityData) {
+	public void write(RegistryAccess pvd, CompoundTag tag, SynchedEntityData data) {
 		for (Data<?> entry : list) {
-			entry.write(pvd, tag, entityData);
+			entry.write(pvd, tag, data);
 		}
+		if (parent != null)
+			parent.write(pvd, tag, data);
 	}
 
-	public void read(RegistryAccess pvd, CompoundTag tag, SynchedEntityData entityData) {
+	public void read(RegistryAccess pvd, CompoundTag tag, SynchedEntityData data) {
 		for (Data<?> entry : list) {
-			entry.read(pvd, tag, entityData);
+			entry.read(pvd, tag, data);
 		}
+		if (parent != null)
+			parent.read(pvd, tag, data);
 	}
 
 	private class Data<T> {
