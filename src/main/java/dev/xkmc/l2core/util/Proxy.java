@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.loading.FMLEnvironment;
@@ -11,16 +12,30 @@ import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
-import java.util.function.BiConsumer;
 
 public class Proxy {
 
-	@Deprecated
+	@Nullable
+	public static Player getPlayer() {
+		if (FMLEnvironment.dist == Dist.CLIENT) {
+			return Minecraft.getInstance().player;
+		}
+		return null;
+	}
+
+	@Nullable
 	public static RegistryAccess getRegistryAccess() {
 		if (FMLEnvironment.dist == Dist.CLIENT) {
-			return Minecraft.getInstance().level.registryAccess();
+			var level = Minecraft.getInstance().level;
+			if (level != null) {
+				return Minecraft.getInstance().level.registryAccess();
+			}
 		}
-		return ServerLifecycleHooks.getCurrentServer().registryAccess();
+		var server = ServerLifecycleHooks.getCurrentServer();
+		if (server != null) {
+			return server.registryAccess();
+		}
+		return null;
 	}
 
 	@Nullable
@@ -28,7 +43,11 @@ public class Proxy {
 		if (FMLEnvironment.dist == Dist.CLIENT) {
 			return Minecraft.getInstance().level;
 		}
-		return ServerLifecycleHooks.getCurrentServer().overworld();
+		var server = ServerLifecycleHooks.getCurrentServer();
+		if (server != null) {
+			return server.overworld();
+		}
+		return null;
 	}
 
 	public static Optional<MinecraftServer> getServer() {

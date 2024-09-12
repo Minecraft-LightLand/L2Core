@@ -101,6 +101,10 @@ public class L2Registrate extends AbstractRegistrate<L2Registrate> {
 	}
 
 	public <T extends Potion> SimpleEntry<Potion> potion(String name, NonNullSupplier<T> sup) {
+		return potion(name, RegistrateLangProvider.toEnglishName(name), sup);
+	}
+
+	public <T extends Potion> SimpleEntry<Potion> potion(String name, String desc, NonNullSupplier<T> sup) {
 		RegistryEntry<Potion, T> ans = entry(name, (cb) -> new NoConfigBuilder<>(this, this, name, cb,
 				Registries.POTION, sup)).register();
 		if (doDataGen.get()) {
@@ -111,7 +115,7 @@ public class L2Registrate extends AbstractRegistrate<L2Registrate> {
 				String str = item.getDescriptionId() + ".effect." + name;
 				String pref_name = RegistrateLangProvider.toEnglishName(prefs[prefs.length - 1]);
 				if (item == Items.TIPPED_ARROW) pref_name = "Arrow";
-				addRawLang(str, pref_name + " of " + RegistrateLangProvider.toEnglishName(name));
+				addRawLang(str, pref_name + " of " + desc);
 			}
 		}
 		return new SimpleEntry<>(ans);
