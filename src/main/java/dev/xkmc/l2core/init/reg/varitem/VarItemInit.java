@@ -5,7 +5,10 @@ import com.mojang.datafixers.util.Pair;
 import com.tterrag.registrate.util.entry.ItemEntry;
 import dev.xkmc.l2core.init.L2Core;
 import dev.xkmc.l2core.init.reg.registrate.L2Registrate;
+import dev.xkmc.l2core.init.reg.syncreg.RegistryConfigHandler;
+import dev.xkmc.l2core.init.reg.syncreg.RegistryConfigHandlers;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.EventPriority;
@@ -14,14 +17,16 @@ import net.neoforged.neoforge.registries.RegisterEvent;
 import org.apache.logging.log4j.Level;
 
 import javax.annotation.Nullable;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
 
-public class VarItemInit<T extends Item> {
+public class VarItemInit<T extends Item> implements RegistryConfigHandler {
 
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().setLenient().create();
 	private static final ConcurrentMap<ResourceLocation, VarItemInit<?>> VAR_ITEM_TYPE = new ConcurrentHashMap<>();
@@ -41,12 +46,50 @@ public class VarItemInit<T extends Item> {
 	private final Set<String> registered = new LinkedHashSet<>();
 	private final Map<String, ItemEntry<T>> results = new ConcurrentHashMap<>();
 
+	private JsonElement json;
+
 	private VarItemInit(L2Registrate reg, ResourceLocation id, Function<ResourceLocation, T> func, VarBuilder<T> builder) {
 		this.reg = reg;
 		this.id = id;
 		this.func = func;
 		this.builder = builder;
 		reg.getModEventBus().addListener(EventPriority.HIGH, RegisterEvent.class, this::init);
+		RegistryConfigHandlers.MAP.put(id, this);
+	}
+
+	@Override
+	public JsonElement serializeConfig() {
+		return json;
+	}
+
+	@Override
+	public @Nullable Component verifyConfig(JsonElement value) {
+		var a = parseFile(json);
+		var b = parseFile(value);
+		if (a.getFirst()) return Component.literal("Error in local config");
+		if (b.getFirst()) return Component.literal("Error in server config");
+		var sa = new TreeSet<>(a.getSecond());
+		var sb = new TreeSet<>(b.getSecond());
+		var sd = new TreeSet<>(sa);
+		sd.retainAll(sb);
+		int da = sa.size() - sd.size();
+		int db = sb.size() - sd.size();
+		if (!sa.equals(sb))
+			return Component.literal("%d removal, %d addition".formatted(da, db));//TODO
+		return null;
+	}
+
+	@Override
+	public void applyConfig(JsonElement value) {
+		try {
+			var file = getFile();
+			var writer = new FileWriter(file);
+			writer.write(GSON.toJson(value));
+			writer.close();
+		} catch (Exception e) {
+			L2Core.LOGGER.error("Failed to save config file for varitem type {}", id);
+			L2Core.LOGGER.throwing(Level.ERROR, e);
+		}
 	}
 
 	public synchronized void add(List<String> defaults) {
@@ -83,21 +126,11 @@ public class VarItemInit<T extends Item> {
 	}
 
 	private void load() {
-		String path = PATH + "/" + id.getNamespace() + "-" + id.getPath() + ".json";
-		var file = FMLPaths.CONFIGDIR.get().resolve(path).toFile();
 		registered.clear();
 		try {
-			var parent = file.getParentFile();
-			if (parent.exists()) {
-				if (!parent.isDirectory()) {
-					if (parent.delete()) {
-						parent.mkdirs();
-					}
-				}
-			} else parent.mkdirs();
-			if (!file.exists()) file.createNewFile();
+			var file = getFile();
 			var reader = new FileReader(file);
-			var json = JsonParser.parseReader(reader);
+			json = JsonParser.parseReader(reader);
 			reader.close();
 			var result = parseFile(json);
 			List<String> ans = result.getSecond();
@@ -108,6 +141,7 @@ public class VarItemInit<T extends Item> {
 				for (var e : ans) {
 					out.add(e);
 				}
+				json = out;
 				writer.write(GSON.toJson(out));
 				writer.close();
 			}
@@ -117,6 +151,21 @@ public class VarItemInit<T extends Item> {
 			L2Core.LOGGER.throwing(Level.ERROR, e);
 			registered.addAll(defaults.keySet());
 		}
+	}
+
+	private File getFile() throws IOException {
+		String path = PATH + "/" + id.getNamespace() + "-" + id.getPath() + ".json";
+		var file = FMLPaths.CONFIGDIR.get().resolve(path).toFile();
+		var parent = file.getParentFile();
+		if (parent.exists()) {
+			if (!parent.isDirectory()) {
+				if (parent.delete()) {
+					parent.mkdirs();
+				}
+			}
+		} else parent.mkdirs();
+		if (!file.exists()) file.createNewFile();
+		return file;
 	}
 
 	private Pair<Boolean, List<String>> parseFile(JsonElement elem) {
