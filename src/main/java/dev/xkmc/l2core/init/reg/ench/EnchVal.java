@@ -35,16 +35,20 @@ public interface EnchVal {
 	@DataGenOnly
 	Holder<Enchantment> datagenDirect(RegistrateProvider pvd);
 
+	default Optional<Holder<Enchantment>> safeHolder() {
+		return Optional.ofNullable(CommonHooks.resolveLookup(Registries.ENCHANTMENT)).flatMap(e -> e.get(id()));
+	}
+
 	default Holder<Enchantment> holder() {
-		return Optional.ofNullable(CommonHooks.resolveLookup(Registries.ENCHANTMENT)).orElseThrow().getOrThrow(id());
+		return safeHolder().orElseThrow();
 	}
 
 	default int getLv(ItemStack stack) {
-		return stack.getEnchantmentLevel(holder());
+		return safeHolder().map(stack::getEnchantmentLevel).orElse(0);
 	}
 
 	default int getLvIntrinsic(ItemStack stack) {
-		return stack.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY).getLevel(holder());
+		return safeHolder().map(e -> stack.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY).getLevel(e)).orElse(0);
 	}
 
 	interface Impl extends EnchVal {
