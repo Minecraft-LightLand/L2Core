@@ -4,12 +4,20 @@ import dev.xkmc.l2core.base.effects.EffectToClient;
 import dev.xkmc.l2core.capability.conditionals.TokenToClient;
 import dev.xkmc.l2core.capability.player.PlayerCapToClient;
 import dev.xkmc.l2core.init.reg.registrate.L2Registrate;
+import dev.xkmc.l2core.init.reg.syncreg.RegistryConfigAckPayload;
+import dev.xkmc.l2core.init.reg.syncreg.RegistryConfigDataPayload;
+import dev.xkmc.l2core.init.reg.syncreg.SyncRegistryConfigClientHandler;
+import dev.xkmc.l2core.init.reg.syncreg.SyncRegistryConfigTask;
 import dev.xkmc.l2core.serial.config.SyncPacket;
 import dev.xkmc.l2serial.network.PacketHandler;
 import dev.xkmc.l2serial.serialization.custom_handler.Handlers;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -17,6 +25,7 @@ import static dev.xkmc.l2serial.network.PacketHandler.NetDir.PLAY_TO_CLIENT;
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(L2Core.MODID)
+@EventBusSubscriber(modid = L2Core.MODID, bus = EventBusSubscriber.Bus.MOD)
 public class L2Core {
 
 	public static final String MODID = "l2core";
@@ -40,6 +49,21 @@ public class L2Core {
 
 	public static ResourceLocation loc(String id) {
 		return ResourceLocation.fromNamespaceAndPath(MODID, id);
+	}
+
+	@SubscribeEvent
+	private static void register(final RegisterPayloadHandlersEvent event) {
+		final PayloadRegistrar reg = event.registrar("1").optional();
+		reg.configurationToClient(
+				RegistryConfigDataPayload.TYPE,
+				RegistryConfigDataPayload.STREAM_CODEC,
+				SyncRegistryConfigTask::handleData
+		);
+		reg.configurationToServer(
+				RegistryConfigAckPayload.TYPE,
+				RegistryConfigAckPayload.STREAM_CODEC,
+				SyncRegistryConfigTask::handleAck
+		);
 	}
 
 }
