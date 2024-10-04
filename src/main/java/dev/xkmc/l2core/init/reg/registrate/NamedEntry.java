@@ -1,6 +1,7 @@
 package dev.xkmc.l2core.init.reg.registrate;
 
 import dev.xkmc.l2serial.util.Wrappers;
+import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -44,6 +45,10 @@ public class NamedEntry<T extends NamedEntry<T>> {
 
 	public T getThis() {
 		return Wrappers.cast(this);
+	}
+
+	public Holder<T> holder() {
+		return registry.get().wrapAsHolder(getThis());
 	}
 
 }

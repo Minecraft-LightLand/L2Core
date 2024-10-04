@@ -61,7 +61,7 @@ public class ClientEventHandler {
 		for (int i = 0; i < n; i++) {
 			Component comp = list.get(i);
 			Component lit;
-			if (comp.getContents() instanceof PlainTextContents.LiteralContents txt && comp.getSiblings().size() == 1) {
+			if (comp.getContents() instanceof PlainTextContents txt && !comp.getSiblings().isEmpty()) {
 				comp = comp.getSiblings().getFirst();
 				lit = Component.literal(txt.text());
 			} else lit = Component.empty();

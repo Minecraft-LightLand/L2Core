@@ -7,6 +7,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
@@ -19,21 +20,6 @@ public class Proxy {
 	public static Player getPlayer() {
 		if (FMLEnvironment.dist == Dist.CLIENT) {
 			return Minecraft.getInstance().player;
-		}
-		return null;
-	}
-
-	@Nullable
-	public static RegistryAccess getRegistryAccess() {
-		if (FMLEnvironment.dist == Dist.CLIENT) {
-			var level = Minecraft.getInstance().level;
-			if (level != null) {
-				return Minecraft.getInstance().level.registryAccess();
-			}
-		}
-		var server = ServerLifecycleHooks.getCurrentServer();
-		if (server != null) {
-			return server.registryAccess();
 		}
 		return null;
 	}
