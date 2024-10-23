@@ -76,6 +76,10 @@ public class ClientEffectRenderEvents {
 					.createCompositeState(false)
 	));
 
+	public static RenderType get2DIcon(ResourceLocation id) {
+		return ICON_TYPE.apply(id);
+	}
+
 	@SubscribeEvent
 	public static void levelRenderLast(RenderLevelStageEvent event) {
 		if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_WEATHER) return;

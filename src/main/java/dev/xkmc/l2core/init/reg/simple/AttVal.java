@@ -7,12 +7,13 @@ import dev.xkmc.l2core.capability.player.PlayerCapabilityHolder;
 import dev.xkmc.l2core.capability.player.PlayerCapabilityTemplate;
 import net.neoforged.neoforge.attachment.AttachmentHolder;
 import net.neoforged.neoforge.attachment.AttachmentType;
+import net.neoforged.neoforge.attachment.IAttachmentHolder;
 
 public interface AttVal<T, H extends AttachmentDef<T>> extends Val<AttachmentType<T>> {
 
 	H type();
 
-	interface CapVal<E extends AttachmentHolder, T extends GeneralCapabilityTemplate<E, T>>
+	interface CapVal<E extends IAttachmentHolder, T extends GeneralCapabilityTemplate<E, T>>
 			extends AttVal<T, GeneralCapabilityHolder<E, T>> {
 
 	}

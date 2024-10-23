@@ -8,6 +8,7 @@ import dev.xkmc.l2core.capability.player.PlayerCapabilityTemplate;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.attachment.AttachmentHolder;
 import net.neoforged.neoforge.attachment.AttachmentType;
+import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
@@ -32,7 +33,7 @@ public record AttReg(DeferredRegister<AttachmentType<?>> att) {
 		return reg(id, type);
 	}
 
-	public <E extends GeneralCapabilityTemplate<H, E>, H extends AttachmentHolder> AttVal.CapVal<H, E>
+	public <E extends GeneralCapabilityTemplate<H, E>, H extends IAttachmentHolder> AttVal.CapVal<H, E>
 	entity(String id, Class<E> holder_class, Supplier<E> sup, Class<H> entity_class, Predicate<H> pred) {
 		ResourceLocation rl = ResourceLocation.fromNamespaceAndPath(att.getNamespace(), id);
 		var type = new GeneralCapabilityHolder<>(rl, holder_class, sup, entity_class, pred);
@@ -62,7 +63,7 @@ public record AttReg(DeferredRegister<AttachmentType<?>> att) {
 
 	}
 
-	private record CapValImpl<E extends AttachmentHolder, T extends GeneralCapabilityTemplate<E, T>>(
+	private record CapValImpl<E extends IAttachmentHolder, T extends GeneralCapabilityTemplate<E, T>>(
 			DeferredHolder<AttachmentType<?>, AttachmentType<T>> val, GeneralCapabilityHolder<E, T> type
 	) implements AttVal.CapVal<E, T> {
 

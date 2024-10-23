@@ -2,6 +2,8 @@ package dev.xkmc.l2core.init;
 
 import dev.xkmc.l2core.base.effects.ClientEffectCap;
 import dev.xkmc.l2core.base.menu.base.MenuLayoutConfig;
+import dev.xkmc.l2core.base.worldgen.ConfigChancePlacement;
+import dev.xkmc.l2core.base.worldgen.ConfigRarityFilter;
 import dev.xkmc.l2core.capability.conditionals.ConditionalData;
 import dev.xkmc.l2core.capability.conditionals.PlayerFlagData;
 import dev.xkmc.l2core.capability.player.PlayerCapabilityNetworkHandler;
@@ -21,6 +23,7 @@ import dev.xkmc.l2core.serial.loot.PlayerFlagCondition;
 import dev.xkmc.l2serial.serialization.codec.MapCodecAdaptor;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.levelgen.placement.PlacementModifierType;
 import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
@@ -72,6 +75,10 @@ public class L2LibReg {
 	private static final EnchReg ENCH_REG = EnchReg.of(REG, L2Core.REGISTRATE);
 	public static final EECVal.Special<EnchColor> COLOR = ENCH_REG.special("color", EnchColor.CODEC);
 	public static final EECVal.Special<LegacyEnchantment> LEGACY = ENCH_REG.special("legacy", ENCH.reg().byNameCodec());
+
+	public static final SR<PlacementModifierType<?>> PM = SR.of(REG, BuiltInRegistries.PLACEMENT_MODIFIER_TYPE);
+	public static final Val<PlacementModifierType<ConfigRarityFilter>> PM_RARITY = PM.reg("rarity", () -> () -> ConfigRarityFilter.CODEC);
+	public static final Val<PlacementModifierType<ConfigChancePlacement>> PM_CHANCE = PM.reg("chance", () -> () -> ConfigChancePlacement.CODEC);
 
 	public static void register() {
 	}
