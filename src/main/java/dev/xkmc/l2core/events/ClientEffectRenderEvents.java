@@ -127,6 +127,10 @@ public class ClientEffectRenderEvents {
 			}
 		}
 
+		if (entity == Minecraft.getInstance().getCameraEntity()) {
+			return;
+		}
+
 		int n = index;
 		int w = (int) Math.ceil(Math.sqrt(n));
 		int h = (int) Math.ceil(n * 1d / w);

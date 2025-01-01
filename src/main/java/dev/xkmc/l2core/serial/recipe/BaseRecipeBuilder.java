@@ -63,7 +63,7 @@ public class BaseRecipeBuilder<
 				.rewards(AdvancementRewards.Builder.recipe(id))
 				.requirements(AdvancementRequirements.Strategy.OR);
 		this.criteria.forEach(builder::addCriterion);
-		id = ResourceLocation.fromNamespaceAndPath(id.getNamespace(), "recipes/" +
+		id = ResourceLocation.fromNamespaceAndPath(id.getNamespace(),
 				BuiltInRegistries.RECIPE_SERIALIZER.getKey(type).getPath() + "/" + id.getPath());
 		pvd.accept(id, recipe, builder.build(id));
 	}

@@ -3,22 +3,28 @@ package dev.xkmc.l2core.base.effects;
 import dev.xkmc.l2core.base.effects.api.ForceEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 
 import javax.annotation.Nullable;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.function.Predicate;
 
 public class EffectUtil {
+
+	private static final Set<EntityType<?>> INVALID = new HashSet<>();
 
 	/**
 	 * force add effect, make hard not override
 	 * for icon use only, such as Arcane Mark on Wither and Ender Dragon
 	 */
-	private static void forceAddEffect(LivingEntity e, MobEffectInstance ins, @Nullable Entity source) {
+	private synchronized static void forceAddEffect(LivingEntity e, MobEffectInstance ins, @Nullable Entity source) {
+		if (INVALID.contains(e.getType())) return;
 		MobEffectInstance old = e.activeEffects.get(ins.getEffect());
 		var event = new ForceAddEffectEvent(e, ins);
 		NeoForge.EVENT_BUS.post(event);
@@ -27,7 +33,12 @@ public class EffectUtil {
 		}
 		NeoForge.EVENT_BUS.post(new MobEffectEvent.Added(e, old, ins, source));
 		if (old == null) {
-			e.activeEffects.put(ins.getEffect(), ins);
+			try {
+				e.activeEffects.put(ins.getEffect(), ins);
+			} catch (Exception ignored) {
+				INVALID.add(e.getType());
+				return;
+			}
 			e.onEffectAdded(ins, source);
 			ins.onEffectAdded(e);
 		} else if (old.update(ins)) {

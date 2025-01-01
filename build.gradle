@@ -147,22 +147,22 @@ dependencies {
     implementation "mezz.jei:jei-${jei_minecraft_version}:${jei_version}"
     implementation "com.tterrag.registrate:Registrate:${registrate_version}"
     implementation "dev.xkmc:l2serial:${l2serial_ver}"
-    implementation "vazkii.patchouli:Patchouli:${patchouli_ver}"
+    compileOnly "vazkii.patchouli:Patchouli:${patchouli_ver}"
 
 
-    runtimeOnly "dev.xkmc:l2damagetracker:3.0.3+2"
-    runtimeOnly "dev.xkmc:l2menustacker:3.0.9"
-    runtimeOnly "dev.xkmc:l2itemselector:3.0.8"
-    runtimeOnly "dev.xkmc:l2library:3.0.2+4"
-    runtimeOnly "dev.xkmc:l2complements:3.0.2+7"
-    runtimeOnly "dev.xkmc:l2archery:3.0.0+8"
+    //runtimeOnly "dev.xkmc:l2damagetracker:3.0.3+2"
+    //runtimeOnly "dev.xkmc:l2menustacker:3.0.9"
+    //runtimeOnly "dev.xkmc:l2itemselector:3.0.8"
+    //runtimeOnly "dev.xkmc:l2library:3.0.2+4"
+    //runtimeOnly "dev.xkmc:l2complements:3.0.2+7"
+    //runtimeOnly "dev.xkmc:l2archery:3.0.0+8"
 
-    runtimeOnly "curse.maven:embeddium-908741:5630163"
-    runtimeOnly "curse.maven:farmers-delight-398521:5566383"
-    runtimeOnly "dev.xkmc:cuisinedelight:1.2.2"
+    //runtimeOnly "curse.maven:embeddium-908741:5630163"
+    //runtimeOnly "curse.maven:farmers-delight-398521:5566383"
+    //runtimeOnly "dev.xkmc:cuisinedelight:1.2.2"
 
-    implementation "curse.maven:enchantment-descriptions-250419:5760047"
-    implementation "curse.maven:bookshelf-228525:5757624"
-    implementation "curse.maven:prickle-1023259:5757615"
+    //implementation "curse.maven:enchantment-descriptions-250419:5760047"
+    //implementation "curse.maven:bookshelf-228525:5757624"
+    //implementation "curse.maven:prickle-1023259:5757615"
 
 }
