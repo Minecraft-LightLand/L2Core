@@ -1,13 +1,12 @@
 package dev.xkmc.l2core.util;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
@@ -36,6 +35,7 @@ public class Proxy {
 		return null;
 	}
 
+	@Deprecated
 	public static Optional<MinecraftServer> getServer() {
 		return Optional.ofNullable(ServerLifecycleHooks.getCurrentServer());
 	}
@@ -45,4 +45,7 @@ public class Proxy {
 		return Minecraft.getInstance().player;
 	}
 
+	static boolean isOnClient() {
+		return getServer().isEmpty() || RenderSystem.isOnRenderThread();
+	}
 }

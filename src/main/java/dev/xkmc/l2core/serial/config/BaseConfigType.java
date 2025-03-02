@@ -12,6 +12,7 @@ public class BaseConfigType<T extends BaseConfig> {
 	public final PacketHandlerWithConfig parent;
 
 	final Map<ResourceLocation, T> configs = new HashMap<>();
+	final Map<ResourceLocation, T> clientConfigs = new HashMap<>();
 
 	protected BaseConfigType(PacketHandlerWithConfig parent, String id, Class<T> cls) {
 		this.parent = parent;
@@ -24,6 +25,13 @@ public class BaseConfigType<T extends BaseConfig> {
 	}
 
 	public void afterReload() {
+	}
+
+	public void clientBeforeReload() {
+		clientConfigs.clear();
+	}
+
+	public void clientAfterReload() {
 	}
 
 }
