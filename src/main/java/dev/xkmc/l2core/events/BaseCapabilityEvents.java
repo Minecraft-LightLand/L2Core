@@ -6,6 +6,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
@@ -25,6 +26,13 @@ public class BaseCapabilityEvents {
 		for (PlayerCapabilityHolder<?> holder : PlayerCapabilityHolder.INTERNAL_MAP.values()) {
 			ServerPlayer e = (ServerPlayer) event.getEntity();
 			holder.getOrCreate(e).onClone(e, event.isWasDeath());
+		}
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOW)
+	public static void onPlayerJoinLevel(EntityJoinLevelEvent event) {
+		if (!(event.getEntity() instanceof ServerPlayer e)) return;
+		for (PlayerCapabilityHolder<?> holder : PlayerCapabilityHolder.INTERNAL_MAP.values()) {
 			holder.network.toClient(e);
 			holder.network.toTracking(e);
 		}

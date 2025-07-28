@@ -10,6 +10,7 @@ public class L2CoreConfig {
 
 		public final ModConfigSpec.IntValue overlayZVal;
 		public final ModConfigSpec.EnumValue<ClientEventHandler.EnchDesc> addEnchantmentDescription;
+		public final ModConfigSpec.BooleanValue renderOverlayIcons;
 
 		Client(Builder builder) {
 			markL2();
@@ -17,6 +18,8 @@ public class L2CoreConfig {
 					.defineInRange("overlayZVal", 250, -1000000, 1000000);
 			addEnchantmentDescription = builder.text("Add Enchantment Descriptions")
 					.defineEnum("addEnchantmentDescription", ClientEventHandler.EnchDesc.ALWAYS);
+			renderOverlayIcons = builder.text("Render overlay icons on entities")
+					.define("renderOverlayIcons", true);
 		}
 
 	}

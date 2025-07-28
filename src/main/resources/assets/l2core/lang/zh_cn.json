@@ -6,5 +6,7 @@
   "l2core.configuration.overlayZVal.tooltip": "默认值：250",
   "l2core.configuration.section.l2configs.l2core.client.toml": "莱特兰核心 - 客户端配置",
   "l2core.configuration.section.l2configs.l2core.client.toml.title": "莱特兰核心 - 客户端配置",
-  "l2core.configuration.title": "莱特兰核心 - 配置"
+  "l2core.configuration.title": "莱特兰核心 - 配置",
+  "l2core.configuration.renderOverlayIcons": "实体图标显示",
+  "l2core.configuration.renderOverlayIcons.tooltip": ""
 }

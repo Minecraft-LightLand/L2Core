@@ -14,6 +14,7 @@ import dev.xkmc.l2core.init.L2Core;
 import dev.xkmc.l2core.init.reg.simple.Val;
 import dev.xkmc.l2core.util.ConfigInit;
 import dev.xkmc.l2serial.serialization.custom_handler.CodecHandler;
+import dev.xkmc.l2serial.serialization.custom_handler.Handlers;
 import dev.xkmc.l2serial.util.ModContainerHack;
 import dev.xkmc.l2serial.util.Wrappers;
 import net.minecraft.client.particle.ParticleEngine;
@@ -21,7 +22,6 @@ import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -146,6 +146,7 @@ public class L2Registrate extends AbstractRegistrate<L2Registrate> {
 		cons.accept(ans);
 		var reg = ans.create();
 		new CodecHandler<>(Wrappers.cast(cls), reg.byNameCodec(), ByteBufCodecs.fromCodecWithRegistries(reg.byNameCodec()));
+		Handlers.registerReg(Wrappers.cast(cls), key);
 		OneTimeEventReceiver.addModListener(this, NewRegistryEvent.class, (e) -> e.register(reg));
 		return new RegistryInstance<>(reg, key);
 	}
@@ -245,13 +246,6 @@ public class L2Registrate extends AbstractRegistrate<L2Registrate> {
 				} else {
 					before = e.id;
 				}
-			}
-			for (var e : BuiltInRegistries.CREATIVE_MODE_TAB.entrySet()) {
-				var id = e.getKey().location();
-				if (known(id) || known(e.getValue())) {
-					continue;
-				}
-				b.withTabsAfter(id);
 			}
 		}
 
