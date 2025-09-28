@@ -16,7 +16,7 @@ public class L2CoreConfig {
 			markL2();
 			overlayZVal = builder.text("The height of item character overlay")
 					.defineInRange("overlayZVal", 250, -1000000, 1000000);
-			addEnchantmentDescription = builder.text("Add Enchantment Descriptions")
+			addEnchantmentDescription = builder.text("Show Enchantment Descriptions when there are enchantments with custom parametric descriptions")
 					.defineEnum("addEnchantmentDescription", ClientEventHandler.EnchDesc.ALWAYS);
 			renderOverlayIcons = builder.text("Render overlay icons on entities")
 					.define("renderOverlayIcons", true);

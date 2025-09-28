@@ -1,5 +1,5 @@
 {
-  "l2core.configuration.addEnchantmentDescription": "Add Enchantment Descriptions",
+  "l2core.configuration.addEnchantmentDescription": "Show Enchantment Descriptions when there are enchantments with custom parametric descriptions",
   "l2core.configuration.addEnchantmentDescription.tooltip": "Allowed Values: DISABLE, SHIFT_ONLY, ALWAYS",
   "l2core.configuration.overlayZVal": "The height of item character overlay",
   "l2core.configuration.overlayZVal.tooltip": " Default: 250\n Range: -1000000 ~ 1000000",
