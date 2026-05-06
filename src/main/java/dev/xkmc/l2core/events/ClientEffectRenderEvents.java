@@ -18,7 +18,7 @@ import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
@@ -64,7 +64,7 @@ public class ClientEffectRenderEvents {
 			RenderType.CompositeState.builder().createCompositeState(false)
 	);
 
-	private static final Function<ResourceLocation, RenderType> ICON_TYPE = Util.memoize(rl -> RenderType.create(
+	private static final Function<Identifier, RenderType> ICON_TYPE = Util.memoize(rl -> RenderType.create(
 			"entity_body_icon",
 			DefaultVertexFormat.POSITION_TEX,
 			VertexFormat.Mode.QUADS, 256, false, false,
@@ -86,7 +86,7 @@ public class ClientEffectRenderEvents {
 		Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
 		PoseStack stack = event.getPoseStack();
 		float pTick = event.getPartialTick().getGameTimeDeltaPartialTick(true);
-		Map<ResourceLocation, List<IDelayedRender>> map = new HashMap<>();
+		Map<Identifier, List<IDelayedRender>> map = new HashMap<>();
 		for (var e : ICONS) map.computeIfAbsent(e.rl(), k -> new ArrayList<>()).add(e);
 		for (var ent : map.entrySet()) {
 			VertexConsumer vc = buffers.getBuffer(ICON_TYPE.apply(ent.getKey()));

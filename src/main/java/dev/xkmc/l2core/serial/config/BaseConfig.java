@@ -1,7 +1,7 @@
 package dev.xkmc.l2core.serial.config;
 
 import dev.xkmc.l2serial.serialization.marker.SerialClass;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -11,9 +11,9 @@ import java.util.function.Supplier;
 @SerialClass
 public class BaseConfig {
 
-	protected ResourceLocation id;
+	protected Identifier id;
 
-	public ResourceLocation getID() {
+	public Identifier getID() {
 		return id;
 	}
 

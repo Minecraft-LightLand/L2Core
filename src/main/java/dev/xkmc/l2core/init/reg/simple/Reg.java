@@ -7,7 +7,7 @@ import dev.xkmc.l2serial.serialization.codec.CodecAdaptor;
 import dev.xkmc.l2serial.util.ModContainerHack;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
@@ -62,8 +62,8 @@ public final class Reg {
 		return dataMap(id, k, codec, codec);
 	}
 
-	public ResourceLocation loc(String id) {
-		return ResourceLocation.fromNamespaceAndPath(modid, id);
+	public Identifier loc(String id) {
+		return Identifier.fromNamespaceAndPath(modid, id);
 	}
 
 

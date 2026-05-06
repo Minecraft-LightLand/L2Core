@@ -6,7 +6,7 @@ import dev.xkmc.l2core.init.reg.registrate.L2Registrate;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementType;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.conditions.ICondition;
@@ -30,13 +30,13 @@ public class AdvancementGenerator {
 	public class TabBuilder {
 
 		private final String tab;
-		private final ResourceLocation bg;
+		private final Identifier bg;
 
 		private Entry root;
 
 		public TabBuilder(String tab) {
 			this.tab = tab;
-			this.bg = ResourceLocation.fromNamespaceAndPath(modid, "textures/gui/advancements/backgrounds/" + tab + ".png");
+			this.bg = Identifier.fromNamespaceAndPath(modid, "textures/gui/advancements/backgrounds/" + tab + ".png");
 		}
 
 		public void build() {
@@ -62,7 +62,7 @@ public class AdvancementGenerator {
 
 			private final List<Entry> children = new ArrayList<>();
 			private final EntryData data;
-			private final ResourceLocation rl;
+			private final Identifier rl;
 			private final Entry parent;
 
 			private AdvancementType type = AdvancementType.TASK;

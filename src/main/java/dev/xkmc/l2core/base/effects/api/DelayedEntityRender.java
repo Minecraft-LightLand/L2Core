@@ -1,26 +1,26 @@
 package dev.xkmc.l2core.base.effects.api;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 
 public record DelayedEntityRender(
-		LivingEntity entity, IconRenderRegion region, ResourceLocation rl,
+		LivingEntity entity, IconRenderRegion region, Identifier rl,
 		double xo, double yo, double zo,
 		float tx, float ty, float tw, float th
 ) implements IDelayedRender {
 
-	public static DelayedEntityRender icon(LivingEntity entity, ResourceLocation rl) {
+	public static DelayedEntityRender icon(LivingEntity entity, Identifier rl) {
 		return icon(entity, IconRenderRegion.identity(), rl);
 	}
 
-	public static DelayedEntityRender icon(LivingEntity entity, IconRenderRegion r, ResourceLocation rl) {
+	public static DelayedEntityRender icon(LivingEntity entity, IconRenderRegion r, Identifier rl) {
 		return new DelayedEntityRender(entity, r, rl, 0, 0, 1, 1);
 	}
 
-	public DelayedEntityRender(LivingEntity entity, IconRenderRegion region, ResourceLocation rl,
+	public DelayedEntityRender(LivingEntity entity, IconRenderRegion region, Identifier rl,
 							   float tx, float ty, float tw, float th) {
 		this(entity, region, rl, entity.xOld, entity.yOld, entity.zOld, tx, ty, tw, th);
 	}

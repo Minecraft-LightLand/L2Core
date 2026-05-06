@@ -6,7 +6,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import javax.annotation.Nullable;
 import java.nio.file.Path;
@@ -56,13 +56,13 @@ public abstract class ConfigDataProvider implements DataProvider {
 
 	public record Collector(Map<String, ConfigEntry<?>> map) {
 
-		public <T extends BaseConfig> void add(ConfigTypeEntry<T> type, ResourceLocation id, T config) {
+		public <T extends BaseConfig> void add(ConfigTypeEntry<T> type, Identifier id, T config) {
 			map.put(type.asPath(id), new ConfigEntry<>(type, id, config));
 		}
 
 	}
 
-	public record ConfigEntry<T extends BaseConfig>(ConfigTypeEntry<T> type, ResourceLocation id, T config) {
+	public record ConfigEntry<T extends BaseConfig>(ConfigTypeEntry<T> type, Identifier id, T config) {
 
 		@Nullable
 		public JsonElement serialize(HolderLookup.Provider pvd) {

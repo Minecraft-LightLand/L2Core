@@ -2,12 +2,12 @@ package dev.xkmc.l2core.base.menu.base;
 
 import dev.xkmc.l2core.init.L2LibReg;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
-public record SpriteManager(ResourceLocation id) {
+public record SpriteManager(Identifier id) {
 
 	public SpriteManager(String modid, String path) {
-		this(ResourceLocation.fromNamespaceAndPath(modid, path));
+		this(Identifier.fromNamespaceAndPath(modid, path));
 	}
 
 	public MenuLayoutConfig get(RegistryAccess access) {

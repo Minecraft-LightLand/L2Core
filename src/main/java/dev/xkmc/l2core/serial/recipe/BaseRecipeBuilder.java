@@ -4,11 +4,11 @@ import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementRequirements;
 import net.minecraft.advancements.AdvancementRewards;
 import net.minecraft.advancements.Criterion;
-import net.minecraft.advancements.critereon.RecipeUnlockedTrigger;
+import net.minecraft.advancements.criterion.RecipeUnlockedTrigger;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.data.recipes.RecipeOutput;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.RecipeInput;
 import org.jetbrains.annotations.Nullable;
@@ -57,13 +57,13 @@ public class BaseRecipeBuilder<
 	}
 
 	@Override
-	public void save(RecipeOutput pvd, ResourceLocation id) {
+	public void save(RecipeOutput pvd, Identifier id) {
 		Advancement.Builder builder = pvd.advancement()
 				.addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(id))
 				.rewards(AdvancementRewards.Builder.recipe(id))
 				.requirements(AdvancementRequirements.Strategy.OR);
 		this.criteria.forEach(builder::addCriterion);
-		id = ResourceLocation.fromNamespaceAndPath(id.getNamespace(), "recipes/" +
+		id = Identifier.fromNamespaceAndPath(id.getNamespace(), "recipes/" +
 				BuiltInRegistries.RECIPE_SERIALIZER.getKey(type).getPath() + "/" + id.getPath());
 		pvd.accept(id, recipe, builder.build(id));
 	}

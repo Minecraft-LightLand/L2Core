@@ -9,15 +9,14 @@ import com.tterrag.registrate.util.OneTimeEventReceiver;
 import com.tterrag.registrate.util.RegistrateDistExecutor;
 import com.tterrag.registrate.util.entry.RegistryEntry;
 import com.tterrag.registrate.util.nullness.NonNullSupplier;
-import com.tterrag.registrate.util.nullness.NonnullType;
 import dev.xkmc.l2core.init.L2Core;
 import dev.xkmc.l2core.init.reg.simple.Val;
 import dev.xkmc.l2core.util.ConfigInit;
 import dev.xkmc.l2serial.serialization.custom_handler.CodecHandler;
 import dev.xkmc.l2serial.util.ModContainerHack;
 import dev.xkmc.l2serial.util.Wrappers;
-import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.client.particle.ParticleProvider;
+import net.minecraft.client.particle.ParticleResources;
 import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
@@ -25,8 +24,8 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -65,8 +64,8 @@ public class L2Registrate extends AbstractRegistrate<L2Registrate> {
 		addRawLang(modid + ".title", mod.getModInfo().getDisplayName());
 	}
 
-	public ResourceLocation loc(String id) {
-		return ResourceLocation.fromNamespaceAndPath(getModid(), id);
+	public Identifier loc(String id) {
+		return Identifier.fromNamespaceAndPath(getModid(), id);
 	}
 
 	private boolean initConfig = false;
@@ -156,13 +155,13 @@ public class L2Registrate extends AbstractRegistrate<L2Registrate> {
 	}
 
 	public synchronized SimpleEntry<CreativeModeTab> buildModCreativeTab(String name, String def, Consumer<CreativeModeTab.Builder> config) {
-		ResourceLocation id = ResourceLocation.fromNamespaceAndPath(getModid(), name);
+		Identifier id = Identifier.fromNamespaceAndPath(getModid(), name);
 		defaultCreativeTab(ResourceKey.create(Registries.CREATIVE_MODE_TAB, id));
 		return buildCreativeTabImpl(name, addLang("itemGroup", id, def), config);
 	}
 
 	public synchronized SimpleEntry<CreativeModeTab> buildL2CreativeTab(String name, String def, Consumer<CreativeModeTab.Builder> config) {
-		ResourceLocation id = ResourceLocation.fromNamespaceAndPath(L2Core.MODID, name);
+		Identifier id = Identifier.fromNamespaceAndPath(L2Core.MODID, name);
 		defaultCreativeTab(ResourceKey.create(Registries.CREATIVE_MODE_TAB, id));
 		TabSorter sorter = new TabSorter(getModid() + ":" + name, id);
 		return L2Core.REGISTRATE.buildCreativeTabImpl(name, addLang("itemGroup", id, def), b -> {
@@ -202,12 +201,12 @@ public class L2Registrate extends AbstractRegistrate<L2Registrate> {
 		}
 
 		@Override
-		protected @NonnullType @NotNull P createEntry() {
+		protected @NotNull P createEntry() {
 			return sup.get();
 		}
 
 		public GenericBuilder<T, P> defaultLang() {
-			var reg = getRegistryKey().location();
+			var reg = getRegistryKey().identifier();
 			String id = reg.getPath() + "." + getOwner().getModid() + "." + getName();
 			return lang(e -> id, RegistrateLangProvider.toEnglishName(this.getName()));
 		}
@@ -217,11 +216,11 @@ public class L2Registrate extends AbstractRegistrate<L2Registrate> {
 	private static class TabSorter {
 
 		private static final TreeMap<String, TabSorter> MAP = new TreeMap<>();
-		private static final HashSet<ResourceLocation> SET = new HashSet<>();
+		private static final HashSet<Identifier> SET = new HashSet<>();
 
-		private final ResourceLocation id;
+		private final Identifier id;
 
-		private TabSorter(String str, ResourceLocation id) {
+		private TabSorter(String str, Identifier id) {
 			MAP.put(str, this);
 			SET.add(id);
 			this.id = id;
@@ -230,7 +229,7 @@ public class L2Registrate extends AbstractRegistrate<L2Registrate> {
 		public void sort(CreativeModeTab.Builder b) {
 			var list = new ArrayList<>(MAP.values());
 			boolean after = false;
-			ResourceLocation before = null;
+			Identifier before = null;
 			for (var e : list) {
 				if (e == this) {
 					after = true;
@@ -247,7 +246,7 @@ public class L2Registrate extends AbstractRegistrate<L2Registrate> {
 				}
 			}
 			for (var e : BuiltInRegistries.CREATIVE_MODE_TAB.entrySet()) {
-				var id = e.getKey().location();
+				var id = e.getKey().identifier();
 				if (known(id) || known(e.getValue())) {
 					continue;
 				}
@@ -255,7 +254,7 @@ public class L2Registrate extends AbstractRegistrate<L2Registrate> {
 			}
 		}
 
-		private static boolean known(ResourceLocation id) {
+		private static boolean known(Identifier id) {
 			if (id.getNamespace().equals("minecraft")) {
 				return true;
 			}
@@ -279,11 +278,7 @@ public class L2Registrate extends AbstractRegistrate<L2Registrate> {
 			return () -> (event, type) -> event.registerSpecial(type, pvd.get());
 		}
 
-		static <T extends ParticleOptions> ParticleSupplier<T> sprite(NonNullSupplier<ParticleProvider.Sprite<T>> pvd) {
-			return () -> (event, type) -> event.registerSprite(type, pvd.get());
-		}
-
-		static <T extends ParticleOptions> ParticleSupplier<T> spriteSet(NonNullSupplier<ParticleEngine.SpriteParticleRegistration<T>> pvd) {
+		static <T extends ParticleOptions> ParticleSupplier<T> spriteSet(NonNullSupplier<ParticleResources.SpriteParticleRegistration<T>> pvd) {
 			return () -> (event, type) -> event.registerSpriteSet(type, pvd.get());
 		}
 

@@ -6,7 +6,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -34,13 +34,13 @@ public class L2TagGen {
 	public static final ProviderType<RegistrateTagsProvider.Impl<Enchantment>> ENCH_TAGS =
 			getProvider(Registries.ENCHANTMENT);
 
-	public static final TagKey<MobEffect> TRACKED_EFFECTS = effectTag(ResourceLocation.fromNamespaceAndPath(L2Core.MODID, "tracked_effects"));
+	public static final TagKey<MobEffect> TRACKED_EFFECTS = effectTag(Identifier.fromNamespaceAndPath(L2Core.MODID, "tracked_effects"));
 
 	public static void onEffectTagGen(RegistrateTagsProvider.IntrinsicImpl<MobEffect> pvd) {
 		pvd.addTag(TRACKED_EFFECTS);
 	}
 
-	public static TagKey<MobEffect> effectTag(ResourceLocation id) {
+	public static TagKey<MobEffect> effectTag(Identifier id) {
 		return TagKey.create(Registries.MOB_EFFECT, id);
 	}
 

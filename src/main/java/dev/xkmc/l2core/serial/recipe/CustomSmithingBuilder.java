@@ -7,7 +7,7 @@ import net.minecraft.advancements.critereon.RecipeUnlockedTrigger;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.SmithingTransformRecipeBuilder;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -26,7 +26,7 @@ public class CustomSmithingBuilder<T extends AbstractSmithingRecipe<T>> extends 
 		this.factory = factory;
 	}
 
-	public void save(RecipeOutput pRecipeOutput, ResourceLocation pRecipeId) {
+	public void save(RecipeOutput pRecipeOutput, Identifier pRecipeId) {
 		this.ensureValid(pRecipeId);
 		Advancement.Builder advancement$builder = pRecipeOutput.advancement()
 				.addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(pRecipeId))

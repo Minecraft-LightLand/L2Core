@@ -4,7 +4,7 @@ import com.mojang.datafixers.util.Either;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderOwner;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 
 import java.util.Optional;
@@ -29,8 +29,8 @@ public interface LegacyHolder<T> extends Holder<T>, Supplier<T> {
 	}
 
 	@Override
-	default boolean is(ResourceLocation id) {
-		return key().location().equals(id);
+	default boolean is(Identifier id) {
+		return key().identifier().equals(id);
 	}
 
 	@Override

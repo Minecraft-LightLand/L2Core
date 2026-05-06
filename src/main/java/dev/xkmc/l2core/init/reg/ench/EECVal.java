@@ -5,7 +5,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Unit;
 import net.minecraft.world.item.ItemStack;
@@ -64,7 +64,7 @@ public interface EECVal<T> extends Val<DataComponentType<List<ConditionalEffect<
 		}
 
 		@Override
-		public ResourceLocation id() {
+		public Identifier id() {
 			return val.getId();
 		}
 
@@ -90,7 +90,7 @@ public interface EECVal<T> extends Val<DataComponentType<List<ConditionalEffect<
 			}
 
 			@Override
-			public ResourceLocation id() {
+			public Identifier id() {
 				return val.getId();
 			}
 
@@ -114,7 +114,7 @@ public interface EECVal<T> extends Val<DataComponentType<List<ConditionalEffect<
 			}
 
 			@Override
-			public ResourceLocation id() {
+			public Identifier id() {
 				return val.getId();
 			}
 
@@ -134,7 +134,7 @@ public interface EECVal<T> extends Val<DataComponentType<List<ConditionalEffect<
 			}
 
 			@Override
-			public ResourceLocation id() {
+			public Identifier id() {
 				return val.getId();
 			}
 

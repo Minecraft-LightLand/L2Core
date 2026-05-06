@@ -3,7 +3,7 @@ package dev.xkmc.l2core.base.menu.stacked;
 import dev.xkmc.l2core.base.menu.base.MenuLayoutConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
@@ -18,7 +18,7 @@ public class StackedRenderHandle {
 	private static final int SLOT_X_OFFSET = 7, SLOT_SIZE = 18, SPRITE_OFFSET = 176;
 
 	final Screen scr;
-	final GuiGraphics g;
+	final GuiGraphicsExtractor g;
 	final MenuLayoutConfig.ScreenRenderer sm;
 	final Font font;
 	final int text_color;
@@ -31,19 +31,19 @@ public class StackedRenderHandle {
 
 	final List<TextEntry> textList = new ArrayList<>();
 
-	public StackedRenderHandle(Screen scr, GuiGraphics g, MenuLayoutConfig.ScreenRenderer sm) {
+	public StackedRenderHandle(Screen scr, GuiGraphicsExtractor g, MenuLayoutConfig.ScreenRenderer sm) {
 		this(scr, g, sm, 3);
 	}
 
-	public StackedRenderHandle(Screen scr, GuiGraphics g, MenuLayoutConfig.ScreenRenderer sm, int ty) {
+	public StackedRenderHandle(Screen scr, GuiGraphicsExtractor g, MenuLayoutConfig.ScreenRenderer sm, int ty) {
 		this(scr, g, 8, 4210752, sm, ty);
 	}
 
-	public StackedRenderHandle(Screen scr, GuiGraphics g, int x_offset, int color, MenuLayoutConfig.ScreenRenderer sm) {
+	public StackedRenderHandle(Screen scr, GuiGraphicsExtractor g, int x_offset, int color, MenuLayoutConfig.ScreenRenderer sm) {
 		this(scr, g, x_offset, color, sm, 3);
 	}
 
-	public StackedRenderHandle(Screen scr, GuiGraphics g, int x_offset, int color, MenuLayoutConfig.ScreenRenderer sm, int ty) {
+	public StackedRenderHandle(Screen scr, GuiGraphicsExtractor g, int x_offset, int color, MenuLayoutConfig.ScreenRenderer sm, int ty) {
 		this.font = Minecraft.getInstance().font;
 		this.g = g;
 		this.scr = scr;
@@ -104,7 +104,7 @@ public class StackedRenderHandle {
 		int index = toggled ? 1 : disabled ? 2 : 0;
 		int x = SLOT_X_OFFSET + current_x * SLOT_SIZE;
 		int u = SPRITE_OFFSET + index * SLOT_SIZE;
-		g.blit(MenuLayoutConfig.getTexture(sm.id), x, current_y, u, 0, SLOT_SIZE, SLOT_SIZE);
+		sm.blit(g, MenuLayoutConfig.getTexture(sm.id), x, current_y, u, 0, SLOT_SIZE, SLOT_SIZE);
 		var ans = new CellEntry(x + 1, current_y + 1, 16, 16);
 		current_x++;
 		if (current_x == 9) {
@@ -127,7 +127,7 @@ public class StackedRenderHandle {
 	}
 
 	public void flushText() {
-		textList.forEach(e -> g.drawString(font, e.text(), e.x(), e.y(), e.color(), e.shadow()));
+		textList.forEach(e -> g.text(font, e.text(), e.x(), e.y(), e.color(), e.shadow()));
 	}
 
 }

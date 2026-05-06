@@ -7,7 +7,7 @@ import dev.xkmc.l2core.init.reg.registrate.L2Registrate;
 import dev.xkmc.l2core.serial.config.SyncPacket;
 import dev.xkmc.l2serial.network.PacketHandler;
 import dev.xkmc.l2serial.serialization.custom_handler.Handlers;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import org.apache.logging.log4j.LogManager;
@@ -38,8 +38,8 @@ public class L2Core {
 		REGISTRATE.addDataGenerator(L2TagGen.EFF_TAGS, L2TagGen::onEffectTagGen);
 	}
 
-	public static ResourceLocation loc(String id) {
-		return ResourceLocation.fromNamespaceAndPath(MODID, id);
+	public static Identifier loc(String id) {
+		return Identifier.fromNamespaceAndPath(MODID, id);
 	}
 
 }

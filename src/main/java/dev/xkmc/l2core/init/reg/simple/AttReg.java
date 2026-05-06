@@ -5,7 +5,7 @@ import dev.xkmc.l2core.capability.attachment.GeneralCapabilityHolder;
 import dev.xkmc.l2core.capability.attachment.GeneralCapabilityTemplate;
 import dev.xkmc.l2core.capability.player.PlayerCapabilityHolder;
 import dev.xkmc.l2core.capability.player.PlayerCapabilityTemplate;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.attachment.AttachmentHolder;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -26,22 +26,22 @@ public record AttReg(DeferredRegister<AttachmentType<?>> att) {
 		return new AttValImpl<>(att.register(id, type::type), type);
 	}
 
-	public <E, T extends AttachmentDef<E>> AttVal<E, T> reg(String id, Function<ResourceLocation, T> factory) {
-		ResourceLocation rl = ResourceLocation.fromNamespaceAndPath(att.getNamespace(), id);
+	public <E, T extends AttachmentDef<E>> AttVal<E, T> reg(String id, Function<Identifier, T> factory) {
+		Identifier rl = Identifier.fromNamespaceAndPath(att.getNamespace(), id);
 		T type = factory.apply(rl);
 		return reg(id, type);
 	}
 
 	public <E extends GeneralCapabilityTemplate<H, E>, H extends AttachmentHolder> AttVal.CapVal<H, E>
 	entity(String id, Class<E> holder_class, Supplier<E> sup, Class<H> entity_class, Predicate<H> pred) {
-		ResourceLocation rl = ResourceLocation.fromNamespaceAndPath(att.getNamespace(), id);
+		Identifier rl = Identifier.fromNamespaceAndPath(att.getNamespace(), id);
 		var type = new GeneralCapabilityHolder<>(rl, holder_class, sup, entity_class, pred);
 		return new CapValImpl<>(att.register(id, type::type), type);
 	}
 
 	public <E extends PlayerCapabilityTemplate<E>> AttVal.PlayerVal<E>
 	player(String id, Class<E> holder_class, Supplier<E> sup, PlayerCapabilityHolder.NetworkFactory<E> network) {
-		ResourceLocation rl = ResourceLocation.fromNamespaceAndPath(att.getNamespace(), id);
+		Identifier rl = Identifier.fromNamespaceAndPath(att.getNamespace(), id);
 		var type = new PlayerCapabilityHolder<>(rl, holder_class, sup, network);
 		return new PlayerValImpl<>(att.register(id, type::type), type);
 	}
@@ -56,7 +56,7 @@ public record AttReg(DeferredRegister<AttachmentType<?>> att) {
 		}
 
 		@Override
-		public ResourceLocation id() {
+		public Identifier id() {
 			return val.getId();
 		}
 
@@ -72,7 +72,7 @@ public record AttReg(DeferredRegister<AttachmentType<?>> att) {
 		}
 
 		@Override
-		public ResourceLocation id() {
+		public Identifier id() {
 			return val.getId();
 		}
 
@@ -88,7 +88,7 @@ public record AttReg(DeferredRegister<AttachmentType<?>> att) {
 		}
 
 		@Override
-		public ResourceLocation id() {
+		public Identifier id() {
 			return val.getId();
 		}
 

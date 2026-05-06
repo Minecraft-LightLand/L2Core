@@ -5,7 +5,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.registries.DataPackRegistryEvent;
 
 import javax.annotation.Nullable;
@@ -18,7 +18,7 @@ public record DatapackReg<T>(ResourceKey<Registry<T>> key, Codec<T> codec) {
 	}
 
 	@Nullable
-	public Holder<T> get(RegistryAccess access, ResourceLocation id) {
+	public Holder<T> get(RegistryAccess access, Identifier id) {
 		var reg = access.registry(key);
 		if (reg.isEmpty()) return null;
 		return reg.get().getHolder(id).orElse(null);

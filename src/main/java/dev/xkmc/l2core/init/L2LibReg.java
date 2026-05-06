@@ -18,10 +18,9 @@ import dev.xkmc.l2core.serial.ingredients.PotionIngredient;
 import dev.xkmc.l2core.serial.loot.AddItemModifier;
 import dev.xkmc.l2core.serial.loot.AddLootTableModifier;
 import dev.xkmc.l2core.serial.loot.PlayerFlagCondition;
-import dev.xkmc.l2serial.serialization.codec.MapCodecAdaptor;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
@@ -59,9 +58,8 @@ public class L2LibReg {
 	public static final CdcVal<AddLootTableModifier> ADD_TABLE = GLM.reg("add_table", AddLootTableModifier.MAP_CODEC);
 
 	// loot conditions
-	public static final SR<LootItemConditionType> LIC = SR.of(REG, BuiltInRegistries.LOOT_CONDITION_TYPE);
-	public static final Val<LootItemConditionType> LIC_FLAG = LIC.reg("player_flag",
-			() -> new LootItemConditionType(MapCodecAdaptor.of(PlayerFlagCondition.class)));
+	public static final CdcReg<LootItemCondition> LIC = CdcReg.of(REG, BuiltInRegistries.LOOT_CONDITION_TYPE);
+	public static final CdcVal<PlayerFlagCondition> LIC_FLAG = LIC.reg("player_flag", PlayerFlagCondition.class);
 
 	// datapack
 	public static final DatapackReg<MenuLayoutConfig> MENU_LAYOUT = REG.dataReg("menu_layout", MenuLayoutConfig.class);

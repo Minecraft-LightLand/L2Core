@@ -3,7 +3,7 @@ package dev.xkmc.l2core.init.reg.simple;
 import com.mojang.serialization.MapCodec;
 import dev.xkmc.l2serial.serialization.codec.MapCodecAdaptor;
 import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -30,7 +30,7 @@ public record CdcReg<T>(DeferredRegister<MapCodec<? extends T>> reg) {
 		}
 
 		@Override
-		public ResourceLocation id() {
+		public Identifier id() {
 			return val.getId();
 		}
 

@@ -5,9 +5,9 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import net.minecraft.MethodsReturnNonnullByDefault;
+import com.mojang.logging.annotations.MethodsReturnNonnullByDefault;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeInput;
@@ -28,7 +28,7 @@ public abstract class BaseRecipeCategory<T, C extends BaseRecipeCategory<T, C>> 
 
 	protected IDrawable background, icon;
 
-	public BaseRecipeCategory(ResourceLocation name, Class<T> cls) {
+	public BaseRecipeCategory(Identifier name, Class<T> cls) {
 		this.type = new RecipeType<>(name, cls);
 	}
 

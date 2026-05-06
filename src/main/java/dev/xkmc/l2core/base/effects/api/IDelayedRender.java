@@ -1,10 +1,10 @@
 package dev.xkmc.l2core.base.effects.api;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.phys.Vec3;
 
 public interface IDelayedRender {
-	ResourceLocation rl();
+	Identifier rl();
 
 	IconRenderRegion region();
 

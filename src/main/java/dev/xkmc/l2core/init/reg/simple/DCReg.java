@@ -14,7 +14,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Unit;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -87,8 +87,8 @@ public record DCReg(DeferredRegister<DataComponentType<?>> reg) {
 		return reg(id, reg.holderByNameCodec(), ByteBufCodecs.holderRegistry(reg.key()), false);
 	}
 
-	public DCVal<ResourceLocation> loc(String id) {
-		return reg(id, ResourceLocation.CODEC, ResourceLocation.STREAM_CODEC, false);
+	public DCVal<Identifier> loc(String id) {
+		return reg(id, Identifier.CODEC, Identifier.STREAM_CODEC, false);
 	}
 
 	public DCVal<UUID> uuid(String id) {
@@ -117,7 +117,7 @@ public record DCReg(DeferredRegister<DataComponentType<?>> reg) {
 		}
 
 		@Override
-		public ResourceLocation id() {
+		public Identifier id() {
 			return val.getId();
 		}
 

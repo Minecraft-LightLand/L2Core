@@ -8,7 +8,7 @@ import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.item.crafting.ShapedRecipePattern;
@@ -26,7 +26,7 @@ public class CustomShapedBuilder<T extends AbstractShapedRecipe<T>> extends Shap
 	}
 
 	@Override
-	public void save(RecipeOutput pRecipeOutput, ResourceLocation pId) {
+	public void save(RecipeOutput pRecipeOutput, Identifier pId) {
 		ShapedRecipePattern shapedrecipepattern = this.ensureValid(pId);
 		Advancement.Builder advancement$builder = pRecipeOutput.advancement()
 				.addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(pId))

@@ -2,7 +2,7 @@ package dev.xkmc.l2core.init.reg.simple;
 
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -23,7 +23,7 @@ public record SR<T>(DeferredRegister<T> reg) {
 		return new ValImpl<>(reg.register(id, sup));
 	}
 
-	public <H extends T> ValImpl<T, H> reg(String id, Function<ResourceLocation, H> sup) {
+	public <H extends T> ValImpl<T, H> reg(String id, Function<Identifier, H> sup) {
 		return new ValImpl<>(reg.register(id, sup));
 	}
 
@@ -35,7 +35,7 @@ public record SR<T>(DeferredRegister<T> reg) {
 		}
 
 		@Override
-		public ResourceLocation id() {
+		public Identifier id() {
 			return val.getId();
 		}
 

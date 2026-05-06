@@ -3,7 +3,7 @@ package dev.xkmc.l2core.serial.recipe;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.data.recipes.RecipeOutput;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.ShapedRecipe;
@@ -23,7 +23,7 @@ public record DataRecipeWrapper(RecipeOutput pvd, ItemStack stack) implements Re
 	}
 
 	@Override
-	public void accept(ResourceLocation id, Recipe<?> recipe, @Nullable AdvancementHolder advancement, ICondition... conditions) {
+	public void accept(Identifier id, Recipe<?> recipe, @Nullable AdvancementHolder advancement, ICondition... conditions) {
 		if (recipe instanceof ShapedRecipe r) {
 			r.result.applyComponents(stack.getComponents());
 		}

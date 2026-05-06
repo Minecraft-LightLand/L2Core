@@ -1,10 +1,10 @@
 package dev.xkmc.l2core.base.tile;
 
+import com.mojang.logging.annotations.MethodsReturnNonnullByDefault;
 import dev.xkmc.l2core.util.ServerOnly;
 import dev.xkmc.l2serial.serialization.codec.TagCodec;
 import dev.xkmc.l2serial.serialization.marker.SerialClass;
 import dev.xkmc.l2serial.serialization.marker.SerialField;
-import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -12,6 +12,8 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -25,17 +27,19 @@ public class BaseBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public void loadAdditional(CompoundTag tag, HolderLookup.Provider pvd) {
-		super.loadAdditional(tag, pvd);
-		if (tag.contains("auto-serial"))
-			new TagCodec(pvd).fromTag(tag.getCompound("auto-serial"), getClass(), this);
+	protected void loadAdditional(ValueInput input) {
+		super.loadAdditional(input);
+		var opt = input.read("auto-serial", CompoundTag.CODEC);
+		if (opt.isPresent())
+			new TagCodec(input.lookup()).fromTag(opt.get(), getClass(), this);
 	}
 
 	@Override
-	public void saveAdditional(CompoundTag tag, HolderLookup.Provider pvd) {
-		super.saveAdditional(tag, pvd);
-		CompoundTag ser = new TagCodec(pvd).toTag(new CompoundTag(), getClass(), this);
-		if (ser != null) tag.put("auto-serial", ser);
+	protected void saveAdditional(ValueOutput output) {
+		super.saveAdditional(output);
+		if (level == null) return;
+		CompoundTag ser = new TagCodec(level.registryAccess()).toTag(new CompoundTag(), getClass(), this);
+		if (ser != null) output.store("auto-serial", CompoundTag.CODEC, ser);
 	}
 
 	@Override

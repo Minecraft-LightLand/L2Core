@@ -8,7 +8,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.item.Item;
@@ -98,13 +98,13 @@ public interface EnchVal {
 		private HolderSetBuilder<Enchantment> exclude;
 		private final List<Consumer<Enchantment.Builder>> effects = new ArrayList<>();
 
-		public final ResourceLocation id;
+		public final Identifier id;
 
 		final List<TagKey<Enchantment>> tags = new ArrayList<>();
 
 		private Enchantment cache;
 
-		Builder(ResourceLocation id) {
+		Builder(Identifier id) {
 			this.id = id;
 			supported = primary = new HolderSetBuilder.Simple<>(Tags.Items.ENCHANTABLES);
 			min = max = new Enchantment.Cost(10, 5);
@@ -196,7 +196,7 @@ public interface EnchVal {
 			return special(L2LibReg.COLOR, color);
 		}
 
-		Enchantment build(BootstrapContext<Enchantment> ctx, ResourceLocation id) {
+		Enchantment build(BootstrapContext<Enchantment> ctx, Identifier id) {
 			var items = ctx.registryLookup(Registries.ITEM).orElseThrow();
 			var enchs = ctx.lookup(Registries.ENCHANTMENT);
 			var fakeItem = new FakeRegistryLookup<>(Registries.ITEM);

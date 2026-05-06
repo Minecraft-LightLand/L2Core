@@ -4,7 +4,7 @@ import dev.xkmc.l2serial.network.SerialPacketBase;
 import dev.xkmc.l2serial.serialization.codec.PacketCodec;
 import dev.xkmc.l2serial.serialization.marker.SerialClass;
 import dev.xkmc.l2serial.serialization.marker.SerialField;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 
@@ -12,7 +12,7 @@ import java.util.UUID;
 import java.util.function.Predicate;
 
 @SerialClass
-public record PlayerCapToClient(Action action, ResourceLocation holderID, byte[] data, UUID playerID)
+public record PlayerCapToClient(Action action, Identifier holderID, byte[] data, UUID playerID)
 		implements SerialPacketBase<PlayerCapToClient> {
 
 	public static <T extends PlayerCapabilityTemplate<T>> PlayerCapToClient

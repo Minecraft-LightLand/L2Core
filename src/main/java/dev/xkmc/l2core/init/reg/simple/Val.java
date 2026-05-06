@@ -2,7 +2,7 @@ package dev.xkmc.l2core.init.reg.simple;
 
 import com.tterrag.registrate.util.entry.RegistryEntry;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
 import java.util.function.Supplier;
@@ -11,7 +11,7 @@ public interface Val<T> extends Supplier<T> {
 
 	T get();
 
-	ResourceLocation id();
+	Identifier id();
 
 	DeferredHolder<? super T, T> val();
 
@@ -27,7 +27,7 @@ public interface Val<T> extends Supplier<T> {
 		}
 
 		@Override
-		public ResourceLocation id() {
+		public Identifier id() {
 			return val.getId();
 		}
 

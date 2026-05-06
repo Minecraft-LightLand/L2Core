@@ -4,14 +4,14 @@ import dev.xkmc.l2serial.util.Wrappers;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class NamedEntry<T extends NamedEntry<T>> {
 
 	private final L2Registrate.RegistryInstance<T> registry;
 
 	private String desc = null;
-	private ResourceLocation id = null;
+	private Identifier id = null;
 
 	public NamedEntry(L2Registrate.RegistryInstance<T> registry) {
 		this.registry = registry;
@@ -20,8 +20,8 @@ public class NamedEntry<T extends NamedEntry<T>> {
 	public String getDescriptionId() {
 		if (desc != null)
 			return desc;
-		ResourceLocation rl = getRegistryName();
-		ResourceLocation reg = registry.key().location();
+		Identifier rl = getRegistryName();
+		Identifier reg = registry.key().location();
 		desc = reg.getPath() + "." + rl.getNamespace() + "." + rl.getPath();
 		return desc;
 	}
@@ -30,7 +30,7 @@ public class NamedEntry<T extends NamedEntry<T>> {
 		return Component.translatable(getDescriptionId());
 	}
 
-	public ResourceLocation getRegistryName() {
+	public Identifier getRegistryName() {
 		if (id != null) return id;
 		id = registry.get().getKey(getThis());
 		if (id == null) {

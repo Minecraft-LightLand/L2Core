@@ -1,17 +1,12 @@
 package dev.xkmc.l2core.capability.attachment;
 
-import dev.xkmc.l2serial.serialization.codec.TagCodec;
-import dev.xkmc.l2serial.util.Wrappers;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
+import dev.xkmc.l2serial.serialization.codec.MapCodecAdaptor;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
-import net.neoforged.neoforge.attachment.IAttachmentSerializer;
 
-import java.util.Objects;
 import java.util.function.Supplier;
 
-public class AttachmentDef<E> implements IAttachmentSerializer<CompoundTag, E> {
+public class AttachmentDef<E> {
 	private final Class<E> cls;
 	private final Supplier<E> sup;
 	private AttachmentType<E> type;
@@ -24,7 +19,7 @@ public class AttachmentDef<E> implements IAttachmentSerializer<CompoundTag, E> {
 	public AttachmentType<E> type() {
 		if (type != null) return type;
 		var builder = AttachmentType.builder(sup);
-		builder.serialize(this);
+		builder.serialize(MapCodecAdaptor.of(cls));
 		if (copyOnDeath())
 			builder.copyOnDeath();
 		type = builder.build();
@@ -33,16 +28,6 @@ public class AttachmentDef<E> implements IAttachmentSerializer<CompoundTag, E> {
 
 	protected boolean copyOnDeath() {
 		return false;
-	}
-
-	@Override
-	public E read(IAttachmentHolder holder, CompoundTag tag, HolderLookup.Provider provider) {
-		return Objects.requireNonNull(Wrappers.get(() -> new TagCodec(provider).fromTag(tag, cls, null)));
-	}
-
-	@Override
-	public CompoundTag write(E attachment, HolderLookup.Provider provider) {
-		return Objects.requireNonNull(new TagCodec(provider).toTag(new CompoundTag(), attachment));
 	}
 
 	public Class<E> cls() {

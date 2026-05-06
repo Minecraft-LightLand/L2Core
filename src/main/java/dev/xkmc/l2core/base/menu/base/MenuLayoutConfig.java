@@ -2,10 +2,10 @@ package dev.xkmc.l2core.base.menu.base;
 
 import dev.xkmc.l2serial.serialization.marker.SerialClass;
 import dev.xkmc.l2serial.serialization.marker.SerialField;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.inventory.Slot;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -17,8 +17,8 @@ import java.util.HashMap;
 @SerialClass
 public record MenuLayoutConfig(int height, HashMap<String, Rect> side, HashMap<String, Rect> comp) {
 
-	public static ResourceLocation getTexture(ResourceLocation id) {
-		return ResourceLocation.fromNamespaceAndPath(id.getNamespace(), "textures/gui/container/" + id.getPath() + ".png");
+	public static Identifier getTexture(Identifier id) {
+		return Identifier.fromNamespaceAndPath(id.getNamespace(), "textures/gui/container/" + id.getPath() + ".png");
 	}
 
 	/**
@@ -50,12 +50,12 @@ public record MenuLayoutConfig(int height, HashMap<String, Rect> side, HashMap<S
 	}
 
 	@OnlyIn(Dist.CLIENT)
-	public ScreenRenderer getRenderer(ResourceLocation id, AbstractContainerScreen<?> gui) {
+	public ScreenRenderer getRenderer(Identifier id, AbstractContainerScreen<?> gui) {
 		return new ScreenRenderer(id, gui);
 	}
 
 	@OnlyIn(Dist.CLIENT)
-	public ScreenRenderer getRenderer(ResourceLocation id, Screen gui, int x, int y, int w, int h) {
+	public ScreenRenderer getRenderer(Identifier id, Screen gui, int x, int y, int w, int h) {
 		return new ScreenRenderer(id, gui, x, y, w, h);
 	}
 
@@ -124,13 +124,13 @@ public record MenuLayoutConfig(int height, HashMap<String, Rect> side, HashMap<S
 		private final int x, y, w, h;
 		private final Screen scr;
 
-		public final ResourceLocation id;
+		public final Identifier id;
 
 		public MenuLayoutConfig parent() {
 			return MenuLayoutConfig.this;
 		}
 
-		public ScreenRenderer(ResourceLocation id, Screen gui, int x, int y, int w, int h) {
+		public ScreenRenderer(Identifier id, Screen gui, int x, int y, int w, int h) {
 			scr = gui;
 			this.x = x;
 			this.y = y;
@@ -139,7 +139,7 @@ public record MenuLayoutConfig(int height, HashMap<String, Rect> side, HashMap<S
 			this.id = id;
 		}
 
-		private ScreenRenderer(ResourceLocation id, AbstractContainerScreen<?> scrIn) {
+		private ScreenRenderer(Identifier id, AbstractContainerScreen<?> scrIn) {
 			x = scrIn.getGuiLeft();
 			y = scrIn.getGuiTop();
 			w = scrIn.getXSize();
@@ -148,55 +148,59 @@ public record MenuLayoutConfig(int height, HashMap<String, Rect> side, HashMap<S
 			this.id = id;
 		}
 
+		public void blit(GuiGraphicsExtractor g, Identifier id, int x, int y, int u, int v, int w, int h) {
+			g.blit(id, x, y, x + w, y + h, u, v, u + w, v + h);
+		}
+
 		/**
 		 * Draw a side sprite on the location specified by the component
 		 */
-		public void draw(GuiGraphics g, String c, String s) {
+		public void draw(GuiGraphicsExtractor g, String c, String s) {
 			Rect cr = getComp(c);
 			Rect sr = getSide(s);
-			g.blit(getTexture(id), x + cr.x, y + cr.y, sr.x, sr.y, sr.w, sr.h);
+			blit(g, getTexture(id), x + cr.x, y + cr.y, sr.x, sr.y, sr.w, sr.h);
 		}
 
 		/**
 		 * Draw a side sprite on the location specified by the component with offsets
 		 */
-		public void draw(GuiGraphics g, String c, String s, int xoff, int yoff) {
+		public void draw(GuiGraphicsExtractor g, String c, String s, int xoff, int yoff) {
 			Rect cr = getComp(c);
 			Rect sr = getSide(s);
-			g.blit(getTexture(id), x + cr.x + xoff, y + cr.y + yoff, sr.x, sr.y, sr.w, sr.h);
+			blit(g, getTexture(id), x + cr.x + xoff, y + cr.y + yoff, sr.x, sr.y, sr.w, sr.h);
 		}
 
 		/**
 		 * Draw a side sprite on the location specified by the component. Draw partially
 		 * from bottom to top
 		 */
-		public void drawBottomUp(GuiGraphics g, String c, String s, int prog, int max) {
+		public void drawBottomUp(GuiGraphicsExtractor g, String c, String s, int prog, int max) {
 			if (prog == 0 || max == 0)
 				return;
 			Rect cr = getComp(c);
 			Rect sr = getSide(s);
 			int dh = sr.h * prog / max;
-			g.blit(getTexture(id), x + cr.x, y + cr.y + sr.h - dh, sr.x, sr.y + sr.h - dh, sr.w, dh);
+			blit(g, getTexture(id), x + cr.x, y + cr.y + sr.h - dh, sr.x, sr.y + sr.h - dh, sr.w, dh);
 		}
 
 		/**
 		 * Draw a side sprite on the location specified by the component. Draw partially
 		 * from left to right
 		 */
-		public void drawLeftRight(GuiGraphics g, String c, String s, int prog, int max) {
+		public void drawLeftRight(GuiGraphicsExtractor g, String c, String s, int prog, int max) {
 			if (prog == 0 || max == 0)
 				return;
 			Rect cr = getComp(c);
 			Rect sr = getSide(s);
 			int dw = sr.w * prog / max;
-			g.blit(getTexture(id), x + cr.x, y + cr.y, sr.x, sr.y, dw, sr.h);
+			blit(g, getTexture(id), x + cr.x, y + cr.y, sr.x, sr.y, dw, sr.h);
 		}
 
 		/**
 		 * fill an area with a sprite, repeat as tiles if not enough, start from lower
 		 * left corner
 		 */
-		public void drawLiquid(GuiGraphics g, String c, double per, int height, int sw, int sh) {
+		public void drawLiquid(GuiGraphicsExtractor g, String c, double per, int height, int sw, int sh) {
 			Rect cr = getComp(c);
 			int base = cr.y + height;
 			int h = (int) Math.round(per * height);
@@ -206,11 +210,11 @@ public record MenuLayoutConfig(int height, HashMap<String, Rect> side, HashMap<S
 		/**
 		 * bind texture, draw background color, and GUI background
 		 */
-		public void start(GuiGraphics g) {
-			g.blit(getTexture(id), x, y, 0, 0, w, h);
+		public void start(GuiGraphicsExtractor g) {
+			blit(g, getTexture(id), x, y, 0, 0, w, h);
 		}
 
-		private void circularBlit(GuiGraphics g, int sx, int sy, int ix, int iy, int w, int h, int iw, int ih) {
+		private void circularBlit(GuiGraphicsExtractor g, int sx, int sy, int ix, int iy, int w, int h, int iw, int ih) {
 			int x0 = ix, yb = iy, x1 = w, x2 = sx;
 			while (x0 < 0)
 				x0 += iw;
@@ -221,7 +225,7 @@ public record MenuLayoutConfig(int height, HashMap<String, Rect> side, HashMap<S
 				int y0 = yb, y1 = h, y2 = sy;
 				while (y1 > 0) {
 					int dy = Math.min(y1, ih - y0);
-					g.blit(getTexture(id), x2, y2, x0, y0, x1, y1);
+					blit(g, getTexture(id), x2, y2, x0, y0, x1, y1);
 					y1 -= dy;
 					y0 += dy;
 					y2 += dy;

@@ -2,13 +2,16 @@ package dev.xkmc.l2core.serial.loot;
 
 import com.tterrag.registrate.providers.loot.RegistrateBlockLootTables;
 import com.tterrag.registrate.providers.loot.RegistrateEntityLootTables;
-import net.minecraft.Util;
-import net.minecraft.advancements.critereon.*;
+import net.minecraft.advancements.criterion.*;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.predicates.DataComponentPredicates;
+import net.minecraft.core.component.predicates.EnchantmentsPredicate;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.StringRepresentable;
+import net.minecraft.util.Util;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -61,9 +64,10 @@ public record LootHelper(HolderLookup.Provider pvd) {
 	}
 
 	public LootItemCondition.Builder toolHasEnch(ResourceKey<Enchantment> enchant, int min) {
-		return MatchTool.toolMatches(ItemPredicate.Builder.item().withSubPredicate(
-				ItemSubPredicates.ENCHANTMENTS, ItemEnchantmentsPredicate.enchantments(
-						List.of(hasEnch(enchant, min)))));
+		return MatchTool.toolMatches(ItemPredicate.Builder.item().withComponents(
+				DataComponentMatchers.Builder.components().partial(
+						DataComponentPredicates.ENCHANTMENTS, EnchantmentsPredicate.enchantments(
+								List.of(hasEnch(enchant, min)))).build()));
 	}
 
 	public LootItemCondition.Builder silk() {
@@ -136,42 +140,42 @@ public record LootHelper(HolderLookup.Provider pvd) {
 		return LootItemEntityPropertyCondition.hasProperties(
 				LootContext.EntityTarget.THIS,
 				EntityPredicate.Builder.entity().entityType(
-						EntityTypePredicate.of(type)));
+						EntityTypePredicate.of(pvd.lookupOrThrow(Registries.ENTITY_TYPE), type)));
 	}
 
 	public LootItemCondition.Builder entity(TagKey<EntityType<?>> tag) {
 		return LootItemEntityPropertyCondition.hasProperties(
 				LootContext.EntityTarget.THIS,
 				EntityPredicate.Builder.entity().entityType(
-						EntityTypePredicate.of(tag)));
+						EntityTypePredicate.of(pvd.lookupOrThrow(Registries.ENTITY_TYPE), tag)));
 	}
 
 	public LootItemCondition.Builder killer(EntityType<?> type) {
 		return LootItemEntityPropertyCondition.hasProperties(
 				LootContext.EntityTarget.ATTACKER,
 				EntityPredicate.Builder.entity().entityType(
-						EntityTypePredicate.of(type)));
+						EntityTypePredicate.of(pvd.lookupOrThrow(Registries.ENTITY_TYPE), type)));
 	}
 
 	public LootItemCondition.Builder killer(TagKey<EntityType<?>> tag) {
 		return LootItemEntityPropertyCondition.hasProperties(
 				LootContext.EntityTarget.ATTACKER,
 				EntityPredicate.Builder.entity().entityType(
-						EntityTypePredicate.of(tag)));
+						EntityTypePredicate.of(pvd.lookupOrThrow(Registries.ENTITY_TYPE), tag)));
 	}
 
 	public LootItemCondition.Builder killerItem(EquipmentSlot slot, Item item) {
 		return LootItemEntityPropertyCondition.hasProperties(
 				LootContext.EntityTarget.ATTACKER,
 				EntityPredicate.Builder.entity().equipment(
-						slot(slot, ItemPredicate.Builder.item().of(item)).build()).build());
+						slot(slot, ItemPredicate.Builder.item().of(pvd.lookupOrThrow(Registries.ITEM), item)).build()).build());
 	}
 
 	public LootItemCondition.Builder killerItem(EquipmentSlot slot, TagKey<Item> item) {
 		return LootItemEntityPropertyCondition.hasProperties(
 				LootContext.EntityTarget.ATTACKER,
 				EntityPredicate.Builder.entity().equipment(
-						slot(slot, ItemPredicate.Builder.item().of(item)).build()).build());
+						slot(slot, ItemPredicate.Builder.item().of(pvd.lookupOrThrow(Registries.ITEM), item)).build()).build());
 	}
 
 	private EntityEquipmentPredicate.Builder slot(EquipmentSlot slot, ItemPredicate.Builder item) {
@@ -184,6 +188,7 @@ public record LootHelper(HolderLookup.Provider pvd) {
 			case CHEST -> b.chest(item);
 			case HEAD -> b.head(item);
 			case BODY -> b.body(item);
+			default -> b;
 		};
 	}
 

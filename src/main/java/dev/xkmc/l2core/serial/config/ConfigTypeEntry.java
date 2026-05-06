@@ -1,7 +1,7 @@
 package dev.xkmc.l2core.serial.config;
 
 import dev.xkmc.l2serial.util.Wrappers;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.Collection;
 
@@ -14,7 +14,7 @@ public record ConfigTypeEntry<T extends BaseConfig>(PacketHandlerWithConfig chan
 		channel.addCachedConfig(name, cls);
 	}
 
-	public String asPath(ResourceLocation rl) {
+	public String asPath(Identifier rl) {
 		return "data/" + rl.getNamespace() + "/" + channel.config_path + "/" + name + "/" + rl.getPath();
 	}
 
@@ -28,7 +28,7 @@ public record ConfigTypeEntry<T extends BaseConfig>(PacketHandlerWithConfig chan
 		return type.configs.values();
 	}
 
-	public T getEntry(ResourceLocation id) {
+	public T getEntry(Identifier id) {
 		MergedConfigType<T> type = Wrappers.cast(channel.types.get(name));
 		return type.configs.get(id);
 	}

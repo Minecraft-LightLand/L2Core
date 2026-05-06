@@ -5,7 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
@@ -18,17 +18,17 @@ import static net.minecraft.world.level.storage.loot.LootTable.createStackSplitt
 public class AddLootTableModifier extends LootModifier {
 
 	public static final MapCodec<AddLootTableModifier> MAP_CODEC = RecordCodecBuilder.mapCodec(inst -> codecStart(inst)
-			.and(ResourceLocation.CODEC.fieldOf("lootTable").forGetter((m) -> m.lootTable))
+			.and(Identifier.CODEC.fieldOf("lootTable").forGetter((m) -> m.lootTable))
 			.apply(inst, AddLootTableModifier::new));
 
-	private final ResourceLocation lootTable;
+	private final Identifier lootTable;
 
-	protected AddLootTableModifier(LootItemCondition[] conditionsIn, ResourceLocation lootTable) {
+	protected AddLootTableModifier(LootItemCondition[] conditionsIn, Identifier lootTable) {
 		super(conditionsIn);
 		this.lootTable = lootTable;
 	}
 
-	public AddLootTableModifier(ResourceLocation lootTable, LootItemCondition... conditionsIn) {
+	public AddLootTableModifier(Identifier lootTable, LootItemCondition... conditionsIn) {
 		super(conditionsIn);
 		this.lootTable = lootTable;
 	}

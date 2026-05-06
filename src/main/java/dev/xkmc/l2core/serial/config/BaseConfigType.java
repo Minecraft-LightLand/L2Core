@@ -1,6 +1,6 @@
 package dev.xkmc.l2core.serial.config;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,7 +11,7 @@ public class BaseConfigType<T extends BaseConfig> {
 	public final String id;
 	public final PacketHandlerWithConfig parent;
 
-	final Map<ResourceLocation, T> configs = new HashMap<>();
+	final Map<Identifier, T> configs = new HashMap<>();
 
 	protected BaseConfigType(PacketHandlerWithConfig parent, String id, Class<T> cls) {
 		this.parent = parent;

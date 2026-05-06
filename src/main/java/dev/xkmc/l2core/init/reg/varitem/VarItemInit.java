@@ -6,7 +6,7 @@ import com.tterrag.registrate.util.entry.ItemEntry;
 import dev.xkmc.l2core.init.L2Core;
 import dev.xkmc.l2core.init.reg.registrate.L2Registrate;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.fml.loading.FMLPaths;
@@ -24,24 +24,24 @@ import java.util.function.Function;
 public class VarItemInit<T extends Item> {
 
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().setLenient().create();
-	private static final ConcurrentMap<ResourceLocation, VarItemInit<?>> VAR_ITEM_TYPE = new ConcurrentHashMap<>();
+	private static final ConcurrentMap<Identifier, VarItemInit<?>> VAR_ITEM_TYPE = new ConcurrentHashMap<>();
 	private static final String PATH = "varitem_config";
 
-	public static <T extends Item> VarItemInit<T> setup(L2Registrate reg, ResourceLocation id, Function<ResourceLocation, T> func, VarBuilder<T> builder) {
+	public static <T extends Item> VarItemInit<T> setup(L2Registrate reg, Identifier id, Function<Identifier, T> func, VarBuilder<T> builder) {
 		var ans = new VarItemInit<>(reg, id, func, builder);
 		VAR_ITEM_TYPE.put(id, ans);
 		return ans;
 	}
 
 	private final L2Registrate reg;
-	private final ResourceLocation id;
-	private final Function<ResourceLocation, T> func;
+	private final Identifier id;
+	private final Function<Identifier, T> func;
 	private final VarBuilder<T> builder;
 	private final Map<String, VarEntry<T>> defaults = new LinkedHashMap<>();
 	private final Set<String> registered = new LinkedHashSet<>();
 	private final Map<String, ItemEntry<T>> results = new ConcurrentHashMap<>();
 
-	private VarItemInit(L2Registrate reg, ResourceLocation id, Function<ResourceLocation, T> func, VarBuilder<T> builder) {
+	private VarItemInit(L2Registrate reg, Identifier id, Function<Identifier, T> func, VarBuilder<T> builder) {
 		this.reg = reg;
 		this.id = id;
 		this.func = func;
@@ -67,7 +67,7 @@ public class VarItemInit<T extends Item> {
 		if (event.getRegistry() != BuiltInRegistries.ITEM) return;
 		load();
 		for (var e : registered) {
-			var rl = ResourceLocation.fromNamespaceAndPath(reg.getModid(), e);
+			var rl = Identifier.fromNamespaceAndPath(reg.getModid(), e);
 			if (BuiltInRegistries.ITEM.containsKey(rl)) {
 				L2Core.LOGGER.error("Item ID {} is already used. Registration of varitem type {} skips this ID.", rl, id);
 				continue;
@@ -126,7 +126,7 @@ public class VarItemInit<T extends Item> {
 		boolean err = false;
 		for (var e : elem.getAsJsonArray()) {
 			var rl = e.getAsString();
-			if (ResourceLocation.isValidPath(rl)) {
+			if (Identifier.isValidPath(rl)) {
 				ans.add(rl);
 				checker.add(rl);
 			} else {

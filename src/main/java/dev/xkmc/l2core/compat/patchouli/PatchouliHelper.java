@@ -12,7 +12,7 @@ import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -32,11 +32,11 @@ public class PatchouliHelper {
 
 	public static final ProviderType<PatchouliProvider> PATCHOULI = ProviderType.registerServerData("patchouli", PatchouliProvider::new);
 
-	public static ItemStack getBook(ResourceLocation book) {
+	public static ItemStack getBook(Identifier book) {
 		return ItemModBook.forBook(book);
 	}
 
-	public static LootTable.Builder getBookLoot(ResourceLocation book) {
+	public static LootTable.Builder getBookLoot(Identifier book) {
 		return LootTable.lootTable().withPool(
 				LootPool.lootPool().add(LootItem.lootTableItem(PatchouliItems.BOOK)
 						.apply(SetComponentsFunction.setComponent(PatchouliDataComponents.BOOK, book)))
@@ -44,10 +44,10 @@ public class PatchouliHelper {
 	}
 
 	private final L2Registrate reg;
-	public final ResourceLocation book;
+	public final Identifier book;
 	public final RewardBuilder reward;
 
-	private ResourceLocation model;
+	private Identifier model;
 
 	public PatchouliHelper(L2Registrate reg, String name) {
 		this.reg = reg;
@@ -60,7 +60,7 @@ public class PatchouliHelper {
 	}
 
 	public PatchouliHelper buildModel(String path) {
-		model = ResourceLocation.fromNamespaceAndPath(reg.getModid(), path);
+		model = Identifier.fromNamespaceAndPath(reg.getModid(), path);
 		reg.addDataGenerator(ProviderType.ITEM_MODEL, pvd -> pvd.getBuilder(path)
 				.parent(new ModelFile.UncheckedModelFile("item/generated"))
 				.texture("layer0", "item/" + path));
@@ -81,7 +81,7 @@ public class PatchouliHelper {
 			builder.unlockedBy("has_" + pvd.safeName(unlock.get()),
 					DataIngredient.items(unlock.get()).getCriterion(pvd));
 			builder.save(ConditionalRecipeWrapper.mod(pvd, "patchouli"),
-					ResourceLocation.fromNamespaceAndPath(reg.getModid(), "book"));
+					Identifier.fromNamespaceAndPath(reg.getModid(), "book"));
 		});
 		return this;
 	}
@@ -100,7 +100,7 @@ public class PatchouliHelper {
 	}
 
 	public record BookEntry(String name, String landing_text, int version,
-							ResourceLocation model, ResourceLocation creative_tab,
+							Identifier model, Identifier creative_tab,
 							boolean use_resource_pack) {
 	}
 

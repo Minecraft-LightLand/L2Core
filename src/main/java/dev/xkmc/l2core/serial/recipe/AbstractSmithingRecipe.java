@@ -1,7 +1,7 @@
 package dev.xkmc.l2core.serial.recipe;
 
 import com.mojang.serialization.MapCodec;
-import net.minecraft.MethodsReturnNonnullByDefault;
+import com.mojang.logging.annotations.MethodsReturnNonnullByDefault;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
@@ -13,8 +13,6 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public abstract class AbstractSmithingRecipe<T extends AbstractSmithingRecipe<T>> extends SmithingTransformRecipe {
-
-	public static final Ingredient TEMPLATE_PLACEHOLDER = Ingredient.EMPTY;
 
 	public AbstractSmithingRecipe(Ingredient template, Ingredient base, Ingredient addition, ItemStack result) {
 		super(template, base, addition, result);

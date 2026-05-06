@@ -14,7 +14,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.contents.PlainTextContents;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
@@ -73,7 +73,7 @@ public class ClientEventHandler {
 				continue;
 			}
 			String id = tr.getKey().substring(prefix.length());
-			var rl = ResourceLocation.tryBySeparator(id, '.');
+			var rl = Identifier.tryBySeparator(id, '.');
 			if (rl == null) continue;
 			var ench = reg.get().get(ResourceKey.create(Registries.ENCHANTMENT, rl));
 			if (ench.isEmpty()) continue;

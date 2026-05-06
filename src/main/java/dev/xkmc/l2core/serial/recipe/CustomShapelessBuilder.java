@@ -8,7 +8,7 @@ import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.ShapelessRecipeBuilder;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.ShapelessRecipe;
 import net.minecraft.world.level.ItemLike;
@@ -25,7 +25,7 @@ public class CustomShapelessBuilder<T extends AbstractShapelessRecipe<T>> extend
 	}
 
 	@Override
-	public void save(RecipeOutput pRecipeOutput, ResourceLocation pId) {
+	public void save(RecipeOutput pRecipeOutput, Identifier pId) {
 		this.ensureValid(pId);
 		Advancement.Builder advancement$builder = pRecipeOutput.advancement()
 				.addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(pId))

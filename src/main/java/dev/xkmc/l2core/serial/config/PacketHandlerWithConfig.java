@@ -6,7 +6,7 @@ import dev.xkmc.l2core.init.L2Core;
 import dev.xkmc.l2serial.network.PacketHandler;
 import dev.xkmc.l2serial.serialization.codec.JsonCodec;
 import dev.xkmc.l2serial.util.Wrappers;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -93,7 +93,7 @@ public class PacketHandlerWithConfig extends PacketHandler {
 		}
 
 		@Override
-		protected void apply(Map<ResourceLocation, JsonElement> map, ResourceManager manager, ProfilerFiller filler) {
+		protected void apply(Map<Identifier, JsonElement> map, ResourceManager manager, ProfilerFiller filler) {
 			listener_before.forEach(Runnable::run);
 			map.forEach((k, v) -> {
 				if (!k.getNamespace().startsWith("_")) {
@@ -104,21 +104,21 @@ public class PacketHandlerWithConfig extends PacketHandler {
 				String id = k.getPath().split("/")[0];
 				if (types.containsKey(id)) {
 					String name = k.getPath().substring(id.length() + 1);
-					ResourceLocation nk = k.withPath(name);
+					Identifier nk = k.withPath(name);
 					addJson(types.get(id), nk, v);
 				}
 			});
 			listener_after.forEach(Runnable::run);
 		}
 
-		private <T extends BaseConfig> void addJson(BaseConfigType<T> type, ResourceLocation k, JsonElement v) {
+		private <T extends BaseConfig> void addJson(BaseConfigType<T> type, Identifier k, JsonElement v) {
 			T config = new JsonCodec(getRegistryLookup()).from(v, type.cls, null);
 			if (config != null) {
 				addConfig(type, k, config);
 			}
 		}
 
-		private <T extends BaseConfig> void addConfig(BaseConfigType<T> type, ResourceLocation k, T config) {
+		private <T extends BaseConfig> void addConfig(BaseConfigType<T> type, Identifier k, T config) {
 			config.id = k;
 			type.configs.put(k, config);
 			configs.add(new ConfigInstance(type.id, k, config));
@@ -136,7 +136,7 @@ public class PacketHandlerWithConfig extends PacketHandler {
 		}
 	}
 
-	public record ConfigInstance(String name, ResourceLocation id, BaseConfig config) {
+	public record ConfigInstance(String name, Identifier id, BaseConfig config) {
 
 	}
 
