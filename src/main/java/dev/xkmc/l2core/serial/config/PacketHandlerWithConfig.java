@@ -114,25 +114,30 @@ public class PacketHandlerWithConfig extends PacketHandler {
 		private <T extends BaseConfig> void addJson(BaseConfigType<T> type, Identifier k, JsonElement v) {
 			T config = new JsonCodec(getRegistryLookup()).from(v, type.cls, null);
 			if (config != null) {
-				addConfig(type, k, config);
+				addServerConfig(type, k, config);
 			}
 		}
 
-		private <T extends BaseConfig> void addConfig(BaseConfigType<T> type, Identifier k, T config) {
+		private <T extends BaseConfig> void addServerConfig(BaseConfigType<T> type, Identifier k, T config) {
 			config.id = k;
 			type.configs.put(k, config);
 			configs.add(new ConfigInstance(type.id, k, config));
+		}
+
+		private <T extends BaseConfig> void addClientConfig(BaseConfigType<T> type, ResourceLocation k, T config) {
+			config.id = k;
+			type.clientConfigs.put(k, config);
 		}
 
 		/**
 		 * Called on client side only
 		 */
 		public void apply(ArrayList<ConfigInstance> list) {
-			listener_before.forEach(Runnable::run);
+			types.values().forEach(BaseConfigType::clientBeforeReload);
 			for (var e : list) {
-				addConfig(types.get(e.name), e.id(), Wrappers.cast(e.config));
+				addClientConfig(types.get(e.name), e.id(), Wrappers.cast(e.config));
 			}
-			listener_after.forEach(Runnable::run);
+			types.values().forEach(BaseConfigType::clientAfterReload);
 		}
 	}
 

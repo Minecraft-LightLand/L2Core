@@ -9,6 +9,7 @@ import dev.xkmc.l2core.base.effects.ClientEffectCap;
 import dev.xkmc.l2core.base.effects.EffectToClient;
 import dev.xkmc.l2core.base.effects.api.*;
 import dev.xkmc.l2core.init.L2Core;
+import dev.xkmc.l2core.init.L2CoreConfig;
 import dev.xkmc.l2core.init.L2LibReg;
 import dev.xkmc.l2core.util.Proxy;
 import net.minecraft.Util;
@@ -76,10 +77,18 @@ public class ClientEffectRenderEvents {
 					.createCompositeState(false)
 	));
 
+	public static RenderType get2DIcon(ResourceLocation id) {
+		return ICON_TYPE.apply(id);
+	}
+
 	@SubscribeEvent
 	public static void levelRenderLast(RenderLevelStageEvent event) {
 		if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_WEATHER) return;
-
+		if (ICONS.isEmpty()) return;
+		if (!L2CoreConfig.CLIENT.renderOverlayIcons.get()) {
+			ICONS.clear();
+			return;
+		}
 		DUMMY.setupRenderState();
 		DUMMY.clearRenderState();
 		MultiBufferSource.BufferSource buffers = Minecraft.getInstance().renderBuffers().bufferSource();
@@ -121,6 +130,10 @@ public class ClientEffectRenderEvents {
 			if (l1.size() > size) {
 				index++;
 			}
+		}
+
+		if (entity == Minecraft.getInstance().getCameraEntity()) {
+			return;
 		}
 
 		int n = index;

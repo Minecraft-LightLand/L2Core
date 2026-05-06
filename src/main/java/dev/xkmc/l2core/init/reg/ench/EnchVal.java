@@ -33,7 +33,12 @@ public interface EnchVal {
 	ResourceKey<Enchantment> id();
 
 	@DataGenOnly
-	Holder<Enchantment> datagenDirect(RegistrateProvider pvd);
+	Holder<Enchantment> datagenDirect();
+
+	@DataGenOnly
+	default Holder<Enchantment> datagenDirect(RegistrateProvider pvd) {
+		return datagenDirect();
+	}
 
 	default Optional<Holder<Enchantment>> safeHolder() {
 		return Optional.ofNullable(CommonHooks.resolveLookup(Registries.ENCHANTMENT)).flatMap(e -> e.get(id()));
@@ -55,7 +60,7 @@ public interface EnchVal {
 		Lazy<Builder> builder();
 
 		@Override
-		default Holder<Enchantment> datagenDirect(RegistrateProvider pvd) {
+		default Holder<Enchantment> datagenDirect() {
 			var val = builder().get().cache;
 			if (val == null) throw new IllegalStateException("Enchantment is not built yet");
 			return new DataGenHolder<>(id(), val);

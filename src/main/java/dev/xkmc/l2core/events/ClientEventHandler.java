@@ -38,6 +38,7 @@ public class ClientEventHandler {
 
 	@SubscribeEvent(priority = EventPriority.LOW)
 	public static void modifyItemTooltip(ItemTooltipEvent event) {
+		if (L2LibReg.ENCH.reg().size() == 0) return;
 		var config = L2CoreConfig.CLIENT.addEnchantmentDescription.get();
 		boolean skip = config == EnchDesc.DISABLE || config == EnchDesc.SHIFT_ONLY && !Screen.hasShiftDown();
 		var list = event.getToolTip();
@@ -85,7 +86,7 @@ public class ClientEventHandler {
 			} else color = EnchColor.DEFAULT;
 
 			var legacy = LegacyEnchantment.findFirst(ench.get(), CustomDescEnchantment.class);
-			if (legacy.isPresent()){
+			if (legacy.isPresent()) {
 				comp = legacy.get().title(stack, list.get(i), alt, book, color);
 				compound.set(i, Either.left(comp));
 				flag = true;

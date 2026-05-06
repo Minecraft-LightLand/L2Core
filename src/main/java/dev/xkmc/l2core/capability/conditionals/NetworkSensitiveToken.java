@@ -10,7 +10,7 @@ public interface NetworkSensitiveToken<T extends ConditionalToken> {
 	void onSync(@Nullable T old, Player player);
 
 	default void sync(TokenKey<T> key, T token, ServerPlayer sp) {
-		L2Core.PACKET_HANDLER.toClientPlayer(TokenToClient.of(key, token), sp);
+		L2Core.PACKET_HANDLER.toClientPlayer(TokenToClient.of(sp.registryAccess(), key, token), sp);
 	}
 
 }
