@@ -3,8 +3,9 @@ package dev.xkmc.l2core.init.reg.registrate;
 import com.mojang.datafixers.util.Either;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderOwner;
-import net.minecraft.resources.ResourceKey;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 
 import java.util.Optional;
@@ -21,6 +22,16 @@ public interface LegacyHolder<T> extends Holder<T>, Supplier<T> {
 	@Override
 	default T value() {
 		return get();
+	}
+
+	@Override
+	default DataComponentMap components() {
+		return DataComponentMap.EMPTY;
+	}
+
+	@Override
+	default boolean areComponentsBound() {
+		return true;
 	}
 
 	@Override

@@ -1,17 +1,15 @@
 package dev.xkmc.l2core.serial.config;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import dev.xkmc.l2core.init.L2Core;
 import dev.xkmc.l2serial.network.PacketHandler;
-import dev.xkmc.l2serial.serialization.codec.JsonCodec;
+import dev.xkmc.l2serial.serialization.codec.CodecAdaptor;
 import dev.xkmc.l2serial.util.Wrappers;
+import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
-import net.neoforged.fml.ModList;
-import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 
 import java.util.ArrayList;
@@ -34,10 +32,10 @@ public class PacketHandlerWithConfig extends PacketHandler {
 		}
 	}
 
-	public static void addReloadListeners(AddReloadListenerEvent event) {
+	public static void addReloadListeners(AddServerReloadListenersEvent event) {
 		for (PacketHandlerWithConfig handler : INTERNAL.values()) {
 			if (handler.listener != null)
-				event.addListener(handler.listener);
+				event.addListener(L2Core.loc(handler.modid), handler.listener);
 		}
 	}
 
@@ -86,36 +84,24 @@ public class PacketHandlerWithConfig extends PacketHandler {
 		return type.load();
 	}
 
-	class ConfigReloadListener extends SimpleJsonResourceReloadListener {
+	class ConfigReloadListener extends SimpleJsonResourceReloadListener<BaseConfig> {
 
-		public ConfigReloadListener(String path) {
-			super(new Gson(), path);
+		protected ConfigReloadListener(String path) {
+			super(new CodecAdaptor<>(BaseConfig.class), FileToIdConverter.json(path));
 		}
 
 		@Override
-		protected void apply(Map<Identifier, JsonElement> map, ResourceManager manager, ProfilerFiller filler) {
+		protected void apply(Map<Identifier, BaseConfig> map, ResourceManager manager, ProfilerFiller filler) {
 			listener_before.forEach(Runnable::run);
 			map.forEach((k, v) -> {
-				if (!k.getNamespace().startsWith("_")) {
-					if (!ModList.get().isLoaded(k.getNamespace())) {
-						return;
-					}
-				}
 				String id = k.getPath().split("/")[0];
 				if (types.containsKey(id)) {
 					String name = k.getPath().substring(id.length() + 1);
 					Identifier nk = k.withPath(name);
-					addJson(types.get(id), nk, v);
+					addServerConfig(types.get(id), nk, Wrappers.cast(v));
 				}
 			});
 			listener_after.forEach(Runnable::run);
-		}
-
-		private <T extends BaseConfig> void addJson(BaseConfigType<T> type, Identifier k, JsonElement v) {
-			T config = new JsonCodec(getRegistryLookup()).from(v, type.cls, null);
-			if (config != null) {
-				addServerConfig(type, k, config);
-			}
 		}
 
 		private <T extends BaseConfig> void addServerConfig(BaseConfigType<T> type, Identifier k, T config) {
@@ -124,7 +110,7 @@ public class PacketHandlerWithConfig extends PacketHandler {
 			configs.add(new ConfigInstance(type.id, k, config));
 		}
 
-		private <T extends BaseConfig> void addClientConfig(BaseConfigType<T> type, ResourceLocation k, T config) {
+		private <T extends BaseConfig> void addClientConfig(BaseConfigType<T> type, Identifier k, T config) {
 			config.id = k;
 			type.clientConfigs.put(k, config);
 		}

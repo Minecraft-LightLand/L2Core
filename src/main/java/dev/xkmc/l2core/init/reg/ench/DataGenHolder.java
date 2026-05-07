@@ -3,6 +3,7 @@ package dev.xkmc.l2core.init.reg.ench;
 import com.mojang.datafixers.util.Either;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderOwner;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
@@ -15,6 +16,16 @@ public record DataGenHolder<T>(ResourceKey<T> key, T val) implements Holder<T> {
 	@Override
 	public T value() {
 		return val;
+	}
+
+	@Override
+	public boolean areComponentsBound() {
+		return true;
+	}
+
+	@Override
+	public DataComponentMap components() {
+		return DataComponentMap.EMPTY;
 	}
 
 	@Override

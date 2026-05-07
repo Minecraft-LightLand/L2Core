@@ -15,13 +15,13 @@ import net.minecraft.world.item.enchantment.Enchantment;
 public class L2TagGen {
 
 	public static <T> ProviderType<RegistrateTagsProvider.IntrinsicImpl<T>> getProvider(ResourceKey<Registry<T>> id, Registry<T> reg) {
-		String name = id.location().getPath();
+		String name = id.identifier().getPath();
 		return ProviderType.registerIntrinsicTag("tags/" + name, name, id,
 				ench -> reg.getResourceKey(ench).orElseThrow());
 	}
 
 	public static <T> ProviderType<RegistrateTagsProvider.Impl<T>> getProvider(ResourceKey<Registry<T>> id) {
-		String name = id.location().getPath();
+		String name = id.identifier().getPath();
 		return ProviderType.registerDynamicTag("tags/" + name, name, id);
 	}
 
@@ -37,7 +37,7 @@ public class L2TagGen {
 	public static final TagKey<MobEffect> TRACKED_EFFECTS = effectTag(Identifier.fromNamespaceAndPath(L2Core.MODID, "tracked_effects"));
 
 	public static void onEffectTagGen(RegistrateTagsProvider.IntrinsicImpl<MobEffect> pvd) {
-		pvd.addTag(TRACKED_EFFECTS);
+		pvd.rawBuilder(TRACKED_EFFECTS);
 	}
 
 	public static TagKey<MobEffect> effectTag(Identifier id) {

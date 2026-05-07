@@ -8,6 +8,7 @@ import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializer;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -30,7 +31,7 @@ public class SyncedData {
 		INT = new Simple<>(EntityDataSerializers.INT, Codec.INT);
 		BLOCK_POS = new Simple<>(EntityDataSerializers.BLOCK_POS, BlockPos.CODEC);
 		STRING = new Simple<>(EntityDataSerializers.STRING, Codec.STRING);
-		UUID = new Opt<>(EntityDataSerializers.OPTIONAL_UUID, UUIDUtil.CODEC);
+		UUID = new Opt<>(EntityDataSerializer.forValueType(UUIDUtil.STREAM_CODEC.apply(ByteBufCodecs::optional)), UUIDUtil.CODEC);
 	}
 
 	private final Definer cls;

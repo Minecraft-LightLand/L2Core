@@ -8,7 +8,8 @@ import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementType;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.common.conditions.ICondition;
 
 import javax.annotation.Nullable;
@@ -44,10 +45,10 @@ public class AdvancementGenerator {
 		}
 
 		public Entry root(String id, Item item, CriterionBuilder builder, String title, String desc) {
-			return root(id, item.getDefaultInstance(), builder, title, desc);
+			return root(id, item == Items.AIR ? null : new ItemStackTemplate(item), builder, title, desc);
 		}
 
-		public Entry root(String id, ItemStack item, CriterionBuilder builder, String title, String desc) {
+		public Entry root(String id, @Nullable ItemStackTemplate item, CriterionBuilder builder, String title, String desc) {
 			if (root == null) {
 				root = new Entry(new EntryData(id, item, builder, title, desc), null);
 			}
@@ -55,7 +56,7 @@ public class AdvancementGenerator {
 		}
 
 		public Entry hidden(String id, CriterionBuilder builder) {
-			return new Entry(new EntryData(id, ItemStack.EMPTY, builder, "", ""), null);
+			return new Entry(new EntryData(id, null, builder, "", ""), null);
 		}
 
 		public class Entry {
@@ -82,17 +83,17 @@ public class AdvancementGenerator {
 			}
 
 			public Entry create(String id, Item item, CriterionBuilder builder, String title, String desc) {
-				return create(id, item.getDefaultInstance(), builder, title, desc);
+				return create(id, item == Items.AIR ? null : new ItemStackTemplate(item), builder, title, desc);
 			}
 
-			public Entry create(String id, ItemStack item, CriterionBuilder builder, String title, String desc) {
+			public Entry create(String id, @Nullable ItemStackTemplate item, CriterionBuilder builder, String title, String desc) {
 				Entry sub = new Entry(new EntryData(id, item, builder, title, desc), this);
 				children.add(sub);
 				return sub;
 			}
 
 			public Entry patchouli(L2Registrate reg, CriterionBuilder builder, PatchouliHelper pat, String title, String desc) {
-				ItemStack stack = PatchouliHelper.getBook(pat.book);
+				ItemStackTemplate stack = PatchouliHelper.getBook(pat.book);
 				return create("patchouli", stack, builder, title, desc)
 						.add(new ModLoadedAdv("patchouli"))
 						.add(pat.reward);
@@ -126,7 +127,7 @@ public class AdvancementGenerator {
 
 			public void build() {
 				var builder = Advancement.Builder.advancement();
-				if (!data.item.isEmpty()) {
+				if (data.item != null) {
 					builder.display(data.item,
 							pvd.title(modid, tab + "." + data.id, data.title),
 							pvd.desc(modid, tab + "." + data.id, data.desc),
@@ -158,9 +159,10 @@ public class AdvancementGenerator {
 
 	}
 
-	private record EntryData(String id, ItemStack item, List<IAdvBuilder> builder, String title, String desc) {
+	private record EntryData(String id, @Nullable ItemStackTemplate item, List<IAdvBuilder> builder, String title,
+							 String desc) {
 
-		EntryData(String id, ItemStack item, IAdvBuilder builder, String title, String desc) {
+		EntryData(String id, @Nullable ItemStackTemplate item, IAdvBuilder builder, String title, String desc) {
 			this(id, item, new ArrayList<>(List.of(builder)), title, desc);
 		}
 

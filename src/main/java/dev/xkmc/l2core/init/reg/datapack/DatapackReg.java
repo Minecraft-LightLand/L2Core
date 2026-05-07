@@ -4,8 +4,8 @@ import com.mojang.serialization.Codec;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.neoforged.neoforge.registries.DataPackRegistryEvent;
 
 import javax.annotation.Nullable;
@@ -19,15 +19,11 @@ public record DatapackReg<T>(ResourceKey<Registry<T>> key, Codec<T> codec) {
 
 	@Nullable
 	public Holder<T> get(RegistryAccess access, Identifier id) {
-		var reg = access.registry(key);
-		if (reg.isEmpty()) return null;
-		return reg.get().getHolder(id).orElse(null);
+		return access.holder(ResourceKey.create(key, id)).orElse(null);
 	}
 
-	public Stream<Holder<T>> getAll(RegistryAccess access) {
-		var reg = access.registry(key);
-		if (reg.isEmpty()) return Stream.empty();
-		return reg.get().holders().map(e -> e);
+	public Iterable<Holder<T>> getAll(RegistryAccess access) {
+		return access.holderOrThrow(key).value().asHolderIdMap();
 	}
 
 }

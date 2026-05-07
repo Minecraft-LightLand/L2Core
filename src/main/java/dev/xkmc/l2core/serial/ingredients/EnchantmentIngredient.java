@@ -4,18 +4,24 @@ import dev.xkmc.l2core.init.L2LibReg;
 import dev.xkmc.l2core.util.DataGenOnly;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.item.EnchantedBookItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.item.enchantment.EnchantmentInstance;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.neoforged.neoforge.common.crafting.ICustomIngredient;
 import net.neoforged.neoforge.common.crafting.IngredientType;
 
-import java.util.stream.IntStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Stream;
 
 public record EnchantmentIngredient(Holder<Enchantment> enchantment, int minLevel) implements ICustomIngredient {
@@ -31,11 +37,23 @@ public record EnchantmentIngredient(Holder<Enchantment> enchantment, int minLeve
 	}
 
 	@Override
-	public Stream<ItemStack> getItems() {
+	public SlotDisplay display() {
+		List<SlotDisplay> ans = new ArrayList<>();
 		var ench = enchantment.value();
-		return IntStream.range(minLevel, ench.getMaxLevel() + 1)
-				.mapToObj(i -> EnchantedBookItem.createForEnchantment(
-						new EnchantmentInstance(enchantment, i)));
+		for (int i = minLevel; i <= ench.getMaxLevel(); i++) {
+			var map = new ItemEnchantments.Mutable(ItemEnchantments.EMPTY);
+			map.set(enchantment, i);
+			var patch = DataComponentPatch.builder()
+					.set(DataComponents.ENCHANTMENTS, map.toImmutable()).build();
+			var stack = new ItemStackTemplate(Items.ENCHANTED_BOOK, patch);
+			ans.add(new SlotDisplay.ItemStackSlotDisplay(stack));
+		}
+		return new SlotDisplay.Composite(ans);
+	}
+
+	@Override
+	public Stream<Holder<Item>> items() {
+		return Stream.of(Items.ENCHANTED_BOOK.builtInRegistryHolder());
 	}
 
 	@Override

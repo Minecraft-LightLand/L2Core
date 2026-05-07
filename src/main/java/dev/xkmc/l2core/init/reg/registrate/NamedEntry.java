@@ -6,11 +6,15 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 
+import javax.annotation.Nullable;
+
 public class NamedEntry<T extends NamedEntry<T>> {
 
 	private final L2Registrate.RegistryInstance<T> registry;
 
+	@Nullable
 	private String desc = null;
+	@Nullable
 	private Identifier id = null;
 
 	public NamedEntry(L2Registrate.RegistryInstance<T> registry) {
@@ -21,7 +25,7 @@ public class NamedEntry<T extends NamedEntry<T>> {
 		if (desc != null)
 			return desc;
 		Identifier rl = getRegistryName();
-		Identifier reg = registry.key().location();
+		Identifier reg = registry.key().identifier();
 		desc = reg.getPath() + "." + rl.getNamespace() + "." + rl.getPath();
 		return desc;
 	}

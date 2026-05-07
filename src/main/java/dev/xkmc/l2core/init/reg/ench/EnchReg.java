@@ -16,8 +16,6 @@ import net.minecraft.util.Unit;
 import net.minecraft.world.item.enchantment.ConditionalEffect;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.effects.EnchantmentValueEffect;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.neoforged.neoforge.common.util.Lazy;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -63,15 +61,12 @@ public class EnchReg {
 		return new EECVal.Special.Impl<>(reg(id, codec.listOf()));
 	}
 
-	public <T> EECVal<T> eff(String id, Codec<T> codec, LootContextParamSet loot) {
-		return new EECVal.Impl<>(reg(id, ConditionalEffect.codec(codec, loot).listOf()));
+	public <T> EECVal<T> eff(String id, Codec<T> codec) {
+		return new EECVal.Impl<>(reg(id, ConditionalEffect.codec(codec).listOf()));
 	}
 
 	public EECVal.Num val(String id) {
-		return new EECVal.Num.Impl(reg(id, ConditionalEffect.codec(
-				EnchantmentValueEffect.CODEC,
-				LootContextParamSets.ENCHANTED_ITEM
-		).listOf()));
+		return new EECVal.Num.Impl(reg(id, ConditionalEffect.codec(EnchantmentValueEffect.CODEC).listOf()));
 	}
 
 	private <T extends EnchVal.Impl> T enchBase(String id, String name, String desc, Function<ResourceKey<Enchantment>, T> factory) {
@@ -85,20 +80,20 @@ public class EnchReg {
 
 	public EnchVal ench(String id, String name, String desc, UnaryOperator<EnchVal.Builder> cons) {
 		return enchBase(id, name, desc, key -> new EnchVal.Simple(key,
-				Lazy.of(() -> cons.apply(new EnchVal.Builder(key.location())))));
+				Lazy.of(() -> cons.apply(new EnchVal.Builder(key.identifier())))));
 	}
 
 	public EnchVal.Flag enchFlag(String id, String name, String desc, UnaryOperator<EnchVal.Builder> cons) {
 		var unit = unit(id);
 		return enchBase(id, name, desc, key -> new EnchVal.FlagImpl(unit, key,
-				Lazy.of(() -> cons.apply(new EnchVal.Builder(key.location()).effect(e ->
+				Lazy.of(() -> cons.apply(new EnchVal.Builder(key.identifier()).effect(e ->
 						e.withEffect(unit.get()))))));
 	}
 
 	public <T extends LegacyEnchantment> EnchVal.Legacy<T> enchLegacy(String id, String name, String desc, UnaryOperator<EnchVal.Builder> cons, Supplier<T> factory) {
 		var unit = legacy.register(id, factory);
 		return enchBase(id, name, desc, key -> new EnchVal.LegacyImpl<>(key, unit,
-				Lazy.of(() -> cons.apply(new EnchVal.Builder(key.location()).effect(e ->
+				Lazy.of(() -> cons.apply(new EnchVal.Builder(key.identifier()).effect(e ->
 						e.withSpecialEffect(L2LibReg.LEGACY.get(), List.of(unit.get())))))
 		));
 	}
@@ -109,13 +104,13 @@ public class EnchReg {
 
 	public void build(BootstrapContext<Enchantment> ctx) {
 		for (var e : parent) e.build(ctx);
-		for (var e : list) ctx.register(e.id(), e.builder().get().build(ctx, e.id().location()));
+		for (var e : list) ctx.register(e.id(), e.builder().get().build(ctx, e.id().identifier()));
 	}
 
 	public void doTagGen(RegistrateTagsProvider<Enchantment> pvd) {
 		for (var e : list) {
 			for (var t : e.builder().get().tags) {
-				pvd.addTag(t).add(e.id());
+				pvd.rawBuilder(t).addElement(e.id().identifier());
 			}
 		}
 	}

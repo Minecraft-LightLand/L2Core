@@ -2,12 +2,16 @@ package dev.xkmc.l2core.serial.ingredients;
 
 import dev.xkmc.l2core.init.L2LibReg;
 import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.neoforged.neoforge.common.crafting.ICustomIngredient;
 import net.neoforged.neoforge.common.crafting.IngredientType;
 
@@ -15,15 +19,21 @@ import java.util.stream.Stream;
 
 public record PotionIngredient(Holder<Potion> potion) implements ICustomIngredient {
 
-	public static Ingredient of(Holder<Potion> potion){
+	public static Ingredient of(Holder<Potion> potion) {
 		return new PotionIngredient(potion).toVanilla();
 	}
 
 	@Override
-	public Stream<ItemStack> getItems() {
-		ItemStack stack = new ItemStack(Items.POTION);
-		stack.set(DataComponents.POTION_CONTENTS, new PotionContents(potion));
-		return Stream.of(stack);
+	public SlotDisplay display() {
+		var patch = DataComponentPatch.builder()
+				.set(DataComponents.POTION_CONTENTS, new PotionContents(potion))
+				.build();
+		return new SlotDisplay.ItemStackSlotDisplay(new ItemStackTemplate(Items.POTION, patch));
+	}
+
+	@Override
+	public Stream<Holder<Item>> items() {
+		return Stream.of(Items.POTION.builtInRegistryHolder());
 	}
 
 	@Override

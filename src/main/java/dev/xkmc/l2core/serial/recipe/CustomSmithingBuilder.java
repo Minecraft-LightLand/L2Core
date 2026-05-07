@@ -1,40 +1,24 @@
 package dev.xkmc.l2core.serial.recipe;
 
-import net.minecraft.advancements.Advancement;
-import net.minecraft.advancements.AdvancementRequirements;
-import net.minecraft.advancements.AdvancementRewards;
-import net.minecraft.advancements.critereon.RecipeUnlockedTrigger;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.SmithingTransformRecipeBuilder;
-import net.minecraft.resources.Identifier;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.SmithingTransformRecipe;
+import net.minecraft.world.item.crafting.Recipe;
 
 public class CustomSmithingBuilder<T extends AbstractSmithingRecipe<T>> extends SmithingTransformRecipeBuilder {
 
 	private final AbstractSmithingRecipe.RecipeFactory<T> factory;
 
-	public CustomSmithingBuilder(AbstractSmithingRecipe.RecipeFactory<T> factory,
-								 Ingredient template,
-								 Ingredient base,
-								 Ingredient add,
-								 Item result) {
-		super(template, base, add, RecipeCategory.MISC, result);
+	public CustomSmithingBuilder(AbstractSmithingRecipe.RecipeFactory<T> factory, Ingredient template, Ingredient base, Ingredient addition, RecipeCategory category, ItemStackTemplate result) {
+		super(template, base, addition, category, result);
 		this.factory = factory;
 	}
 
-	public void save(RecipeOutput pRecipeOutput, Identifier pRecipeId) {
-		this.ensureValid(pRecipeId);
-		Advancement.Builder advancement$builder = pRecipeOutput.advancement()
-				.addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(pRecipeId))
-				.rewards(AdvancementRewards.Builder.recipe(pRecipeId))
-				.requirements(AdvancementRequirements.Strategy.OR);
-		this.criteria.forEach(advancement$builder::addCriterion);
-		SmithingTransformRecipe smithingtransformrecipe = new SmithingTransformRecipe(this.template, this.base, this.addition, new ItemStack(this.result));
-		pRecipeOutput.accept(pRecipeId, factory.map(smithingtransformrecipe), advancement$builder.build(pRecipeId.withPrefix("recipes/" + this.category.getFolderName() + "/")));
+	public void save(RecipeOutput output, ResourceKey<Recipe<?>> id) {
+		super.save(new DelegateRecipeOutput<>(output, factory::map), id);
 	}
 
 }

@@ -4,7 +4,7 @@ import dev.xkmc.l2core.init.L2Core;
 import dev.xkmc.l2core.serial.config.PacketHandlerWithConfig;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
@@ -12,11 +12,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 
-@EventBusSubscriber(modid = L2Core.MODID, bus = EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber(modid = L2Core.MODID)
 public class SchedulerHandler {
 
 	@SubscribeEvent
-	public static void addReloadListeners(AddReloadListenerEvent event) {
+	public static void addReloadListeners(AddServerReloadListenersEvent event) {
 		PacketHandlerWithConfig.addReloadListeners(event);
 	}
 

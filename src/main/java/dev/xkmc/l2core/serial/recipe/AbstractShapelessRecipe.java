@@ -26,7 +26,7 @@ public abstract class AbstractShapelessRecipe<T extends AbstractShapelessRecipe<
 		T create(CommonInfo commonInfo, CraftingBookInfo bookInfo, ItemStackTemplate result, List<Ingredient> ingredients);
 
 		default T map(ShapelessRecipe r) {
-			return create(new CommonInfo(r.showNotification()), new CraftingBookInfo(r.category(), r.group()), r.result, r.placementInfo().ingredients());
+			return create(new CommonInfo(r.showNotification()), new CraftingBookInfo(r.category(), r.group()), r.result, r.ingredients);
 		}
 
 	}

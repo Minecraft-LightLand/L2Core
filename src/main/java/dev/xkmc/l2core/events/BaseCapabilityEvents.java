@@ -10,7 +10,7 @@ import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
-@EventBusSubscriber(modid = L2Core.MODID, bus = EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber(modid = L2Core.MODID)
 public class BaseCapabilityEvents {
 
 	@SubscribeEvent

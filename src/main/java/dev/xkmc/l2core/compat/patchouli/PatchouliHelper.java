@@ -1,38 +1,10 @@
 package dev.xkmc.l2core.compat.patchouli;
 
-import com.tterrag.registrate.providers.ProviderType;
-import com.tterrag.registrate.util.DataIngredient;
-import dev.xkmc.l2core.init.reg.registrate.L2Registrate;
-import dev.xkmc.l2core.serial.advancements.RewardBuilder;
-import dev.xkmc.l2core.serial.recipe.ConditionalRecipeWrapper;
-import net.minecraft.Util;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.data.recipes.RecipeBuilder;
-import net.minecraft.data.recipes.RecipeCategory;
-import net.minecraft.data.recipes.ShapedRecipeBuilder;
-import net.minecraft.data.recipes.ShapelessRecipeBuilder;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.Identifier;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.storage.loot.LootPool;
-import net.minecraft.world.level.storage.loot.LootTable;
-import net.minecraft.world.level.storage.loot.entries.LootItem;
-import net.minecraft.world.level.storage.loot.functions.SetComponentsFunction;
-import net.neoforged.neoforge.client.model.generators.ModelFile;
-import vazkii.patchouli.common.item.ItemModBook;
-import vazkii.patchouli.common.item.PatchouliDataComponents;
-import vazkii.patchouli.common.item.PatchouliItems;
-
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-
 public class PatchouliHelper {
-
+/*
 	public static final ProviderType<PatchouliProvider> PATCHOULI = ProviderType.registerServerData("patchouli", PatchouliProvider::new);
 
-	public static ItemStack getBook(Identifier book) {
+	public static ItemStackTemplate getBook(Identifier book) {
 		return ItemModBook.forBook(book);
 	}
 
@@ -67,14 +39,6 @@ public class PatchouliHelper {
 		return this;
 	}
 
-	public PatchouliHelper buildShapelessRecipe(Consumer<ShapelessRecipeBuilder> cons, Supplier<Item> unlock) {
-		return buildRecipe(() -> Util.make(new ShapelessRecipeBuilder(RecipeCategory.MISC, getBook(book)), cons), unlock);
-	}
-
-	public PatchouliHelper buildShapedRecipe(Consumer<ShapedRecipeBuilder> cons, Supplier<Item> unlock) {
-		return buildRecipe(() -> Util.make(new ShapedRecipeBuilder(RecipeCategory.MISC, getBook(book)), cons), unlock);
-	}
-
 	private PatchouliHelper buildRecipe(Supplier<RecipeBuilder> cons, Supplier<Item> unlock) {
 		reg.addDataGenerator(ProviderType.RECIPE, pvd -> {
 			var builder = cons.get();
@@ -95,13 +59,13 @@ public class PatchouliHelper {
 		reg.addRawLang(titleId, title);
 		reg.addRawLang(descId, landing);
 		reg.addDataGenerator(PATCHOULI, pvd -> pvd.accept(reg.getModid() + "/patchouli_books/" + book.getPath() + "/book",
-				new BookEntry(titleId, descId, ver, model, tab.location(), true)));
+				new BookEntry(titleId, descId, ver, model, tab.identifier(), true)));
 		return this;
 	}
 
 	public record BookEntry(String name, String landing_text, int version,
 							Identifier model, Identifier creative_tab,
 							boolean use_resource_pack) {
-	}
+	}*/
 
 }

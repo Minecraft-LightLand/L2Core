@@ -52,7 +52,7 @@ public class AddItemModifier extends LootModifier {
 
 	@Override
 	protected @NotNull ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
-		if (!context.hasParam(LootContextParams.DAMAGE_SOURCE)) {
+		if (!context.hasParameter(LootContextParams.DAMAGE_SOURCE)) {
 			return generatedLoot;
 		}
 		if (chance == null || context.getRandom().nextDouble() <= chance.getAsDouble()) {

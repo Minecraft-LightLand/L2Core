@@ -8,7 +8,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.portal.DimensionTransition;
+import net.minecraft.world.level.portal.TeleportTransition;
 import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
 
@@ -17,11 +17,11 @@ import java.util.Set;
 public class TeleportTool {
 
 	public static void teleportHome(ServerLevel world, ServerPlayer player) {
-		DimensionTransition respawn = player.findRespawnPositionAndUseSpawnBlock(true, DimensionTransition.DO_NOTHING);
+		TeleportTransition respawn = player.findRespawnPositionAndUseSpawnBlock(true, TeleportTransition.DO_NOTHING);
 		if (world == respawn.newLevel()) {
-			player.moveTo(respawn.pos(), respawn.yRot(), respawn.xRot());
+			player.snapTo(respawn.position(), respawn.yRot(), respawn.xRot());
 		} else {
-			var pos = respawn.pos();
+			var pos = respawn.position();
 			performTeleport(player, respawn.newLevel(), pos.x, pos.y, pos.z, respawn.yRot(), respawn.xRot());
 		}
 	}
@@ -36,7 +36,7 @@ public class TeleportTool {
 		if (!Level.isInSpawnableBounds(blockpos)) return;
 		float yr = Mth.wrapDegrees(yaw);
 		float xr = Mth.wrapDegrees(pitch);
-		if (e.teleportTo(level, x, y, z, Set.of(), yr, xr)) {
+		if (e.teleportTo(level, x, y, z, Set.of(), yr, xr, false)) {
 			if (e instanceof LivingEntity le) {
 				if (!le.isFallFlying()) {
 					e.setDeltaMovement(e.getDeltaMovement().multiply(1.0, 0.0, 1.0));

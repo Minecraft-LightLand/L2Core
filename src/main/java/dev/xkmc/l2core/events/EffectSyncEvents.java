@@ -12,7 +12,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
-@EventBusSubscriber(modid = L2Core.MODID, bus = EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber(modid = L2Core.MODID)
 public class EffectSyncEvents {
 
 	private static boolean isTracked(Holder<MobEffect> eff) {

@@ -1,6 +1,7 @@
 package dev.xkmc.l2core.base.effects;
 
 import dev.xkmc.l2core.base.effects.api.ForceEffect;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -52,8 +53,8 @@ public class EffectUtil {
 				ins.isAmbient(), ins.isVisible(), ins.showIcon());
 		if (ins.getEffect() instanceof ForceEffect)
 			forceAddEffect(entity, ins, source);
-		else if (ins.getEffect().value().isInstantenous())
-			ins.getEffect().value().applyInstantenousEffect(null, null, entity, ins.getAmplifier(), 1);
+		else if (ins.getEffect().value().isInstantenous() && entity.level() instanceof ServerLevel sl)
+			ins.getEffect().value().applyInstantenousEffect(sl, source, source, entity, ins.getAmplifier(), 1);
 		else entity.addEffect(ins, source);
 	}
 
@@ -71,8 +72,8 @@ public class EffectUtil {
 		Iterator<MobEffectInstance> itr = entity.activeEffects.values().iterator();
 		while (itr.hasNext()) {
 			MobEffectInstance effect = itr.next();
-			if (pred.test(effect) && EventHooks.onEffectRemoved(entity, effect, null)) {
-				entity.onEffectRemoved(effect);
+			if (pred.test(effect) && EventHooks.onEffectRemoved(entity, effect)) {
+				entity.onEffectsRemoved(entity.getActiveEffects());
 				itr.remove();
 				entity.effectsDirty = true;
 			}

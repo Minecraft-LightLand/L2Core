@@ -27,7 +27,7 @@ public class PlayerFlagData extends PlayerCapabilityTemplate<PlayerFlagData> {
 		if (entity instanceof Player player) {
 			return L2LibReg.FLAGS.type().getExisting(player).map(e -> e.hasFlag(str)).orElse(false);
 		} else {
-			return entity.getTags().contains(str);
+			return entity.entityTags().contains(str);
 		}
 	}
 
