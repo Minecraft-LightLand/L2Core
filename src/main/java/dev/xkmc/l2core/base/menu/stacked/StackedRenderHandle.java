@@ -1,5 +1,6 @@
 package dev.xkmc.l2core.base.menu.stacked;
 
+import dev.xkmc.l2core.base.menu.base.LayoutRenderer;
 import dev.xkmc.l2core.base.menu.base.MenuLayoutConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -19,7 +20,7 @@ public class StackedRenderHandle {
 
 	final Screen scr;
 	final GuiGraphicsExtractor g;
-	final MenuLayoutConfig.ScreenRenderer sm;
+	final LayoutRenderer sm;
 	final Font font;
 	final int text_color;
 	private final int TEXT_Y_OFFSET;
@@ -31,19 +32,19 @@ public class StackedRenderHandle {
 
 	final List<TextEntry> textList = new ArrayList<>();
 
-	public StackedRenderHandle(Screen scr, GuiGraphicsExtractor g, MenuLayoutConfig.ScreenRenderer sm) {
+	public StackedRenderHandle(Screen scr, GuiGraphicsExtractor g, LayoutRenderer sm) {
 		this(scr, g, sm, 3);
 	}
 
-	public StackedRenderHandle(Screen scr, GuiGraphicsExtractor g, MenuLayoutConfig.ScreenRenderer sm, int ty) {
+	public StackedRenderHandle(Screen scr, GuiGraphicsExtractor g, LayoutRenderer sm, int ty) {
 		this(scr, g, 8, 4210752, sm, ty);
 	}
 
-	public StackedRenderHandle(Screen scr, GuiGraphicsExtractor g, int x_offset, int color, MenuLayoutConfig.ScreenRenderer sm) {
+	public StackedRenderHandle(Screen scr, GuiGraphicsExtractor g, int x_offset, int color, LayoutRenderer sm) {
 		this(scr, g, x_offset, color, sm, 3);
 	}
 
-	public StackedRenderHandle(Screen scr, GuiGraphicsExtractor g, int x_offset, int color, MenuLayoutConfig.ScreenRenderer sm, int ty) {
+	public StackedRenderHandle(Screen scr, GuiGraphicsExtractor g, int x_offset, int color, LayoutRenderer sm, int ty) {
 		this.font = Minecraft.getInstance().font;
 		this.g = g;
 		this.scr = scr;

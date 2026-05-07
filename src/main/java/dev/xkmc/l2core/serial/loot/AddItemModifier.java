@@ -32,19 +32,19 @@ public class AddItemModifier extends LootModifier {
 	@Nullable
 	public final DoubleSupplier chance;
 
-	protected AddItemModifier(LootItemCondition[] conditionsIn, Item item, Optional<Item> fail, Optional<DoubleSupplier> chance) {
-		super(conditionsIn);
+	protected AddItemModifier(LootItemCondition[] conditionsIn, int priority, Item item, Optional<Item> fail, Optional<DoubleSupplier> chance) {
+		super(conditionsIn, priority);
 		this.item = item;
 		this.fail = fail.orElse(Items.AIR);
 		this.chance = chance.orElse(null);
 	}
 
-	public AddItemModifier(Item item, @Nullable DoubleConfigValue chance, LootItemCondition... conditionsIn) {
-		this(item, Items.AIR, chance, conditionsIn);
+	public AddItemModifier(int priority, Item item, @Nullable DoubleConfigValue chance, LootItemCondition... conditionsIn) {
+		this(priority, item, Items.AIR, chance, conditionsIn);
 	}
 
-	public AddItemModifier(Item item, Item fail, @Nullable DoubleConfigValue chance, LootItemCondition... conditionsIn) {
-		super(conditionsIn);
+	public AddItemModifier(int priority, Item item, Item fail, @Nullable DoubleConfigValue chance, LootItemCondition... conditionsIn) {
+		super(conditionsIn, priority);
 		this.item = item;
 		this.fail = fail;
 		this.chance = chance;

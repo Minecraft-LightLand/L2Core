@@ -1,5 +1,6 @@
 package dev.xkmc.l2core.base.menu.scroller;
 
+import dev.xkmc.l2core.base.menu.base.LayoutRenderer;
 import dev.xkmc.l2core.base.menu.base.MenuLayoutConfig;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.util.Mth;
@@ -66,7 +67,7 @@ public class Scroller {
 		screen.scrollTo((int) ((percentage * screen.getMenu().getMaxScroll()) + 0.5D));
 	}
 
-	public void render(GuiGraphicsExtractor g, MenuLayoutConfig.ScreenRenderer sr) {
+	public void render(GuiGraphicsExtractor g, LayoutRenderer sr) {
 		if (screen.getMenu().getMaxScroll() == 0) {
 			sr.draw(g, box, dark);
 		} else {

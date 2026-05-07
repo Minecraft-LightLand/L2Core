@@ -27,7 +27,7 @@ public class TeleportTool {
 	}
 
 	public static void performTeleport(Entity e, ServerLevel level, double x, double y, double z, float yaw, float pitch) {
-		EntityTeleportEvent.TeleportCommand event = EventHooks.onEntityTeleportCommand(e, x, y, z);
+		EntityTeleportEvent.TeleportCommand event = EventHooks.onEntityTeleportCommand(e, level, x, y, z);
 		if (event.isCanceled()) return;
 		x = event.getTargetX();
 		y = event.getTargetY();

@@ -19,8 +19,8 @@ public abstract class BaseContainerScreen<T extends BaseContainerMenu<T>> extend
 		extractRenderStateWithTooltipAndSubtitles(g, mx, my, partial);
 	}
 
-	protected MenuLayoutConfig.ScreenRenderer getRenderer() {
-		return menu.getLayout().getRenderer(menu.getLayoutId(), this);
+	protected LayoutRenderer getRenderer() {
+		return new LayoutRenderer(menu.getLayout(), menu.getLayoutId(), this);
 	}
 
 	protected boolean click(int btn) {

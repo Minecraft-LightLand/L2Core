@@ -23,13 +23,13 @@ public class AddLootTableModifier extends LootModifier {
 
 	private final Identifier lootTable;
 
-	protected AddLootTableModifier(LootItemCondition[] conditionsIn, Identifier lootTable) {
-		super(conditionsIn);
+	protected AddLootTableModifier(LootItemCondition[] conditionsIn, int priority, Identifier lootTable) {
+		super(conditionsIn, priority);
 		this.lootTable = lootTable;
 	}
 
-	public AddLootTableModifier(Identifier lootTable, LootItemCondition... conditionsIn) {
-		super(conditionsIn);
+	public AddLootTableModifier(Identifier lootTable, int priority, LootItemCondition... conditionsIn) {
+		super(conditionsIn, priority);
 		this.lootTable = lootTable;
 	}
 
