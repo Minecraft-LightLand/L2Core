@@ -84,7 +84,7 @@ public class PotionBuilder {
 
 
 	public Holder<Potion> regPotion(String id, String name, Holder<MobEffect> sup, int dur, int amp) {
-		var ans = reg.potion(id, RegistrateLangProvider.toEnglishName(name), () -> new Potion(new MobEffectInstance(sup, dur, amp)));
+		var ans = reg.potion(id, RegistrateLangProvider.toEnglishName(name), () -> new Potion(id, new MobEffectInstance(sup, dur, amp)));
 		tab.add(reg.getModid(), ans);
 		return ans;
 	}

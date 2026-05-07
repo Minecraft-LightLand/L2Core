@@ -14,7 +14,7 @@ public class ServerProxy {
 
 	@Nullable
 	public static RegistryAccess getRegistryAccess() {
-		if (FMLEnvironment.dist == Dist.CLIENT) {
+		if (FMLEnvironment.getDist() == Dist.CLIENT) {
 			Level level = Proxy.getLevel();
 			if (level != null) {
 				return level.registryAccess();
@@ -32,7 +32,7 @@ public class ServerProxy {
 	}
 
 	public static boolean isOnClient() {
-		if (FMLEnvironment.dist == Dist.DEDICATED_SERVER) return false;
+		if (FMLEnvironment.getDist() == Dist.DEDICATED_SERVER) return false;
 		return Proxy.isOnClient();
 	}
 

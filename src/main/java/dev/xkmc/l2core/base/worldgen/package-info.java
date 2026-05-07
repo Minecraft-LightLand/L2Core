@@ -1,8 +1,4 @@
-@MethodsReturnNonnullByDefault
-@ParametersAreNonnullByDefault
+@org.jspecify.annotations.NullMarked
 
 package dev.xkmc.l2core.base.worldgen;
 
-import net.minecraft.MethodsReturnNonnullByDefault;
-
-import javax.annotation.ParametersAreNonnullByDefault;

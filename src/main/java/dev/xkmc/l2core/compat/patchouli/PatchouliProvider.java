@@ -36,7 +36,7 @@ public class PatchouliProvider extends RecordDataProvider implements RegistrateP
 	@Override
 	public void add(BiConsumer<String, Record> map) {
 		this.map = map;
-		owner.genData(PatchouliHelper.PATCHOULI, this);
+		//owner.genData(PatchouliHelper.PATCHOULI, this);
 		this.map = null;
 	}
 

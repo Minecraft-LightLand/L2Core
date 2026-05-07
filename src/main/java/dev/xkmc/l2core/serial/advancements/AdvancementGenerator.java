@@ -1,8 +1,6 @@
 package dev.xkmc.l2core.serial.advancements;
 
 import com.tterrag.registrate.providers.RegistrateAdvancementProvider;
-import dev.xkmc.l2core.compat.patchouli.PatchouliHelper;
-import dev.xkmc.l2core.init.reg.registrate.L2Registrate;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementType;
@@ -92,12 +90,13 @@ public class AdvancementGenerator {
 				return sub;
 			}
 
+			/*
 			public Entry patchouli(L2Registrate reg, CriterionBuilder builder, PatchouliHelper pat, String title, String desc) {
 				ItemStackTemplate stack = PatchouliHelper.getBook(pat.book);
 				return create("patchouli", stack, builder, title, desc)
 						.add(new ModLoadedAdv("patchouli"))
 						.add(pat.reward);
-			}
+			}*/
 
 			public Entry root() {
 				return root;

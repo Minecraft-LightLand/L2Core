@@ -6,6 +6,7 @@ import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -14,6 +15,7 @@ public class BaseContainer<T extends BaseContainer<T>> extends SimpleContainer i
 
 	private int max = 64;
 	private Predicate<ItemStack> predicate = e -> true;
+	private final List<BaseContainerListener> list = new ArrayList<>();
 
 	public BaseContainer(int size) {
 		super(size);
@@ -30,7 +32,7 @@ public class BaseContainer<T extends BaseContainer<T>> extends SimpleContainer i
 	}
 
 	public T add(BaseContainerListener t) {
-		addListener(t);
+		list.add(t);
 		return getThis();
 	}
 

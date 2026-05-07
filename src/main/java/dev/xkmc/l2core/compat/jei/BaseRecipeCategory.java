@@ -3,20 +3,14 @@ package dev.xkmc.l2core.compat.jei;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.recipe.IFocusGroup;
-import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import com.mojang.logging.annotations.MethodsReturnNonnullByDefault;
+import mezz.jei.api.recipe.types.IRecipeType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.world.item.crafting.RecipeHolder;
-import net.minecraft.world.item.crafting.RecipeInput;
+import net.minecraft.world.item.crafting.*;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
-@ParametersAreNonnullByDefault
-@MethodsReturnNonnullByDefault
 public abstract class BaseRecipeCategory<T, C extends BaseRecipeCategory<T, C>> implements IRecipeCategory<T> {
 
 	@SuppressWarnings("unchecked")
@@ -24,19 +18,18 @@ public abstract class BaseRecipeCategory<T, C extends BaseRecipeCategory<T, C>> 
 		return (Class<T>) cls;
 	}
 
-	private final RecipeType<T> type;
+	private final IRecipeType<T> type;
 
-	protected IDrawable background, icon;
+	protected IDrawable icon;
 
 	public BaseRecipeCategory(Identifier name, Class<T> cls) {
-		this.type = new RecipeType<>(name, cls);
+		this.type = IRecipeType.create(name, cls);
 	}
 
-	public <R extends Recipe<I>, I extends RecipeInput> List<R> getAll(net.minecraft.world.item.crafting.RecipeType<R> type) {
+	public <R extends Recipe<I>, I extends RecipeInput> List<R> getAll(RecipeMap map, RecipeType<R> type) {
 		var level = Minecraft.getInstance().level;
 		if (level == null) return List.of();
-		return level.getRecipeManager().getAllRecipesFor(type)
-				.stream().map(RecipeHolder::value).toList();
+		return map.byType(type).stream().map(RecipeHolder::value).toList();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -45,13 +38,8 @@ public abstract class BaseRecipeCategory<T, C extends BaseRecipeCategory<T, C>> 
 	}
 
 	@Override
-	public final RecipeType<T> getRecipeType() {
+	public final IRecipeType<T> getRecipeType() {
 		return type;
-	}
-
-	@Override
-	public final IDrawable getBackground() {
-		return background;
 	}
 
 	@Override

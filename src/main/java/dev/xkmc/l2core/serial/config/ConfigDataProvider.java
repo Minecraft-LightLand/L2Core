@@ -1,7 +1,6 @@
 package dev.xkmc.l2core.serial.config;
 
 import com.google.gson.JsonElement;
-import com.tterrag.registrate.providers.ProviderType;
 import dev.xkmc.l2serial.serialization.codec.JsonCodec;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.CachedOutput;

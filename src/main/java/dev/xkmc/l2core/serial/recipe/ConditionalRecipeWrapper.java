@@ -4,7 +4,7 @@ import dev.xkmc.l2core.util.MathHelper;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.data.recipes.RecipeOutput;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.crafting.Recipe;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.common.conditions.ModLoadedCondition;
@@ -31,7 +31,12 @@ public record ConditionalRecipeWrapper(RecipeOutput pvd, ICondition... condition
 	}
 
 	@Override
-	public void accept(Identifier id, Recipe<?> recipe, @Nullable AdvancementHolder advancement, ICondition... conditions) {
+	public void includeRootAdvancement() {
+		pvd.includeRootAdvancement();
+	}
+
+	@Override
+	public void accept(ResourceKey<Recipe<?>> id, Recipe<?> recipe, @Nullable AdvancementHolder advancement, ICondition... conditions) {
 		pvd.accept(id, recipe, advancement, MathHelper.merge(conditions(), conditions));
 	}
 

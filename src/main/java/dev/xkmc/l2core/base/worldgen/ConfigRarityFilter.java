@@ -1,4 +1,3 @@
-
 package dev.xkmc.l2core.base.worldgen;
 
 import com.mojang.serialization.MapCodec;

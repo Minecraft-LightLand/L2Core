@@ -3,15 +3,14 @@ package dev.xkmc.l2core.base.entity;
 import dev.xkmc.l2serial.serialization.codec.PacketCodec;
 import dev.xkmc.l2serial.serialization.codec.TagCodec;
 import dev.xkmc.l2serial.serialization.marker.SerialClass;
-import com.mojang.logging.annotations.MethodsReturnNonnullByDefault;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
-
-import javax.annotation.ParametersAreNonnullByDefault;
 
 @SerialClass
 public abstract class BaseEntity extends Entity implements IEntityWithComplexSpawn {
@@ -21,15 +20,16 @@ public abstract class BaseEntity extends Entity implements IEntityWithComplexSpa
 	}
 
 	@Override
-	protected void addAdditionalSaveData(CompoundTag tag) {
+	protected void addAdditionalSaveData(ValueOutput output) {
 		var dat = new TagCodec(registryAccess()).toTag(new CompoundTag(), this);
-		if (dat != null) tag.put("auto-serial", dat);
+		if (dat != null) output.store("auto-serial", CompoundTag.CODEC, dat);
 	}
 
 	@Override
-	protected void readAdditionalSaveData(CompoundTag tag) {
-		if (!tag.contains("auto-serial")) return;
-		new TagCodec(registryAccess()).fromTag(tag.getCompound("auto-serial"), this.getClass(), this);
+	protected void readAdditionalSaveData(ValueInput input) {
+		var dat = input.read("auto-serial", CompoundTag.CODEC);
+		if (dat.isEmpty()) return;
+		new TagCodec(registryAccess()).fromTag(dat.get(), this.getClass(), this);
 	}
 
 	@Override

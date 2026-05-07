@@ -1,6 +1,5 @@
 package dev.xkmc.l2core.base.tile;
 
-import com.mojang.logging.annotations.MethodsReturnNonnullByDefault;
 import dev.xkmc.l2core.util.ServerOnly;
 import dev.xkmc.l2serial.serialization.codec.TagCodec;
 import dev.xkmc.l2serial.serialization.marker.SerialClass;
@@ -15,10 +14,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-
-@MethodsReturnNonnullByDefault
-@ParametersAreNonnullByDefault
+@org.jspecify.annotations.NullMarked
 @SerialClass
 public class BaseBlockEntity extends BlockEntity {
 

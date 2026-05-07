@@ -1,36 +1,27 @@
 package dev.xkmc.l2core.base.tile;
 
 import dev.xkmc.l2serial.serialization.codec.AliasCollection;
-import dev.xkmc.l2serial.serialization.marker.SerialClass;
-import dev.xkmc.l2serial.serialization.marker.SerialField;
-import net.minecraft.core.NonNullList;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import org.jetbrains.annotations.NotNull;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.fluid.FluidStacksResourceHandler;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
 
-@SerialClass
-public class BaseTank implements IFluidHandler, AliasCollection<FluidStack> {
+public class BaseTank extends FluidStacksResourceHandler implements AliasCollection<FluidStack> {
 
-	private final int size, capacity;
 	private final List<BaseContainerListener> listeners = new ArrayList<>();
 
-	private Predicate<FluidStack> predicate = e -> true;
+	private Predicate<FluidResource> predicate = e -> true;
 	private BooleanSupplier allowExtract = () -> true;
-
-	@SerialField
-	public NonNullList<FluidStack> list;
 
 	private int click_max;
 
 	public BaseTank(int size, int capacity) {
-		this.size = size;
-		this.capacity = capacity;
-		list = NonNullList.withSize(size, FluidStack.EMPTY);
+		super(size, capacity);
 	}
 
 	public BaseTank add(BaseContainerListener listener) {
@@ -38,7 +29,7 @@ public class BaseTank implements IFluidHandler, AliasCollection<FluidStack> {
 		return this;
 	}
 
-	public BaseTank setPredicate(Predicate<FluidStack> predicate) {
+	public BaseTank setPredicate(Predicate<FluidResource> predicate) {
 		this.predicate = predicate;
 		return this;
 	}
@@ -54,130 +45,20 @@ public class BaseTank implements IFluidHandler, AliasCollection<FluidStack> {
 	}
 
 	@Override
-	public int getTanks() {
-		return size;
-	}
-
-	@NotNull
-	@Override
-	public FluidStack getFluidInTank(int tank) {
-		return list.get(tank);
-	}
-
-	@Override
-	public int getTankCapacity(int tank) {
-		return capacity;
-	}
-
-	@Override
-	public boolean isFluidValid(int tank, @NotNull FluidStack stack) {
-		return true;
-	}
-
-	@Override
-	public int fill(FluidStack resource, FluidAction action) {
-		if (resource.isEmpty()) return 0;
+	public int insert(FluidResource resource, int amount, TransactionContext transaction) {
 		if (!predicate.test(resource)) return 0;
-		int to_fill = click_max == 0 ? resource.getAmount() : resource.getAmount() >= click_max ? click_max : 0;
-		if (to_fill == 0) return 0;
-		int filled = 0;
-		for (int i = 0; i < size; i++) {
-			FluidStack stack = list.get(i);
-			if (FluidStack.isSameFluidSameComponents(stack, resource)) {
-				int remain = capacity - stack.getAmount();
-				int fill = Math.min(to_fill, remain);
-				filled += fill;
-				to_fill -= fill;
-				if (action == FluidAction.EXECUTE) {
-					resource.shrink(fill);
-					stack.grow(fill);
-				}
-			} else if (stack.isEmpty()) {
-				int fill = Math.min(to_fill, capacity);
-				filled += fill;
-				to_fill -= fill;
-				if (action == FluidAction.EXECUTE) {
-					FluidStack rep = resource.copy();
-					rep.setAmount(fill);
-					list.set(i, rep);
-					resource.shrink(fill);
-				}
-			}
-			if (resource.isEmpty() || to_fill == 0) break;
-		}
-		if (action == FluidAction.EXECUTE && filled > 0) {
-			setChanged();
-		}
-		return filled;
+		return super.insert(resource, click_max <= 0 ? amount : Math.min(click_max, amount), transaction);
 	}
 
-	@NotNull
 	@Override
-	public FluidStack drain(FluidStack resource, FluidAction action) {
-		if (resource.isEmpty()) return resource;
-		if (!allowExtract.getAsBoolean()) return FluidStack.EMPTY;
-		int to_drain = resource.getAmount();
-		if (click_max > 0) {
-			if (to_drain < click_max) return FluidStack.EMPTY;
-			to_drain = click_max;
-		}
-		int drained = 0;
-		for (int i = 0; i < size; i++) {
-			FluidStack stack = list.get(i);
-			if (FluidStack.isSameFluidSameComponents(stack, resource)) {
-				int remain = stack.getAmount();
-				int drain = Math.min(to_drain, remain);
-				drained += drain;
-				to_drain -= drain;
-				if (action == FluidAction.EXECUTE) {
-					stack.shrink(drain);
-				}
-			}
-			if (to_drain == 0) break;
-		}
-		if (action == FluidAction.EXECUTE && drained > 0) {
-			setChanged();
-		}
-		FluidStack ans = resource.copy();
-		ans.setAmount(drained);
-		return ans;
+	public int extract(FluidResource resource, int amount, TransactionContext transaction) {
+		if (!allowExtract.getAsBoolean()) return 0;
+		return super.extract(resource, amount, transaction);
 	}
 
-	@NotNull
 	@Override
-	public FluidStack drain(int maxDrain, FluidAction action) {
-		if (!allowExtract.getAsBoolean()) return FluidStack.EMPTY;
-		FluidStack ans = null;
-		int to_drain = maxDrain;
-		if (click_max > 0) {
-			if (to_drain < click_max) return FluidStack.EMPTY;
-			to_drain = click_max;
-		}
-		int drained = 0;
-		for (int i = 0; i < size; i++) {
-			FluidStack stack = list.get(i);
-			if (!stack.isEmpty() && (ans == null || FluidStack.isSameFluidSameComponents(stack, ans))) {
-				int remain = stack.getAmount();
-				int drain = Math.min(to_drain, remain);
-				drained += drain;
-				to_drain -= drain;
-				if (ans == null) {
-					ans = stack.copy();
-				}
-				if (action == FluidAction.EXECUTE) {
-					stack.shrink(drain);
-				}
-			}
-			if (to_drain == 0) break;
-		}
-		if (action == FluidAction.EXECUTE && drained > 0) {
-			setChanged();
-		}
-		if (ans == null) {
-			return FluidStack.EMPTY;
-		}
-		ans.setAmount(drained);
-		return ans;
+	protected void onContentsChanged(int index, FluidStack previousContents) {
+		setChanged();
 	}
 
 	public void setChanged() {
@@ -186,17 +67,18 @@ public class BaseTank implements IFluidHandler, AliasCollection<FluidStack> {
 
 	@Override
 	public List<FluidStack> getAsList() {
-		return list;
+		return stacks;
 	}
 
 	@Override
 	public void clear() {
-		list.clear();
+		stacks.clear();
+		setChanged();
 	}
 
 	@Override
 	public void set(int n, int i, FluidStack elem) {
-		list.set(i, elem);
+		stacks.set(i, elem);
 	}
 
 	@Override
@@ -205,10 +87,11 @@ public class BaseTank implements IFluidHandler, AliasCollection<FluidStack> {
 	}
 
 	public boolean isEmpty() {
-		for (FluidStack stack : list) {
+		for (FluidStack stack : stacks) {
 			if (!stack.isEmpty())
 				return false;
 		}
 		return true;
 	}
+
 }

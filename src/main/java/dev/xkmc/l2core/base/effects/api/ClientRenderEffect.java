@@ -1,7 +1,6 @@
 package dev.xkmc.l2core.base.effects.api;
 
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
-import net.minecraft.world.entity.LivingEntity;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;

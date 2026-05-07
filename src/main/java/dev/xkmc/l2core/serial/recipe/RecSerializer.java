@@ -10,24 +10,28 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeInput;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 
-public class RecSerializer<R extends Recipe<I>, I extends RecipeInput> implements RecipeSerializer<R> {
+public class RecSerializer<R extends Recipe<I>, I extends RecipeInput> {
 
 	public final Class<R> cls;
 	private final MapCodecAdaptor<R> codec;
 	private final StreamCodec<RegistryFriendlyByteBuf, R> stream;
+	private final RecipeSerializer<R> serializer;
 
 	public RecSerializer(Class<R> cls) {
 		this.cls = cls;
 		this.codec = MapCodecAdaptor.of(cls);
 		this.stream = new CodecAdaptor<>(cls).toNetwork();
+		this.serializer = new RecipeSerializer<>(codec, stream);
 	}
 
-	@Override
+	public RecipeSerializer<R> serializer() {
+		return serializer;
+	}
+
 	public MapCodec<R> codec() {
 		return codec;
 	}
 
-	@Override
 	public StreamCodec<RegistryFriendlyByteBuf, R> streamCodec() {
 		return stream;
 	}

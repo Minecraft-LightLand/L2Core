@@ -16,6 +16,6 @@ public interface IDelayedRender {
 
 	float th();
 
-	Vec3 pos(float partial);
+	Vec3 pos();
 
 }

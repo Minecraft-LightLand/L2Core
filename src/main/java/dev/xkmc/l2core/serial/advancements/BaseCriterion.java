@@ -2,7 +2,7 @@ package dev.xkmc.l2core.serial.advancements;
 
 import com.mojang.serialization.Codec;
 import dev.xkmc.l2serial.serialization.codec.CodecAdaptor;
-import net.minecraft.advancements.critereon.SimpleCriterionTrigger;
+import net.minecraft.advancements.criterion.SimpleCriterionTrigger;
 
 public class BaseCriterion<T extends BaseCriterionInstance<T, R>, R extends BaseCriterion<T, R>> extends SimpleCriterionTrigger<T> {
 

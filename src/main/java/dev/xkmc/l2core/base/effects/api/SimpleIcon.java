@@ -12,9 +12,4 @@ public record SimpleIcon(
 		return new SimpleIcon(rl, IconRenderRegion.identity(), 0, 0, 1, 1, pos);
 	}
 
-	@Override
-	public Vec3 pos(float partial) {
-		return pos;
-	}
-
 }

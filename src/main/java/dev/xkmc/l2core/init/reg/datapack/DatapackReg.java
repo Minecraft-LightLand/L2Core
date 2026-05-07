@@ -9,7 +9,6 @@ import net.minecraft.resources.ResourceKey;
 import net.neoforged.neoforge.registries.DataPackRegistryEvent;
 
 import javax.annotation.Nullable;
-import java.util.stream.Stream;
 
 public record DatapackReg<T>(ResourceKey<Registry<T>> key, Codec<T> codec) {
 

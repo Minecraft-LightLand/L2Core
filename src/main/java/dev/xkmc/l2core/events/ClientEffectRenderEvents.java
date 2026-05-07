@@ -1,11 +1,8 @@
 package dev.xkmc.l2core.events;
 
 import com.google.common.reflect.TypeToken;
-import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.datafixers.util.Pair;
 import dev.xkmc.l2core.base.effects.ClientEffectCap;
 import dev.xkmc.l2core.base.effects.EffectToClient;
@@ -19,13 +16,11 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
-import net.minecraft.client.renderer.rendertype.RenderSetup;
 import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.resources.Identifier;
-import net.minecraft.util.Util;
 import net.minecraft.util.context.ContextKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -43,7 +38,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 
 @EventBusSubscriber(value = Dist.CLIENT, modid = L2Core.MODID)
 public class ClientEffectRenderEvents {
@@ -66,6 +60,7 @@ public class ClientEffectRenderEvents {
 		}
 	}
 
+	/*
 	private static final Function<Identifier, RenderType> ICON_TYPE = Util.memoize(id -> RenderType.create(
 			"entity_body_icon", RenderSetup.builder(RenderPipelines.TEXT_POLYGON_OFFSET,
 					DefaultVertexFormat.POSITION_TEX,
@@ -76,15 +71,16 @@ public class ClientEffectRenderEvents {
 							.setTransparencyState(RenderStateShard.ADDITIVE_TRANSPARENCY)
 							.setDepthTestState(RenderStateShard.NO_DEPTH_TEST)
 							.createCompositeState(false)
-			)));
+			)));*/
 
 	@SubscribeEvent
-	public static void registerRenderPipeline(RegisterRenderPipelinesEvent event){
-		event.registerPipeline(RenderPipeline.builder());
+	public static void registerRenderPipeline(RegisterRenderPipelinesEvent event) {
+		//event.registerPipeline(RenderPipeline.builder());
 	}
 
 	public static RenderType get2DIcon(Identifier id) {
-		return ICON_TYPE.apply(id);
+		return RenderTypes.eyes(id);
+		//	return ICON_TYPE.apply(id);
 	}
 
 	@SubscribeEvent
@@ -97,13 +93,12 @@ public class ClientEffectRenderEvents {
 		MultiBufferSource.BufferSource buffers = Minecraft.getInstance().renderBuffers().bufferSource();
 		Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
 		PoseStack stack = event.getPoseStack();
-		float pTick = event.getPartialTick().getGameTimeDeltaPartialTick(true);
 		Map<Identifier, List<IDelayedRender>> map = new HashMap<>();
 		for (var e : ICONS) map.computeIfAbsent(e.rl(), k -> new ArrayList<>()).add(e);
 		for (var ent : map.entrySet()) {
-			VertexConsumer vc = buffers.getBuffer(ICON_TYPE.apply(ent.getKey()));
+			VertexConsumer vc = buffers.getBuffer(get2DIcon(ent.getKey()));
 			for (var e : ent.getValue()) {
-				renderIcon(stack, vc, e, pTick, camera);
+				renderIcon(stack, vc, e, camera);
 			}
 		}
 		ICONS.clear();
@@ -161,9 +156,8 @@ public class ClientEffectRenderEvents {
 
 	}
 
-	private static void renderIcon(PoseStack pose, VertexConsumer vc, IDelayedRender icon,
-								   float partial, Camera camera) {
-		Vec3 pos = icon.pos(partial);
+	private static void renderIcon(PoseStack pose, VertexConsumer vc, IDelayedRender icon, Camera camera) {
+		Vec3 pos = icon.pos();
 		Vec3 cam_pos = camera.position();
 		pose.pushPose();
 		pose.translate(pos.x() - cam_pos.x, pos.y() - cam_pos.y, pos.z() - cam_pos.z);

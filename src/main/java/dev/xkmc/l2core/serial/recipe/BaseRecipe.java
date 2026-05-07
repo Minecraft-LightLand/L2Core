@@ -1,12 +1,9 @@
 package dev.xkmc.l2core.serial.recipe;
 
-import net.minecraft.core.HolderLookup;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeInput;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.level.Level;
 
 import java.util.function.Supplier;
 
@@ -19,24 +16,12 @@ public abstract class BaseRecipe<Rec extends SRec, SRec extends BaseRecipe<?, SR
 	}
 
 	@Override
-	public abstract boolean matches(Inv inv, Level world);
-
-	@Override
-	public abstract ItemStack assemble(Inv inv, HolderLookup.Provider provider);
-
-	@Override
-	public abstract ItemStack getResultItem(HolderLookup.Provider provider);
-
-	@Override
-	public abstract boolean canCraftInDimensions(int r, int c);
-
-	@Override
-	public final RecipeSerializer<?> getSerializer() {
-		return factory;
+	public final RecipeSerializer<? extends Recipe<Inv>> getSerializer() {
+		return factory.serializer();
 	}
 
 	@Override
-	public final RecipeType<?> getType() {
+	public final RecipeType<? extends Recipe<Inv>> getType() {
 		return factory.type.get();
 	}
 

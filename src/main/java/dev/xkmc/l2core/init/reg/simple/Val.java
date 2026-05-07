@@ -1,8 +1,8 @@
 package dev.xkmc.l2core.init.reg.simple;
 
 import com.tterrag.registrate.util.entry.RegistryEntry;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
 import java.util.function.Supplier;

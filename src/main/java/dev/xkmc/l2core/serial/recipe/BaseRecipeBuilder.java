@@ -1,20 +1,15 @@
 package dev.xkmc.l2core.serial.recipe;
 
-import net.minecraft.advancements.Advancement;
-import net.minecraft.advancements.AdvancementRequirements;
-import net.minecraft.advancements.AdvancementRewards;
 import net.minecraft.advancements.Criterion;
-import net.minecraft.advancements.criterion.RecipeUnlockedTrigger;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.recipes.RecipeBuilder;
+import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
-import net.minecraft.resources.Identifier;
-import net.minecraft.world.item.Item;
+import net.minecraft.data.recipes.RecipeUnlockAdvancementBuilder;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeInput;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 public class BaseRecipeBuilder<
 		T extends BaseRecipeBuilder<T, Rec, SRec, Inv>,
@@ -25,11 +20,10 @@ public class BaseRecipeBuilder<
 
 	protected final BaseRecipe.RecType<Rec, SRec, Inv> type;
 	protected final Rec recipe;
-	protected final Item result;
-	protected final Advancement.Builder advancement = Advancement.Builder.advancement();
-	protected final Map<String, Criterion<?>> criteria = new LinkedHashMap<>();
+	protected final ItemStackTemplate result;
+	protected final RecipeUnlockAdvancementBuilder advancementBuilder = new RecipeUnlockAdvancementBuilder();
 
-	public BaseRecipeBuilder(BaseRecipe.RecType<Rec, SRec, Inv> type, Item result) {
+	public BaseRecipeBuilder(BaseRecipe.RecType<Rec, SRec, Inv> type, ItemStackTemplate result) {
 		this.type = type;
 		this.recipe = type.blank();
 		this.result = result;
@@ -42,7 +36,7 @@ public class BaseRecipeBuilder<
 
 	@Override
 	public T unlockedBy(String name, Criterion<?> trigger) {
-		criteria.put(name, trigger);
+		advancementBuilder.unlockedBy(name, trigger);
 		return getThis();
 	}
 
@@ -52,20 +46,13 @@ public class BaseRecipeBuilder<
 	}
 
 	@Override
-	public Item getResult() {
-		return result;
+	public ResourceKey<Recipe<?>> defaultId() {
+		return RecipeBuilder.getDefaultRecipeId(this.result);
 	}
 
 	@Override
-	public void save(RecipeOutput pvd, Identifier id) {
-		Advancement.Builder builder = pvd.advancement()
-				.addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(id))
-				.rewards(AdvancementRewards.Builder.recipe(id))
-				.requirements(AdvancementRequirements.Strategy.OR);
-		this.criteria.forEach(builder::addCriterion);
-		id = Identifier.fromNamespaceAndPath(id.getNamespace(),
-				BuiltInRegistries.RECIPE_SERIALIZER.getKey(type).getPath() + "/" + id.getPath());
-		pvd.accept(id, recipe, builder.build(id));
+	public void save(RecipeOutput output, ResourceKey<Recipe<?>> id) {
+		output.accept(id, recipe, advancementBuilder.build(output, id, RecipeCategory.MISC));
 	}
 
 }

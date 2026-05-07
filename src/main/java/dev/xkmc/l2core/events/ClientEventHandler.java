@@ -7,14 +7,15 @@ import dev.xkmc.l2core.init.L2LibReg;
 import dev.xkmc.l2core.init.reg.ench.CustomDescEnchantment;
 import dev.xkmc.l2core.init.reg.ench.EnchColor;
 import dev.xkmc.l2core.init.reg.ench.LegacyEnchantment;
+import dev.xkmc.l2core.util.TooltipHelper;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.contents.PlainTextContents;
 import net.minecraft.network.chat.contents.TranslatableContents;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
@@ -29,7 +30,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
 
-@EventBusSubscriber(value = Dist.CLIENT, modid = L2Core.MODID, bus = EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber(value = Dist.CLIENT, modid = L2Core.MODID)
 public class ClientEventHandler {
 
 	public enum EnchDesc {
@@ -40,7 +41,7 @@ public class ClientEventHandler {
 	public static void modifyItemTooltip(ItemTooltipEvent event) {
 		if (L2LibReg.ENCH.reg().size() == 0) return;
 		var config = L2CoreConfig.CLIENT.addEnchantmentDescription.get();
-		boolean skip = config == EnchDesc.DISABLE || config == EnchDesc.SHIFT_ONLY && !Screen.hasShiftDown();
+		boolean skip = config == EnchDesc.DISABLE || config == EnchDesc.SHIFT_ONLY && !TooltipHelper.hasShiftDown();
 		var list = event.getToolTip();
 		int n = list.size();
 		ItemStack stack = event.getItemStack();
@@ -48,7 +49,7 @@ public class ClientEventHandler {
 		var map = EnchantmentHelper.getEnchantmentsForCrafting(stack);
 		String prefix = "enchantment.";
 		String suffix = ".desc";
-		boolean alt = Screen.hasAltDown();
+		boolean alt = TooltipHelper.hasAltDown();
 		boolean flag = false;
 		boolean book = event.getItemStack().is(Items.ENCHANTED_BOOK);
 		var registries = event.getContext().registries();

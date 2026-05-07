@@ -4,9 +4,13 @@ import com.mojang.datafixers.util.Pair;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementRequirements;
 import net.minecraft.advancements.Criterion;
-import net.minecraft.advancements.critereon.*;
-import net.minecraft.core.Holder;
-import net.minecraft.core.component.DataComponentPredicate;
+import net.minecraft.advancements.criterion.*;
+import net.minecraft.core.HolderGetter;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.predicates.DataComponentPredicates;
+import net.minecraft.core.component.predicates.EnchantmentsPredicate;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -19,65 +23,81 @@ import java.util.Optional;
 
 public class CriterionBuilder implements IAdvBuilder {
 
-	@Deprecated
-	public static CriterionBuilder none() {
-		return one(InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item()));
-	}
+	public static class Provider {
 
-	public static CriterionBuilder item(Item item) {
-		return one(InventoryChangeTrigger.TriggerInstance.hasItems(item));
-	}
+		private final HolderGetter<Item> itemPvd;
+		private final HolderGetter<Enchantment> enchPvd;
 
-	public static CriterionBuilder item(TagKey<Item> item, DataComponentPredicate tag) {
-		return one(InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item().of(item).hasComponents(tag).build()));
-	}
+		public Provider(HolderLookup.Provider pvd) {
+			this.itemPvd = pvd.lookupOrThrow(Registries.ITEM);
+			this.enchPvd = pvd.lookupOrThrow(Registries.ENCHANTMENT);
+		}
 
-	public static CriterionBuilder item(ItemLike item, DataComponentPredicate tag) {
-		return one(InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item().of(item).hasComponents(tag).build()));
-	}
+		@Deprecated
+		public static CriterionBuilder none() {
+			return one(InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item()));
+		}
 
-	public static CriterionBuilder items(Item... item) {
-		return one(InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item().of(item).build()));
-	}
+		public static CriterionBuilder item(Item item) {
+			return one(InventoryChangeTrigger.TriggerInstance.hasItems(item));
+		}
 
-	public static CriterionBuilder item(TagKey<Item> item) {
-		return one(InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item().of(item).build()));
-	}
+		public CriterionBuilder item(TagKey<Item> item, DataComponentMatchers tag) {
+			return one(InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item().of(itemPvd, item).withComponents(tag).build()));
+		}
 
-	public static CriterionBuilder book(Holder<Enchantment> enchantment) {
-		return one(InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item()
-				.withSubPredicate(ItemSubPredicates.STORED_ENCHANTMENTS,
-						ItemEnchantmentsPredicate.storedEnchantments(List.of(
-								new EnchantmentPredicate(enchantment, MinMaxBounds.Ints.ANY))))));
-	}
+		public CriterionBuilder item(ItemLike item, DataComponentMatchers tag) {
+			return one(InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item().of(itemPvd, item).withComponents(tag).build()));
+		}
 
-	public static CriterionBuilder enchanted(Holder<Enchantment> enchantment) {
-		return one(InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item()
-				.withSubPredicate(ItemSubPredicates.ENCHANTMENTS,
-						ItemEnchantmentsPredicate.enchantments(List.of(
-								new EnchantmentPredicate(enchantment, MinMaxBounds.Ints.ANY))))));
-	}
+		public CriterionBuilder items(Item... item) {
+			return one(InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item().of(itemPvd, item).build()));
+		}
 
-	public static CriterionBuilder enchanted(ItemLike item, Holder<Enchantment> enchantment) {
-		return one(InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item().of(item)
-				.withSubPredicate(ItemSubPredicates.ENCHANTMENTS,
-						ItemEnchantmentsPredicate.enchantments(List.of(
-								new EnchantmentPredicate(enchantment, MinMaxBounds.Ints.ANY))))));
-	}
+		public CriterionBuilder item(TagKey<Item> item) {
+			return one(InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item().of(itemPvd, item).build()));
+		}
 
-	public static CriterionBuilder enchanted(TagKey<Item> item, Holder<Enchantment> enchantment) {
-		return one(InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item().of(item)
-				.withSubPredicate(ItemSubPredicates.ENCHANTMENTS,
-						ItemEnchantmentsPredicate.enchantments(List.of(
-								new EnchantmentPredicate(enchantment, MinMaxBounds.Ints.ANY))))));
-	}
+		public CriterionBuilder book(ResourceKey<Enchantment> enchantment) {
+			return one(InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item()
+					.withComponents(DataComponentMatchers.Builder.components().partial(
+							DataComponentPredicates.STORED_ENCHANTMENTS,
+							EnchantmentsPredicate.storedEnchantments(List.of(
+									new EnchantmentPredicate(enchPvd.getOrThrow(enchantment), MinMaxBounds.Ints.ANY)))).build())));
+		}
 
-	public static CriterionBuilder player(PlayerTrigger trigger) {
-		return one(trigger.createCriterion(new PlayerTrigger.TriggerInstance(Optional.empty())));
-	}
+		public CriterionBuilder enchanted(ResourceKey<Enchantment> enchantment) {
+			return one(InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item()
+					.withComponents(DataComponentMatchers.Builder.components().partial(
+							DataComponentPredicates.ENCHANTMENTS,
+							EnchantmentsPredicate.enchantments(List.of(
+									new EnchantmentPredicate(enchPvd.getOrThrow(enchantment), MinMaxBounds.Ints.ANY)))).build())));
+		}
 
-	public static CriterionBuilder one(Criterion<?> instance) {
-		return new CriterionBuilder(RequirementsStrategy.AND).add(instance);
+		public CriterionBuilder enchanted(ItemLike item, ResourceKey<Enchantment> enchantment) {
+			return one(InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item().of(itemPvd, item)
+					.withComponents(DataComponentMatchers.Builder.components().partial(
+							DataComponentPredicates.ENCHANTMENTS,
+							EnchantmentsPredicate.enchantments(List.of(
+									new EnchantmentPredicate(enchPvd.getOrThrow(enchantment), MinMaxBounds.Ints.ANY)))).build())));
+		}
+
+		public CriterionBuilder enchanted(TagKey<Item> item, ResourceKey<Enchantment> enchantment) {
+			return one(InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item().of(itemPvd, item)
+					.withComponents(DataComponentMatchers.Builder.components().partial(
+							DataComponentPredicates.ENCHANTMENTS,
+							EnchantmentsPredicate.enchantments(List.of(
+									new EnchantmentPredicate(enchPvd.getOrThrow(enchantment), MinMaxBounds.Ints.ANY)))).build())));
+		}
+
+		public static CriterionBuilder player(PlayerTrigger trigger) {
+			return one(trigger.createCriterion(new PlayerTrigger.TriggerInstance(Optional.empty())));
+		}
+
+		public static CriterionBuilder one(Criterion<?> instance) {
+			return new CriterionBuilder(RequirementsStrategy.AND).add(instance);
+		}
+
 	}
 
 	public enum RequirementsStrategy {

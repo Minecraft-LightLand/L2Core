@@ -17,18 +17,13 @@ public record DataMapReg<K, V>(DataMapType<K, V> reg) {
 
 	@Nullable
 	public V get(RegistryAccess access, Holder<K> key) {
-		var registry = access.registry(reg.registryKey());
-		if (registry.isEmpty()) return null;
-		var id = key.unwrapKey();
-		if (id.isEmpty()) return null;
-		return registry.get().getData(reg, id.get());
+		return key.getData(reg);
 	}
 
 	public Stream<Pair<Holder<K>, V>> getAll(RegistryAccess access) {
-		var registry = access.registry(reg.registryKey());
-		if (registry.isEmpty()) return Stream.empty();
-		return registry.get().getDataMap(reg).entrySet().stream()
-				.map(e -> Pair.of(registry.get().getHolderOrThrow(e.getKey()), e.getValue()));
+		var registry = access.lookupOrThrow(reg.registryKey());
+		return registry.getDataMap(reg).entrySet().stream()
+				.map(e -> Pair.of(registry.get(e.getKey()).orElseThrow(), e.getValue()));
 	}
 
 }

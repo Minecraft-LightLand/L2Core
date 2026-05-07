@@ -17,7 +17,7 @@ public class Proxy {
 
 	@Nullable
 	public static Player getPlayer() {
-		if (FMLEnvironment.dist == Dist.CLIENT) {
+		if (FMLEnvironment.getDist() == Dist.CLIENT) {
 			return Minecraft.getInstance().player;
 		}
 		return null;
@@ -25,7 +25,7 @@ public class Proxy {
 
 	@Nullable
 	public static Level getLevel() {
-		if (FMLEnvironment.dist == Dist.CLIENT) {
+		if (FMLEnvironment.getDist() == Dist.CLIENT) {
 			return Minecraft.getInstance().level;
 		}
 		var server = ServerLifecycleHooks.getCurrentServer();

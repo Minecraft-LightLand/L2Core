@@ -6,7 +6,6 @@ import dev.xkmc.l2core.capability.attachment.GeneralCapabilityTemplate;
 import dev.xkmc.l2core.capability.player.PlayerCapabilityHolder;
 import dev.xkmc.l2core.capability.player.PlayerCapabilityTemplate;
 import net.minecraft.resources.Identifier;
-import net.neoforged.neoforge.attachment.AttachmentHolder;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.registries.DeferredHolder;

@@ -1,7 +1,8 @@
 package dev.xkmc.l2core.base.tile;
 
-import net.minecraft.world.Container;
-import net.minecraft.world.ContainerListener;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerListener;
+import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -10,9 +11,9 @@ public interface BaseContainerListener extends ContainerListener {
 
 	void notifyTile();
 
-	@SuppressWarnings({"unsafe", "unchecked"})
 	@Override
-	default void containerChanged(Container cont) {
+	default void slotChanged(AbstractContainerMenu container, int slotIndex, ItemStack itemStack) {
 		notifyTile();
 	}
+
 }

@@ -5,7 +5,6 @@ import dev.xkmc.l2core.capability.attachment.GeneralCapabilityHolder;
 import dev.xkmc.l2core.capability.attachment.GeneralCapabilityTemplate;
 import dev.xkmc.l2core.capability.player.PlayerCapabilityHolder;
 import dev.xkmc.l2core.capability.player.PlayerCapabilityTemplate;
-import net.neoforged.neoforge.attachment.AttachmentHolder;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
 

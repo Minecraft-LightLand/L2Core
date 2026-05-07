@@ -31,7 +31,7 @@ public class MergedConfigType<T extends BaseConfig> extends BaseConfigType<T> {
 			return clientResult;
 		}
 		clientResult = new ConfigMerger<>(cls).apply(clientConfigs.values());
-		clientResult.id = ResourceLocation.fromNamespaceAndPath(parent.modid, id);
+		clientResult.id = Identifier.fromNamespaceAndPath(parent.modid, id);
 		return clientResult;
 	}
 
