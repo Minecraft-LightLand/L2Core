@@ -1,5 +1,6 @@
 package dev.xkmc.l2core.base.menu.base;
 
+import dev.xkmc.l2core.util.GuiHelper;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -45,8 +46,8 @@ public class LayoutRenderer {
 		return parent.getSide(key);
 	}
 
-	public void blit(GuiGraphicsExtractor g, Identifier id, int x, int y, int u, int v, int w, int h) {
-		g.blit(id, x, y, x + w, y + h, u, v, u + w, v + h);
+	public void blit(GuiGraphicsExtractor g, int x, int y, int u, int v, int w, int h) {
+		GuiHelper.blit(g, MenuLayoutConfig.getTexture(id), x, y, u, v, w, h);
 	}
 
 	/**
@@ -55,7 +56,7 @@ public class LayoutRenderer {
 	public void draw(GuiGraphicsExtractor g, String c, String s) {
 		MenuLayoutConfig.Rect cr = getComp(c);
 		MenuLayoutConfig.Rect sr = getSide(s);
-		blit(g, MenuLayoutConfig.getTexture(id), x + cr.x, y + cr.y, sr.x, sr.y, sr.w, sr.h);
+		blit(g, x + cr.x, y + cr.y, sr.x, sr.y, sr.w, sr.h);
 	}
 
 	/**
@@ -64,7 +65,7 @@ public class LayoutRenderer {
 	public void draw(GuiGraphicsExtractor g, String c, String s, int xoff, int yoff) {
 		MenuLayoutConfig.Rect cr = getComp(c);
 		MenuLayoutConfig.Rect sr = getSide(s);
-		blit(g, MenuLayoutConfig.getTexture(id), x + cr.x + xoff, y + cr.y + yoff, sr.x, sr.y, sr.w, sr.h);
+		blit(g, x + cr.x + xoff, y + cr.y + yoff, sr.x, sr.y, sr.w, sr.h);
 	}
 
 	/**
@@ -77,7 +78,7 @@ public class LayoutRenderer {
 		MenuLayoutConfig.Rect cr = getComp(c);
 		MenuLayoutConfig.Rect sr = getSide(s);
 		int dh = sr.h * prog / max;
-		blit(g, MenuLayoutConfig.getTexture(id), x + cr.x, y + cr.y + sr.h - dh, sr.x, sr.y + sr.h - dh, sr.w, dh);
+		blit(g, x + cr.x, y + cr.y + sr.h - dh, sr.x, sr.y + sr.h - dh, sr.w, dh);
 	}
 
 	/**
@@ -90,7 +91,7 @@ public class LayoutRenderer {
 		MenuLayoutConfig.Rect cr = getComp(c);
 		MenuLayoutConfig.Rect sr = getSide(s);
 		int dw = sr.w * prog / max;
-		blit(g, MenuLayoutConfig.getTexture(id), x + cr.x, y + cr.y, sr.x, sr.y, dw, sr.h);
+		blit(g, x + cr.x, y + cr.y, sr.x, sr.y, dw, sr.h);
 	}
 
 	/**
@@ -108,7 +109,7 @@ public class LayoutRenderer {
 	 * bind texture, draw background color, and GUI background
 	 */
 	public void start(GuiGraphicsExtractor g) {
-		blit(g, MenuLayoutConfig.getTexture(id), x, y, 0, 0, w, h);
+		blit(g, x, y, 0, 0, w, h);
 	}
 
 	private void circularBlit(GuiGraphicsExtractor g, int sx, int sy, int ix, int iy, int w, int h, int iw, int ih) {
@@ -122,7 +123,7 @@ public class LayoutRenderer {
 			int y0 = yb, y1 = h, y2 = sy;
 			while (y1 > 0) {
 				int dy = Math.min(y1, ih - y0);
-				blit(g, MenuLayoutConfig.getTexture(id), x2, y2, x0, y0, x1, y1);
+				blit(g, x2, y2, x0, y0, x1, y1);
 				y1 -= dy;
 				y0 += dy;
 				y2 += dy;

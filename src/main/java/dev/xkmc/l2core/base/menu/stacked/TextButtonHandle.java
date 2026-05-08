@@ -20,7 +20,7 @@ public class TextButtonHandle {
 	public CellEntry addButton(String btn) {
 		MenuLayoutConfig.Rect r = parent.sm.parent().getSide(btn);
 		int y0 = y - (r.h + 1) / 2;
-		parent.sm.blit(parent.g, MenuLayoutConfig.getTexture(parent.sm.id), x, y0, r.x, r.y, r.w, r.h);
+		parent.sm.blit(parent.g, x, y0, r.x, r.y, r.w, r.h);
 		CellEntry c1 = new CellEntry(x, y0, r.w, r.h);
 		x += r.w + StackedRenderHandle.BTN_X_OFFSET;
 		return c1;

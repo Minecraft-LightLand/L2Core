@@ -1,7 +1,6 @@
 package dev.xkmc.l2core.base.menu.stacked;
 
 import dev.xkmc.l2core.base.menu.base.LayoutRenderer;
-import dev.xkmc.l2core.base.menu.base.MenuLayoutConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -105,7 +104,7 @@ public class StackedRenderHandle {
 		int index = toggled ? 1 : disabled ? 2 : 0;
 		int x = SLOT_X_OFFSET + current_x * SLOT_SIZE;
 		int u = SPRITE_OFFSET + index * SLOT_SIZE;
-		sm.blit(g, MenuLayoutConfig.getTexture(sm.id), x, current_y, u, 0, SLOT_SIZE, SLOT_SIZE);
+		sm.blit(g, x, current_y, u, 0, SLOT_SIZE, SLOT_SIZE);
 		var ans = new CellEntry(x + 1, current_y + 1, 16, 16);
 		current_x++;
 		if (current_x == 9) {

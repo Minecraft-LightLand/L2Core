@@ -13,12 +13,6 @@ public abstract class BaseContainerScreen<T extends BaseContainerMenu<T>> extend
 		this.inventoryLabelY = menu.getLayout().getPlInvY() - 11;
 	}
 
-	@Override
-	public void extractRenderState(GuiGraphicsExtractor g, int mx, int my, float partial) {
-		super.extractRenderState(g, mx, my, partial);
-		extractRenderStateWithTooltipAndSubtitles(g, mx, my, partial);
-	}
-
 	protected LayoutRenderer getRenderer() {
 		return new LayoutRenderer(menu.getLayout(), menu.getLayoutId(), this);
 	}
