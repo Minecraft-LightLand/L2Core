@@ -1,13 +1,13 @@
 package dev.xkmc.l2core.serial.config;
 
+import com.google.gson.JsonElement;
 import dev.xkmc.l2core.init.L2Core;
 import dev.xkmc.l2serial.network.PacketHandler;
-import dev.xkmc.l2serial.serialization.codec.CodecAdaptor;
+import dev.xkmc.l2serial.serialization.codec.JsonCodec;
 import dev.xkmc.l2serial.util.Wrappers;
 import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
@@ -84,21 +84,23 @@ public class PacketHandlerWithConfig extends PacketHandler {
 		return type.load();
 	}
 
-	class ConfigReloadListener extends SimpleJsonResourceReloadListener<BaseConfig> {
+	class ConfigReloadListener extends JsonResourceReloadListener {
 
 		protected ConfigReloadListener(String path) {
-			super(new CodecAdaptor<>(BaseConfig.class), FileToIdConverter.json(path));
+			super(FileToIdConverter.json(path));
 		}
 
 		@Override
-		protected void apply(Map<Identifier, BaseConfig> map, ResourceManager manager, ProfilerFiller filler) {
+		protected void apply(Map<Identifier, JsonElement> map, ResourceManager manager, ProfilerFiller filler) {
 			listener_before.forEach(Runnable::run);
 			map.forEach((k, v) -> {
 				String id = k.getPath().split("/")[0];
 				if (types.containsKey(id)) {
 					String name = k.getPath().substring(id.length() + 1);
 					Identifier nk = k.withPath(name);
-					addServerConfig(types.get(id), nk, Wrappers.cast(v));
+					var type = types.get(id);
+					var ans = new JsonCodec(getRegistryLookup()).from(v, type.cls, null);
+					if (ans != null) addServerConfig(type, nk, Wrappers.cast(ans));
 				}
 			});
 			listener_after.forEach(Runnable::run);
