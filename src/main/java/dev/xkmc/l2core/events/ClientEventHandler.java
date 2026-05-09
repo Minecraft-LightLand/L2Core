@@ -1,6 +1,8 @@
 package dev.xkmc.l2core.events;
 
 import com.mojang.datafixers.util.Either;
+import dev.xkmc.l2core.content.glow.EntityGlowOverrideEvent;
+import dev.xkmc.l2core.content.raytrace.EntityTarget;
 import dev.xkmc.l2core.init.L2Core;
 import dev.xkmc.l2core.init.L2CoreConfig;
 import dev.xkmc.l2core.init.L2LibReg;
@@ -109,6 +111,16 @@ public class ClientEventHandler {
 		if (flag) {
 			list.clear();
 			list.addAll(compound.stream().flatMap(e -> e.map(Stream::of, Collection::stream)).toList());
+		}
+	}
+
+	@SubscribeEvent
+	public static void onGlow(EntityGlowOverrideEvent event){
+		for (EntityTarget target : EntityTarget.LIST) {
+			if (target.target == event.getEntity()) {
+				event.setEnabled();
+				return;
+			}
 		}
 	}
 

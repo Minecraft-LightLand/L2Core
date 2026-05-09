@@ -1,15 +1,18 @@
 {
-  "required": true,
-  "priority": 1000,
-  "package": "dev.xkmc.l2core.mixin",
-  "compatibilityLevel": "JAVA_21",
-  "mixins": [
-    "CreativeModeTabMixin"
-  ],
-  "client": [
-  ],
-  "injectors": {
-    "defaultRequire": 1
-  },
-  "minVersion": "0.8"
+	"required": true,
+	"priority": 1000,
+	"package": "dev.xkmc.l2core.mixin",
+	"compatibilityLevel": "JAVA_21",
+	"mixins": [
+		"AbstractArrowMixin",
+		"CreativeModeTabMixin",
+		"EntityMixin",
+		"LightningBoltMixin"
+	],
+	"client": [
+	],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"minVersion": "0.8"
 }
