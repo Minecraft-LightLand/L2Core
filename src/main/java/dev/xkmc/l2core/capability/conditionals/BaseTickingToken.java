@@ -2,7 +2,7 @@ package dev.xkmc.l2core.capability.conditionals;
 
 import dev.xkmc.l2serial.serialization.marker.SerialClass;
 import dev.xkmc.l2serial.serialization.marker.SerialField;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.LivingEntity;
 
 @SerialClass
 public class BaseTickingToken extends ConditionalToken {
@@ -19,22 +19,22 @@ public class BaseTickingToken extends ConditionalToken {
 	}
 
 	@Override
-	public boolean tick(Player player) {
+	public boolean tick(LivingEntity entity) {
 		if (tick > 0) {
 			tick--;
-			onTick(player);
+			onTick(entity);
 			return false;
 		} else {
-			onRemove(player);
+			onRemove(entity);
 			return true;
 		}
 	}
 
-	public void onTick(Player player) {
+	public void onTick(LivingEntity entity) {
 
 	}
 
-	public void onRemove(Player player) {
+	public void onRemove(LivingEntity entity) {
 
 	}
 

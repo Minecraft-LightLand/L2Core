@@ -1,6 +1,5 @@
-package dev.xkmc.l2core.capability.conditionals;
+package dev.xkmc.l2core.capability.player;
 
-import dev.xkmc.l2core.capability.player.PlayerCapabilityTemplate;
 import dev.xkmc.l2core.init.L2LibReg;
 import dev.xkmc.l2serial.serialization.marker.SerialClass;
 import dev.xkmc.l2serial.serialization.marker.SerialField;

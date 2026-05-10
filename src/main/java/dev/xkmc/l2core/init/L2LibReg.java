@@ -4,8 +4,9 @@ import dev.xkmc.l2core.base.effects.ClientEffectCap;
 import dev.xkmc.l2core.base.menu.base.MenuLayoutConfig;
 import dev.xkmc.l2core.base.worldgen.ConfigChancePlacement;
 import dev.xkmc.l2core.base.worldgen.ConfigRarityFilter;
-import dev.xkmc.l2core.capability.conditionals.ConditionalData;
-import dev.xkmc.l2core.capability.conditionals.PlayerFlagData;
+import dev.xkmc.l2core.capability.conditionals.MobConditionalData;
+import dev.xkmc.l2core.capability.conditionals.PlayerConditionalData;
+import dev.xkmc.l2core.capability.player.PlayerFlagData;
 import dev.xkmc.l2core.capability.player.PlayerCapabilityNetworkHandler;
 import dev.xkmc.l2core.init.reg.datapack.DatapackReg;
 import dev.xkmc.l2core.init.reg.ench.EECVal;
@@ -22,6 +23,7 @@ import dev.xkmc.l2core.serial.loot.AddLootTableModifier;
 import dev.xkmc.l2core.serial.loot.PlayerFlagCondition;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.levelgen.placement.PlacementModifierType;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.neoforged.neoforge.common.conditions.ICondition;
@@ -50,8 +52,10 @@ public class L2LibReg {
 
 	public static final AttVal.CapVal<LivingEntity, ClientEffectCap> EFFECT = ATTACHMENT.entity("effect",
 			ClientEffectCap.class, ClientEffectCap::new, LivingEntity.class, e -> e.level().isClientSide());
-	public static final AttVal.PlayerVal<ConditionalData> CONDITIONAL = ATTACHMENT.player("conditionals",
-			ConditionalData.class, ConditionalData::new, PlayerCapabilityNetworkHandler::new);
+	public static final AttVal.PlayerVal<PlayerConditionalData> PLAYER_CONDITIONAL = ATTACHMENT.player("player_conditionals",
+			PlayerConditionalData.class, PlayerConditionalData::new, PlayerCapabilityNetworkHandler::new);
+	public static final AttVal.CapVal<LivingEntity, MobConditionalData> MOB_CONDITIONAL = ATTACHMENT.entity("mob_conditionals",
+			MobConditionalData.class, MobConditionalData::new, LivingEntity.class, e -> !(e instanceof Player));
 	public static final AttVal.PlayerVal<PlayerFlagData> FLAGS = ATTACHMENT.player("flags",
 			PlayerFlagData.class, PlayerFlagData::new, PlayerCapabilityNetworkHandler::new);
 
