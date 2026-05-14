@@ -1,18 +1,16 @@
 package dev.xkmc.l2core.base.entity;
 
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
+import dev.xkmc.l2core.init.L2LibReg;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.UUIDUtil;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
-import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializer;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -25,13 +23,15 @@ public class SyncedData {
 	public static final Serializer<Integer> INT;
 	public static final Serializer<BlockPos> BLOCK_POS;
 	public static final Serializer<String> STRING;
+	public static final Serializer<Optional<Vec3>> VEC3;
 	public static final Serializer<Optional<UUID>> UUID;
 
 	static {
 		INT = new Simple<>(EntityDataSerializers.INT, Codec.INT);
 		BLOCK_POS = new Simple<>(EntityDataSerializers.BLOCK_POS, BlockPos.CODEC);
 		STRING = new Simple<>(EntityDataSerializers.STRING, Codec.STRING);
-		UUID = new Opt<>(EntityDataSerializer.forValueType(UUIDUtil.STREAM_CODEC.apply(ByteBufCodecs::optional)), UUIDUtil.CODEC);
+		VEC3 = new Opt<>(L2LibReg.EDS_VEC3.get(), Vec3.CODEC);
+		UUID = new Opt<>(L2LibReg.EDS_UUID.get(), UUIDUtil.CODEC);
 	}
 
 	private final Definer cls;
@@ -65,20 +65,20 @@ public class SyncedData {
 		return data.data;
 	}
 
-	public void write(RegistryAccess pvd, CompoundTag tag, SynchedEntityData data) {
+	public void write(ValueOutput tag, SynchedEntityData data) {
 		for (Data<?> entry : list) {
-			entry.write(pvd, tag, data);
+			entry.write(tag, data);
 		}
 		if (parent != null)
-			parent.write(pvd, tag, data);
+			parent.write(tag, data);
 	}
 
-	public void read(RegistryAccess pvd, CompoundTag tag, SynchedEntityData data) {
+	public void read(ValueInput tag, SynchedEntityData data) {
 		for (Data<?> entry : list) {
-			entry.read(pvd, tag, data);
+			entry.read(tag, data);
 		}
 		if (parent != null)
-			parent.read(pvd, tag, data);
+			parent.read(tag, data);
 	}
 
 	private class Data<T> {
@@ -86,7 +86,7 @@ public class SyncedData {
 		private final Serializer<T> ser;
 		private final EntityDataAccessor<T> data;
 		private final T init;
-		private final String name;
+		private final @Nullable String name;
 
 		private Data(Serializer<T> ser, T init, @Nullable String name) {
 			this.ser = ser;
@@ -99,16 +99,14 @@ public class SyncedData {
 			data.define(this.data, this.init);
 		}
 
-		public void write(RegistryAccess pvd, CompoundTag tag, SynchedEntityData entityData) {
+		public void write(ValueOutput tag, SynchedEntityData entityData) {
 			if (name == null) return;
-			Tag ans = ser.write(pvd, entityData.get(data));
-			if (ans != null) tag.put(name, ans);
+			ser.write(tag, name, entityData.get(data));
 		}
 
-		public void read(RegistryAccess pvd, CompoundTag tag, SynchedEntityData entityData) {
+		public void read(ValueInput tag, SynchedEntityData entityData) {
 			if (name == null) return;
-			var in = tag.get(name);
-			entityData.set(data, Optional.ofNullable(in).map(e -> ser.read(pvd, e)).orElse(init));
+			entityData.set(data, Optional.ofNullable(ser.read(tag, name)).orElse(init));
 		}
 	}
 
@@ -116,37 +114,34 @@ public class SyncedData {
 
 		EntityDataSerializer<T> data();
 
-		@Nullable
-		Tag write(RegistryAccess pvd, T t);
+		void write(ValueOutput pvd, String id, T t);
 
 		@Nullable
-		T read(RegistryAccess pvd, Tag tag);
+		T read(ValueInput pvd, String id);
 
 	}
 
 	public record Simple<T>(EntityDataSerializer<T> data, Codec<T> codec) implements Serializer<T> {
 
-		@Nullable
-		public Tag write(RegistryAccess pvd, T t) {
-			return codec.encodeStart(pvd.createSerializationContext(NbtOps.INSTANCE), t).getOrThrow();
+		public void write(ValueOutput pvd, String id, T t) {
+			pvd.store(id, codec, t);
 		}
 
 		@Nullable
-		public T read(RegistryAccess pvd, Tag tag) {
-			return codec.decode(pvd.createSerializationContext(NbtOps.INSTANCE), tag).getOrThrow().getFirst();
+		public T read(ValueInput pvd, String id) {
+			return pvd.read(id, codec).orElse(null);
 		}
 
 	}
 
 	public record Opt<T>(EntityDataSerializer<Optional<T>> data, Codec<T> codec) implements Serializer<Optional<T>> {
 
-		@Nullable
-		public Tag write(RegistryAccess pvd, Optional<T> val) {
-			return val.map(e -> codec.encodeStart(pvd.createSerializationContext(NbtOps.INSTANCE), e).getOrThrow()).orElse(null);
+		public void write(ValueOutput pvd, String id, Optional<T> t) {
+			t.ifPresent(e -> pvd.store(id, codec, e));
 		}
 
-		public Optional<T> read(RegistryAccess pvd, Tag tag) {
-			return codec.decode(pvd.createSerializationContext(NbtOps.INSTANCE), tag).result().map(Pair::getFirst);
+		public Optional<T> read(ValueInput pvd, String id) {
+			return pvd.read(id, codec);
 		}
 
 	}

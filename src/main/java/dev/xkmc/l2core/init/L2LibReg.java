@@ -6,8 +6,8 @@ import dev.xkmc.l2core.base.worldgen.ConfigChancePlacement;
 import dev.xkmc.l2core.base.worldgen.ConfigRarityFilter;
 import dev.xkmc.l2core.capability.conditionals.MobConditionalData;
 import dev.xkmc.l2core.capability.conditionals.PlayerConditionalData;
-import dev.xkmc.l2core.capability.player.PlayerFlagData;
 import dev.xkmc.l2core.capability.player.PlayerCapabilityNetworkHandler;
+import dev.xkmc.l2core.capability.player.PlayerFlagData;
 import dev.xkmc.l2core.init.reg.datapack.DatapackReg;
 import dev.xkmc.l2core.init.reg.ench.EECVal;
 import dev.xkmc.l2core.init.reg.ench.EnchColor;
@@ -21,14 +21,21 @@ import dev.xkmc.l2core.serial.ingredients.PotionIngredient;
 import dev.xkmc.l2core.serial.loot.AddItemModifier;
 import dev.xkmc.l2core.serial.loot.AddLootTableModifier;
 import dev.xkmc.l2core.serial.loot.PlayerFlagCondition;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.syncher.EntityDataSerializer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.levelgen.placement.PlacementModifierType;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
+
+import java.util.Optional;
+import java.util.UUID;
 
 public class L2LibReg {
 
@@ -81,6 +88,11 @@ public class L2LibReg {
 	public static final SR<PlacementModifierType<?>> PM = SR.of(REG, BuiltInRegistries.PLACEMENT_MODIFIER_TYPE);
 	public static final Val<PlacementModifierType<ConfigRarityFilter>> PM_RARITY = PM.reg("rarity", () -> () -> ConfigRarityFilter.CODEC);
 	public static final Val<PlacementModifierType<ConfigChancePlacement>> PM_CHANCE = PM.reg("chance", () -> () -> ConfigChancePlacement.CODEC);
+
+	// entity serializers
+	private static final SR<EntityDataSerializer<?>> EDS = SR.of(REG, NeoForgeRegistries.Keys.ENTITY_DATA_SERIALIZERS);
+	public static final Val<EntityDataSerializer<Optional<Vec3>>> EDS_VEC3 = EDS.regVal("vec3", EntityDataSerializer.forValueType(Vec3.STREAM_CODEC.apply(ByteBufCodecs::optional)));
+	public static final Val<EntityDataSerializer<Optional<UUID>>> EDS_UUID = EDS.regVal("uuid", EntityDataSerializer.forValueType(UUIDUtil.STREAM_CODEC.apply(ByteBufCodecs::optional)));
 
 	public static void register() {
 	}

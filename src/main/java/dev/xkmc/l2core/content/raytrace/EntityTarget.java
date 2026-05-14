@@ -41,7 +41,6 @@ public class EntityTarget {
 
 	}
 
-	@OnlyIn(Dist.CLIENT)
 	public void tickRender() {
 		if (target == null) {
 			return;
