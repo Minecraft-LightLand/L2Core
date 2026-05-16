@@ -50,7 +50,7 @@ public class ClientEffectRenderEvents {
 
 	@SubscribeEvent
 	public static void clientTick(ClientTickEvent.Post event) {
-		AbstractClientPlayer player = Proxy.getClientPlayer();
+		var player = Minecraft.getInstance().player;
 		if (player != null) {
 			for (var entry : player.getActiveEffectsMap().entrySet()) {
 				if (entry.getValue().getEffect().value() instanceof FirstPlayerRenderEffect effect) {

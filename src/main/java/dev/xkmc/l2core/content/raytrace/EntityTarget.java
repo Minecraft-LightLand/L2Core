@@ -45,7 +45,7 @@ public class EntityTarget {
 		if (target == null) {
 			return;
 		}
-		Player player = Proxy.getClientPlayer();
+		Player player = Proxy.getPlayer();
 		if (player == null) {
 			updateTarget(null);
 			return;

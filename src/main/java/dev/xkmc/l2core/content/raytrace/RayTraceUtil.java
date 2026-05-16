@@ -93,7 +93,7 @@ public class RayTraceUtil {
 		@Override
 		public void onChange(@Nullable Entity entity) {
 			UUID eid = entity == null ? null : entity.getUUID();
-			var pl = Proxy.getClientPlayer();
+			var pl = Proxy.getPlayer();
 			if (pl != null) {
 				L2Core.PACKET_HANDLER.toServer(new TargetSetPacket(pl.getUUID(), eid));
 			}
