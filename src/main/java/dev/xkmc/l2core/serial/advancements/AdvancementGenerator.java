@@ -35,7 +35,7 @@ public class AdvancementGenerator {
 
 		public TabBuilder(String tab) {
 			this.tab = tab;
-			this.bg = Identifier.fromNamespaceAndPath(modid, "textures/gui/advancements/backgrounds/" + tab + ".png");
+			this.bg = Identifier.fromNamespaceAndPath(modid, "gui/advancements/backgrounds/" + tab + ".png");
 		}
 
 		public void build() {

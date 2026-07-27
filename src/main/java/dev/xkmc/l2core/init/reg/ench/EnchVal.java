@@ -202,7 +202,7 @@ public interface EnchVal {
 		}
 
 		Enchantment build(BootstrapContext<Enchantment> ctx, Identifier id) {
-			var items = ctx.registryLookup(Registries.ITEM).orElseThrow();
+			var items = ctx.holderLookup(Registries.ITEM).orElseThrow();
 			var enchs = ctx.lookup(Registries.ENCHANTMENT);
 			var fakeItem = new FakeRegistryLookup<>(Registries.ITEM);
 			var fakeEnch = new FakeRegistryLookup<>(Registries.ENCHANTMENT);

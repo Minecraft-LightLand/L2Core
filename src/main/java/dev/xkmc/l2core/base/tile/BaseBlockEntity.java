@@ -1,9 +1,11 @@
 package dev.xkmc.l2core.base.tile;
 
 import dev.xkmc.l2core.util.ServerOnly;
+import dev.xkmc.l2serial.serialization.codec.CodecAdaptor;
 import dev.xkmc.l2serial.serialization.codec.TagCodec;
 import dev.xkmc.l2serial.serialization.marker.SerialClass;
 import dev.xkmc.l2serial.serialization.marker.SerialField;
+import dev.xkmc.l2serial.util.Wrappers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -13,8 +15,9 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import org.jspecify.annotations.NullMarked;
 
-@org.jspecify.annotations.NullMarked
+@NullMarked
 @SerialClass
 public class BaseBlockEntity extends BlockEntity {
 
@@ -25,17 +28,13 @@ public class BaseBlockEntity extends BlockEntity {
 	@Override
 	protected void loadAdditional(ValueInput input) {
 		super.loadAdditional(input);
-		var opt = input.read("auto-serial", CompoundTag.CODEC);
-		if (opt.isPresent())
-			new TagCodec(input.lookup()).fromTag(opt.get(), getClass(), this);
+		input.read("auto-serial", CodecAdaptor.toRead(this));
 	}
 
 	@Override
 	protected void saveAdditional(ValueOutput output) {
 		super.saveAdditional(output);
-		if (level == null) return;
-		CompoundTag ser = new TagCodec(level.registryAccess()).toTag(new CompoundTag(), getClass(), this);
-		if (ser != null) output.store("auto-serial", CompoundTag.CODEC, ser);
+		output.store("auto-serial", new CodecAdaptor<>(Wrappers.cast(getClass())), this);
 	}
 
 	@Override
