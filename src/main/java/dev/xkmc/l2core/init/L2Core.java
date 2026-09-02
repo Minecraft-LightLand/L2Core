@@ -24,7 +24,7 @@ public class L2Core {
 
 	public static final L2Registrate REGISTRATE = new L2Registrate(MODID);
 
-	public static final PacketHandler PACKET_HANDLER = new PacketHandler(MODID, 1,
+	public static final PacketHandler PACKET_HANDLER = new PacketHandler(MODID, 2,
 			e -> e.create(EffectToClient.class, PLAY_TO_CLIENT),
 			e -> e.create(PlayerCapToClient.class, PLAY_TO_CLIENT),
 			e -> e.create(TokenToClient.class, PLAY_TO_CLIENT),

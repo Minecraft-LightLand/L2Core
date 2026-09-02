@@ -28,7 +28,7 @@ public class PacketHandlerWithConfig extends PacketHandler {
 
 	public static void onDatapackSync(OnDatapackSyncEvent event) {
 		for (PacketHandlerWithConfig handler : INTERNAL.values()) {
-			SyncPacket packet = new SyncPacket(handler.modid, handler.configs);
+			SyncPacket packet =  SyncPacket.of(handler.modid, handler.configs, event.getPlayerList());
 			if (event.getPlayer() == null) L2Core.PACKET_HANDLER.toAllClient(packet);
 			else L2Core.PACKET_HANDLER.toClientPlayer(packet, event.getPlayer());
 		}
