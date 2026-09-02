@@ -1,5 +1,6 @@
 package dev.xkmc.l2core.serial.config;
 
+import dev.xkmc.l2core.util.ServerProxy;
 import dev.xkmc.l2serial.util.Wrappers;
 import net.minecraft.resources.Identifier;
 
@@ -25,11 +26,17 @@ public record ConfigTypeEntry<T extends BaseConfig>(PacketHandlerWithConfig chan
 
 	public Collection<T> getAll() {
 		MergedConfigType<T> type = Wrappers.cast(channel.types.get(name));
+		if (ServerProxy.hasClientLevel()) {
+			return type.clientConfigs.values();
+		}
 		return type.configs.values();
 	}
 
 	public T getEntry(Identifier id) {
 		MergedConfigType<T> type = Wrappers.cast(channel.types.get(name));
+		if (ServerProxy.hasClientLevel()) {
+			return type.clientConfigs.get(id);
+		}
 		return type.configs.get(id);
 	}
 

@@ -36,4 +36,9 @@ public class ServerProxy {
 		return Proxy.isOnClient();
 	}
 
+	public static boolean hasClientLevel() {
+		if (FMLEnvironment.getDist() == Dist.DEDICATED_SERVER) return false;
+		return Proxy.isOnClient() && Proxy.getLevel() != null;
+	}
+
 }
