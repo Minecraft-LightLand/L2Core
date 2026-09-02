@@ -30,6 +30,14 @@ public class BaseCapabilityEvents {
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOW)
+	public static void onPlayerClone(PlayerEvent.PlayerRespawnEvent event) {
+		for (PlayerCapabilityHolder<?> holder : PlayerCapabilityHolder.INTERNAL_MAP.values()) {
+			ServerPlayer e = (ServerPlayer) event.getEntity();
+			holder.network.toClient(e);
+		}
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOW)
 	public static void onPlayerJoinLevel(EntityJoinLevelEvent event) {
 		if (!(event.getEntity() instanceof ServerPlayer e)) return;
 		for (PlayerCapabilityHolder<?> holder : PlayerCapabilityHolder.INTERNAL_MAP.values()) {
