@@ -48,6 +48,8 @@ public class PacketHandlerWithConfig extends PacketHandler {
 	final ConfigReloadListener listener;
 	final List<Runnable> listener_before = new ArrayList<>();
 	final List<Runnable> listener_after = new ArrayList<>();
+	final List<Runnable> client_listener_before = new ArrayList<>();
+	final List<Runnable> client_listener_after = new ArrayList<>();
 	final Map<String, BaseConfigType<?>> types = new HashMap<>();
 
 	@SafeVarargs
@@ -65,6 +67,14 @@ public class PacketHandlerWithConfig extends PacketHandler {
 
 	public void addAfterReloadListener(Runnable runnable) {
 		listener_after.add(runnable);
+	}
+
+	public void addClientBeforeReloadListener(Runnable runnable) {
+		client_listener_before.add(runnable);
+	}
+
+	public void addClientAfterReloadListener(Runnable runnable) {
+		client_listener_after.add(runnable);
 	}
 
 	public <T extends BaseConfig> void addConfig(String id, Class<T> loader) {
@@ -133,11 +143,13 @@ public class PacketHandlerWithConfig extends PacketHandler {
 		 * Called on client side only
 		 */
 		public void apply(ArrayList<ConfigInstance> list) {
+			client_listener_before.forEach(Runnable::run);
 			types.values().forEach(BaseConfigType::clientBeforeReload);
 			for (var e : list) {
 				addClientConfig(types.get(e.name), e.id(), Wrappers.cast(e.config));
 			}
 			types.values().forEach(BaseConfigType::clientAfterReload);
+			client_listener_after.forEach(Runnable::run);
 		}
 	}
 

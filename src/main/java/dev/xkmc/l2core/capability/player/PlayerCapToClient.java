@@ -26,7 +26,7 @@ public record PlayerCapToClient(Action action, ResourceLocation holderID, byte[]
 	@Override
 	public void handle(Player player) {
 		ClientSyncHandler.parse(player.level().registryAccess(), data,
-				PlayerCapabilityHolder.INTERNAL_MAP.get(holderID), action.pred);
+				PlayerCapabilityHolder.INTERNAL_MAP.get(holderID), action.pred, playerID);
 	}
 
 	public enum Action {
